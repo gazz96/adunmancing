@@ -1,0 +1,12 @@
+<?php
+
+namespace App\Filament\Resources\OrderShippingResource\Pages;
+
+use App\Filament\Resources\OrderShippingResource;
+use Filament\Actions;
+use Filament\Resources\Pages\CreateRecord;
+
+class CreateOrderShipping extends CreateRecord
+{
+    protected static string $resource = OrderShippingResource::class;
+}
