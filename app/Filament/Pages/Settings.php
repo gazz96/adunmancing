@@ -55,7 +55,22 @@ class Settings extends Page implements Forms\Contracts\HasForms
                     //     ]),
                     Tabs\Tab::make('Payment')
                         ->schema([
-                            // TextInput::make('payment_gateway')->label('Payment Gateway'),
+                            Section::make('Take offline payments')
+                                ->description('Accept payments via cash on delivery, bank transfer, etc.')
+                                ->schema([
+                                    Toggle::make('options.enable_cod')
+                                        ->label('Enable Cash on Delivery')
+                                        ->default(true),
+                                    Toggle::make('options.enable_bank_transfer')
+                                        ->label('Enable Bank Transfer')
+                                        ->default(true),
+                                    Toggle::make('options.enable_credit_card')
+                                        ->label('Enable Credit Card Payment')
+                                        ->default(false),
+                                    Toggle::make('options.enable_paypal')
+                                        ->label('Enable PayPal Payment')
+                                        ->default(false),
+                                ]),
                         ]),
                     
                     Tabs\Tab::make('Emails')
