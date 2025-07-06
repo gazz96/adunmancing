@@ -21,6 +21,9 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Tabs;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 
 class ProductResource extends Resource
 {
@@ -30,13 +33,21 @@ class ProductResource extends Resource
 
     protected static ?string $navigationGroup = 'Product Management';
 
+    public function mounted()
+    {
+        dd('testing');
+    }
+
     public static function form(Form $form): Form
     {
+
+
         return $form
-        ->schema([
-            Section::make('Info Produk')
-                ->schema([
-                    TextInput::make('name')
+            ->schema([
+                
+                Section::make('Info Produk')
+                    ->schema([
+                        TextInput::make('name')
                         ->required()
                         ->live(onBlur: true)
                         ->afterStateUpdated(function (string $operation, $state, callable $set, callable $get) {
@@ -54,84 +65,81 @@ class ProductResource extends Resource
                             $set('slug', $slug);
                         }),
 
-                TextInput::make('slug')
-                    ->required()
-                    ->disabled()
-                    ->dehydrated(),
+                    TextInput::make('slug')
+                        ->required()
+                        ->disabled()
+                        ->dehydrated(),
 
-                // TextInput::make('sku')
-                //     ->label('SKU (Kode Produk)')
-                //     ->nullable()
-                //     ->maxLength(20),
+                    RichEditor::make('description')
+                        ->label('Deskripsi Produk')
+                        ->required()
+                        ->toolbarButtons([
+                            'bold',
+                            'italic',
+                            'underline',
+                            'link',
+                            'bulletList',
+                            'numberList',
+                            'blockquote',
+                            'codeBlock',
+                        ])
+                        ->columns(1),
 
-                RichEditor::make('description')
-                    ->label('Deskripsi Produk')
-                    ->required()
-                    ->toolbarButtons([
-                        'bold',
-                        'italic',
-                        'underline',
-                        'link',
-                        'bulletList',
-                        'numberList',
-                        'blockquote',
-                        'codeBlock',
-                    ])
-                    ->columns(1),
+                    TextInput::make('price')
+                        ->label('Harga')
+                        ->numeric(),
 
-                TextInput::make('price')
-                    ->label('Harga')
-                    ->numeric()
-                    ->required(),
+                    TextInput::make('compare_price')
+                        ->label('Harga Coret')
+                        ->numeric(),
 
-                TextInput::make('compare_price')
-                    ->label('Harga Coret')
-                    ->numeric()
-                    ->nullable(),
-            ])->columns(1),
-
-            Section::make('Kategori')
-                ->schema([
-                    Select::make('categories')
-                        ->multiple()
-                        ->relationship('categories', 'name')
-                        ->preload()
-                        ->searchable()
-                        ->label('Kategori')
+                    Toggle::make('status')
+                        ->label('Aktif')
+                        ->default(true),
                 ]),
 
-            Repeater::make('variants')
-                ->relationship('variants')
-                ->label('Product Variants')
-                ->schema([
-                    TextInput::make('sku')       
-                        ->disabled()
-                        ->dehydrated(false)
-                        ->hint('Auto-generated on save'),
-                    TextInput::make('price')->numeric()->required(),
+                Section::make('Kategori')
+                    ->schema([
+                        Select::make('categories')
+                            ->multiple()
+                            ->relationship('categories', 'name')
+                            ->preload()
+                            ->searchable()
+                            ->label('Kategori')
+                    ]),
 
-                    // Options
-                    Repeater::make('options')
-                        ->relationship('options')
-                        ->schema([
-                            TextInput::make('option_name')->required(),  // e.g. "Color"
-                            TextInput::make('option_value')->required(), // e.g. "Red"
-                        ])
-                        ->columns(2),
-
-                    // Images
-                    // FileUpload::make('images')
-                    //     ->label('Variant Images')
-                    //     ->multiple()
-                    //     ->directory('variants')
-                    //     ->relationship('images', 'image_path'),
-                ])
-                ->itemLabel('Add Variant')
-                ->collapsible()
-                ->columnSpanFull()
+                Section::make('Attributes')
+                    ->schema(self::getAttributesForm($form)),
 
         ]);
     }
+
+    public static function getAttributesForm($form)
+    {
+
+
+        $attributes = \App\Models\Attribute::all();
+        $forms = [];
+
+        foreach ($attributes as $attribute) {
+
+            if(!$attribute->values) {
+                continue; // Skip attributes without values
+            }
+
+            $values = [];
+
+            foreach(explode(',', $attribute->values) as $value) {
+                $values[trim($value)] = trim($value);
+            }
+
+            $forms[] = Select::make('attributes.' . $attribute->slug)
+                ->label($attribute->name)
+                ->options($values);
+        }
+
+        return $forms;
+    }  
 
     public static function table(Table $table): Table
     {
@@ -139,7 +147,10 @@ class ProductResource extends Resource
         ->columns([
             Tables\Columns\TextColumn::make('name')->searchable(),
             Tables\Columns\TextColumn::make('price')->money('IDR', true),
-            Tables\Columns\ToggleColumn::make('is_active'),
+            Tables\Columns\ToggleColumn::make('status')
+                ->label('Aktif')
+                ->sortable()
+                ->toggleable(),
             Tables\Columns\TextColumn::make('categories.name')->label('Kategori')->badge()->limit(2),
             Tables\Columns\TextColumn::make('created_at')->dateTime(),
         ])

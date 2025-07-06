@@ -10,6 +10,11 @@ class EditProduct extends EditRecord
 {
     protected static string $resource = ProductResource::class;
 
+    public function beforeFill()
+    {
+        $this->record->attributes = json_decode($this->record->attributes, 1);
+    }
+
     protected function getHeaderActions(): array
     {
         return [

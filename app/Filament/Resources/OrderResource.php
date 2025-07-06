@@ -48,23 +48,41 @@ class OrderResource extends Resource
 
                         Repeater::make('items')
                             ->label('Order Items')
-                            ->relationship()
+                            ->relationship('items')
                             ->schema([
-                                Select::make('product_variant_id')
-                                    ->label('Variant')
-                                    ->relationship('variant', 'sku')
+                                Select::make('product_id')
+                                    ->label('Product')
+                                    ->relationship('product', 'name')
                                     ->searchable()
-                                    ->required(),
+                                    ->required()
+                                    ->preload()
+                                    ->live()
+                                    ->afterStateUpdated(function($state, callable $set, callable $get){
+                                        $product = \App\Models\Product::find($state);
+                                        if ($product) {
+                                            $set('price', $product->price);
+                                            $set('subtotal', $product->price * ($get('quantity') ?? 1));
+                                        }
+                                    }),
 
                                 TextInput::make('price')
                                     ->label('Price')
                                     ->numeric()
-                                    ->required(),
+                                    ->required()
+                                    ->afterStateUpdated(
+                                        fn($state, callable $set, callable $get) =>
+                                        $set('subtotal', (float) $state * (int) $get('quantity'))
+                                    )
+                                    ->visible(fn($get) => $get('product_id') !== null),
 
                                 TextInput::make('quantity')
                                     ->numeric()
                                     ->minValue(1)
-                                    ->required(),
+                                    ->required()
+                                    ->live()
+                                    ->afterStateUpdated(function($state, callable $set, callable $get) {
+                                        $set('subtotal', (float) $get('price') * (int) $state);
+                                    }),
 
                                 TextInput::make('subtotal')
                                     ->label('Subtotal')
@@ -78,11 +96,15 @@ class OrderResource extends Resource
                             ->columns(4)
                             ->itemLabel('Add Item'),
 
-                        TextInput::make('total')
+                        TextInput::make('total_amount')
                             ->disabled()
                             ->dehydrated()
                             ->numeric()
-                            ->label('Total'),
+                            ->label('Total')
+                            ->afterStateHydrated(function($state, callable $set, callable $get) {
+                                $total = collect($get('items'))->sum('subtotal');
+                                $set('total_amount', $total);
+                            }),
                     ]),
 
                 Section::make('Shipping Information')
@@ -92,7 +114,21 @@ class OrderResource extends Resource
                         TextInput::make('shipping.address')->required(),
                         TextInput::make('shipping.city')->required(),
                         TextInput::make('shipping.postal_code')->required(),
-                    ])
+                    ]),
+
+                Section::make('Status')
+                    ->schema([
+                        Select::make('status')
+                            ->label('Order Status')
+                            ->options([
+                                'pending' => 'Pending',
+                                'paid' => 'Paid',
+                                'shipped' => 'Shipped',
+                                'cancelled' => 'Cancelled',
+                            ])
+                            ->default('pending')
+                            ->required(),
+                    ]),
             ]);
     }
 
