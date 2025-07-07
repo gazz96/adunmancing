@@ -47,7 +47,9 @@ class Settings extends Page implements Forms\Contracts\HasForms
                                 ->image()
                                 ->disk('public')
                                 ->directory('site_logos')
-                                ->columnSpanFull(),
+                                ->visibility(true)
+                                ->columnSpanFull()
+                                ->previewable(false),
                             TextInput::make('options.site_name')->label('Site Name'),
                             TextInput::make('options.contact')->label('Site Contact'),
                             Textarea::make('options.site_description')->label('Description'),

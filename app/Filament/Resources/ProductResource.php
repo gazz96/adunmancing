@@ -96,6 +96,16 @@ class ProductResource extends Resource
                     Toggle::make('status')
                         ->label('Aktif')
                         ->default(true),
+
+                    FileUpload::make('featured_image')
+                        ->label('Gambar Unggulan')
+                        ->image()
+                        ->disk('public')
+                        ->directory('product')
+                        ->visibility('public')
+                        ->columnSpanFull()
+                        ->previewable(false)
+                        ->nullable(),
                 ]),
 
                 Section::make('Kategori')
@@ -145,6 +155,9 @@ class ProductResource extends Resource
     {
         return  $table
         ->columns([
+            Tables\Columns\ImageColumn::make('featured_image_url')
+                ->square()
+                ->label('Gambar'),
             Tables\Columns\TextColumn::make('name')->searchable(),
             Tables\Columns\TextColumn::make('price')->money('IDR', true),
             Tables\Columns\ToggleColumn::make('status')

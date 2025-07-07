@@ -15,4 +15,9 @@ class Category extends Model
     {
         return $this->belongsToMany(Product::class);
     }
+
+     public function getFeaturedImageUrlAttribute()
+    {
+        return $this->icon ? asset('storage/' . $this->icon) : null;
+    }
 }

@@ -34,3 +34,7 @@ Route::post('/register', [AuthController::class, 'doRegister'])
 
 Route::get('/', [WebController::class, 'index'])
     ->name('frontend.index');
+Route::get('/shop', [WebController::class, 'shop']) 
+    ->name('frontend.shop');
+Route::get('/product/{?slug}', [WebController::class, 'productDetail']) 
+    ->name('frontend.product-detail');

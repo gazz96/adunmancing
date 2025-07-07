@@ -58,6 +58,7 @@ class CategoryResource extends Resource
                     ->disk('public')
                     ->directory('product_category_icons')
                     ->columnSpanFull()
+                    ->previewable(false)
                     ->nullable(),
             ]);
     }
@@ -66,6 +67,9 @@ class CategoryResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\ImageColumn::make('featured_image_url')
+                    ->square()
+                    ->label('Icon'),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
