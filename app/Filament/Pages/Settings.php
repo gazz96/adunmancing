@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use Filament\Forms;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -41,7 +42,14 @@ class Settings extends Page implements Forms\Contracts\HasForms
                 ->tabs([
                     Tabs\Tab::make('General')
                         ->schema([
+                            FileUpload::make('options.site_logo')
+                                ->label('Site Logo')
+                                ->image()
+                                ->disk('public')
+                                ->directory('site_logos')
+                                ->columnSpanFull(),
                             TextInput::make('options.site_name')->label('Site Name'),
+                            TextInput::make('options.contact')->label('Site Contact'),
                             Textarea::make('options.site_description')->label('Description'),
                         ]),
                     Tabs\Tab::make('Product')

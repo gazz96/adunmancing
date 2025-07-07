@@ -18,7 +18,7 @@ class CategoryResource extends Resource
     protected static ?string $model = Category::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-tag';
-    
+
     protected static ?string $navigationGroup = 'Product Management';
 
     public static function form(Form $form): Form
@@ -26,30 +26,39 @@ class CategoryResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
-            ->required()
-            ->live(onBlur: true)
-            ->afterStateUpdated(function (string $operation, $state, callable $set, callable $get) {
-                $slug = \Illuminate\Support\Str::slug($state);
-                $originalSlug = $slug;
-                $i = 1;
+                    ->required()
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(function (string $operation, $state, callable $set, callable $get) {
+                        $slug = \Illuminate\Support\Str::slug($state);
+                        $originalSlug = $slug;
+                        $i = 1;
 
-                while (Category::where('slug', $slug)
-                    ->when($get('id'), fn ($query, $id) => $query->where('id', '!=', $id))
-                    ->exists()
-                ) {
-                    $slug = $originalSlug . '-' . $i++;
-                }
+                        while (Category::where('slug', $slug)
+                            ->when($get('id'), fn($query, $id) => $query->where('id', '!=', $id))
+                            ->exists()
+                        ) {
+                            $slug = $originalSlug . '-' . $i++;
+                        }
 
-                $set('slug', $slug);
-            }),
+                        $set('slug', $slug);
+                    }),
 
-        Forms\Components\TextInput::make('slug')
-            ->required()
-            ->disabled() // agar tidak bisa diubah manual
-            ->dehydrated(), // tetap dikirim ke server saat submit
+                Forms\Components\TextInput::make('slug')
+                    ->required()
+                    ->disabled() // agar tidak bisa diubah manual
+                    ->dehydrated(), // tetap dikirim ke server saat submit
 
                 Forms\Components\Textarea::make('description')
-                    ->rows(3),
+                    ->rows(3)
+                    ->columnSpanFull(),
+
+                Forms\Components\FileUpload::make('icon')
+                    ->label('Category Icon')
+                    ->image()
+                    ->disk('public')
+                    ->directory('product_category_icons')
+                    ->columnSpanFull()
+                    ->nullable(),
             ]);
     }
 
