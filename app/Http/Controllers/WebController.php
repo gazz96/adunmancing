@@ -22,19 +22,22 @@ class WebController extends Controller
         ]);
     }
 
-    public function shop()
-    {
-        return view('frontend.shop.index', [
-            'productCategories' => \App\Models\Category::orderBy('name')
-                ->limit(6)
-                ->get(),
-        ]);
-    }
-
     public function myAccount()
     {
         return view('frontend.my-account.index', [
             'user' => auth()->user(),
+        ]);
+    }
+
+    public function shop(Request $request)
+    {
+        return view('frontend.shop', [
+            'productCategories' => \App\Models\Category::orderBy('name')
+                ->get(),
+            'products' => \App\Models\Product::orderBy('created_at', 'desc')
+                ->whereStatus(1)
+                ->paginate(12)
+                ->appends($request->except('page')),
         ]);
     }
 }

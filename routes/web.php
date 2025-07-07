@@ -41,3 +41,6 @@ Route::get('/product/{?slug}', [WebController::class, 'productDetail'])
 
 Route::get('my-account', [WebController::class, 'myAccount'])
     ->name('web.my-account');
+
+Route::get('/shop', [WebController::class, 'shop'])
+    ->name('web.shop');

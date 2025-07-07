@@ -28,11 +28,24 @@ class Product extends Model
 
     public function getPriceLabelAttribute()
     {
-        return number_format($this->price, 2, '.', ',');
+        return number_format($this->price, 0, '.', ',');
+    }
+
+    public function getComparePriceLabelAttribute()
+    {
+        return $this->compare_price ? number_format($this->compare_price, 0, '.', ',') : null;
     }
 
     public function getFeaturedImageUrlAttribute()
     {
         return $this->featured_image ? asset('storage/' . $this->featured_image) : null;
+    }
+
+    public function getPercentageDiscountByComparePriceAttribute()
+    {
+        if ($this->compare_price && $this->compare_price > $this->price) {
+            return round((($this->compare_price - $this->price) / $this->compare_price) * 100);
+        }
+        return 0;
     }
 }

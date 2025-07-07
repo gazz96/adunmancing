@@ -124,6 +124,21 @@
                 </div>
                 <div class="offcanvas-body pt-3 pb-4 py-lg-0 mx-lg-auto">
                     <ul class="navbar-nav position-relative">
+                        <li class="nav-item me-lg-n2 me-xl-0">
+                            <a class="nav-link fs-sm" href="docs/typography.html">Home</a>
+                        </li>
+
+                        <li class="nav-item me-lg-n2 me-xl-0">
+                            <a class="nav-link fs-sm" href="docs/typography.html">Blogs</a>
+                        </li>
+                        
+                        <li class="nav-item me-lg-n2 me-xl-0">
+                            <a class="nav-link fs-sm" href="docs/typography.html">Shop</a>
+                        </li>
+
+                        <li class="nav-item me-lg-n2 me-xl-0">
+                            <a class="nav-link fs-sm" href="docs/typography.html">Contact Us</a>
+                        </li>
                         <li class="nav-item dropdown me-lg-n1 me-xl-0">
                             <a class="nav-link dropdown-toggle fs-sm active" aria-current="page" href="#"
                                 role="button" data-bs-toggle="dropdown" data-bs-trigger="hover"
@@ -777,8 +792,12 @@
     <script src="assets/vendor/simplebar/dist/simplebar.min.js"></script>
     <script src="assets/vendor/glightbox/dist/js/glightbox.min.js"></script>
 
+    
+
     <!-- Bootstrap + Theme scripts -->
     <script src="assets/js/theme.min.js"></script>
+
+    @yield('footer_scripts')
 </body>
 
 </html>
