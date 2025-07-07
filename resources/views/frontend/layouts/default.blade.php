@@ -89,7 +89,7 @@
 
             @if (Auth::check())
                 <li class="animate-underline">
-                    <a class="nav-link animate-target fs-xs p-0" href="#!">Account</a>
+                    <a class="nav-link animate-target fs-xs p-0" href="{{ route('web.my-account') }}">Account</a>
                 </li>
             @else
                 <li class="animate-underline">

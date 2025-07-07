@@ -38,3 +38,6 @@ Route::get('/shop', [WebController::class, 'shop'])
     ->name('frontend.shop');
 Route::get('/product/{?slug}', [WebController::class, 'productDetail']) 
     ->name('frontend.product-detail');
+
+Route::get('my-account', [WebController::class, 'myAccount'])
+    ->name('web.my-account');

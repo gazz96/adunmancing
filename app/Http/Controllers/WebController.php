@@ -30,4 +30,11 @@ class WebController extends Controller
                 ->get(),
         ]);
     }
+
+    public function myAccount()
+    {
+        return view('frontend.my-account.index', [
+            'user' => auth()->user(),
+        ]);
+    }
 }
