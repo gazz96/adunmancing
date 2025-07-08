@@ -33,14 +33,13 @@
     <link rel="stylesheet" href="assets/icons/cartzilla-icons.min.css">
 
     <!-- Vendor styles -->
-    <link rel="stylesheet" href="assets/vendor/swiper/swiper-bundle.min.css">
-    <link rel="stylesheet" href="assets/vendor/simplebar/dist/simplebar.min.css">
-    <link rel="stylesheet" href="assets/vendor/glightbox/dist/css/glightbox.min.css">
+    <link rel="stylesheet" href="{{ url('assets/vendor/choices.js/public/assets/styles/choices.min.css') }}">
+    <link rel="stylesheet" href="{{ url('assets/vendor/swiper/swiper-bundle.min.css')}}">
+    <link rel="stylesheet" href="{{ url('assets/vendor/simplebar/dist/simplebar.min.css') }}">
+    <link rel="stylesheet" href="{{ url('assets/vendor/glightbox/dist/css/glightbox.min.css') }}">
 
     <!-- Bootstrap + Theme styles -->
-    <link rel="preload" href="assets/css/theme.min.css" as="style">
-    <link rel="preload" href="assets/css/theme.rtl.min.css" as="style">
-    <link rel="stylesheet" href="assets/css/theme.min.css" id="theme-styles">
+    <link rel="stylesheet" href="{{ url('assets/css/theme.min.css') }}" id="theme-styles">
 </head>
 
 
@@ -788,14 +787,15 @@
 
 
     <!-- Vendor scripts -->
-    <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
-    <script src="assets/vendor/simplebar/dist/simplebar.min.js"></script>
-    <script src="assets/vendor/glightbox/dist/js/glightbox.min.js"></script>
+    <script src="{{ url('assets/vendor/choices.js/public/assets/scripts/choices.min.js') }}"></script>
+    <script src="{{ url('assets/vendor/swiper/swiper-bundle.min.js') }}"></script>
+    <script src="{{ url('assets/vendor/simplebar/dist/simplebar.min.js') }}"></script>
+    <script src="{{ url('assets/vendor/glightbox/dist/js/glightbox.min.js') }}"></script>
 
     
 
     <!-- Bootstrap + Theme scripts -->
-    <script src="assets/js/theme.min.js"></script>
+    <script src="{{ url('assets/js/theme.min.js') }}"></script>
 
     @yield('footer_scripts')
 </body>

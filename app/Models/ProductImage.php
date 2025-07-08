@@ -20,4 +20,6 @@ class ProductImage extends Model
     {
         return $this->path ? asset('storage/' . $this->path) : null;
     }
+
+    
 }

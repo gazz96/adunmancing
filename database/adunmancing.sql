@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS `blogs` (
   CONSTRAINT `blogs_author_id_foreign` FOREIGN KEY (`author_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table adunmancing.blogs: ~0 rows (approximately)
+-- Dumping data for table adunmancing.blogs: ~1 rows (approximately)
 INSERT INTO `blogs` (`id`, `title`, `slug`, `content`, `featured_image`, `author_id`, `is_published`, `created_at`, `updated_at`) VALUES
 	(1, 'testing', 'testing', '<p>testing</p>', 'blogs/featured-images/01JZJ670YXMG0QFDHR2503PZPV.jpg', 1, 1, '2025-06-30 21:36:24', '2025-07-07 03:17:38');
 
@@ -95,13 +95,13 @@ CREATE TABLE IF NOT EXISTS `categories` (
   UNIQUE KEY `categories_slug_unique` (`slug`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table adunmancing.categories: ~0 rows (approximately)
+-- Dumping data for table adunmancing.categories: ~5 rows (approximately)
 INSERT INTO `categories` (`id`, `name`, `slug`, `created_at`, `updated_at`, `icon`) VALUES
 	(1, 'Makanan', 'makanan', '2025-06-30 17:53:12', '2025-07-07 03:18:08', 'product_category_icons/01JZJ696V64YSJWG1EZ9YMYVKH.png'),
 	(2, 'Alat Mancing', 'alat-mancing', '2025-07-06 20:25:46', '2025-07-07 02:58:21', 'product_category_icons/01JZJ550CRH2HHRAGTQNM0PPAN.png'),
 	(3, 'Rokok Elektronik', 'rokok-elektronik', '2025-07-06 20:26:06', '2025-07-07 02:58:42', 'product_category_icons/01JZJ55MZ9DMA61R2BMQ9KS34A.png'),
 	(4, 'Bubble Wrap', 'bubble-wrap', '2025-07-06 20:26:59', '2025-07-07 02:58:48', 'product_category_icons/01JZJ55T1JG1AEWFMGG47ASJW5.png'),
-	(5, 'Parfume', 'parfume', '2025-07-07 03:31:11', '2025-07-07 03:31:11', 'product_category_icons/01JZJ7142QMT6T3YC5M1EWG4Z1.png');
+	(5, 'Umpan Pancing', 'umpan-pancing', '2025-07-07 03:31:11', '2025-07-07 13:48:01', 'product_category_icons/01JZJ7142QMT6T3YC5M1EWG4Z1.png');
 
 -- Dumping structure for table adunmancing.category_product
 CREATE TABLE IF NOT EXISTS `category_product` (
@@ -113,12 +113,15 @@ CREATE TABLE IF NOT EXISTS `category_product` (
   KEY `category_product_product_id_foreign` (`product_id`),
   CONSTRAINT `category_product_category_id_foreign` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE,
   CONSTRAINT `category_product_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table adunmancing.category_product: ~0 rows (approximately)
+-- Dumping data for table adunmancing.category_product: ~4 rows (approximately)
 INSERT INTO `category_product` (`id`, `category_id`, `product_id`) VALUES
 	(1, 1, 1),
-	(2, 1, 2);
+	(2, 1, 2),
+	(5, 5, 4),
+	(4, 5, 5),
+	(3, 5, 6);
 
 -- Dumping structure for table adunmancing.coupons
 CREATE TABLE IF NOT EXISTS `coupons` (
@@ -237,7 +240,7 @@ CREATE TABLE IF NOT EXISTS `options` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table adunmancing.options: ~9 rows (approximately)
+-- Dumping data for table adunmancing.options: ~22 rows (approximately)
 INSERT INTO `options` (`id`, `option_name`, `option_value`, `autoload`, `created_at`, `updated_at`) VALUES
 	(1, 'site_name', 'Adunmancing', NULL, '2025-07-05 17:55:32', '2025-07-05 17:55:32'),
 	(2, 'site_description', 'Website jualan umpan', NULL, '2025-07-05 17:55:32', '2025-07-05 17:55:32'),
@@ -390,32 +393,45 @@ CREATE TABLE IF NOT EXISTS `products` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `compare_price` decimal(10,2) DEFAULT NULL,
   `has_variants` int DEFAULT NULL,
-  `attributes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `featured_image` text COLLATE utf8mb4_unicode_ci,
+  `views` int DEFAULT NULL,
+  `sales_count` int DEFAULT NULL,
+  `weight` double DEFAULT NULL,
+  `dimension_l` double DEFAULT NULL,
+  `dimension_w` double DEFAULT NULL,
+  `dimension_h` double DEFAULT NULL,
+  `product_id` bigint DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `products_slug_unique` (`slug`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table adunmancing.products: ~4 rows (approximately)
-INSERT INTO `products` (`id`, `name`, `slug`, `description`, `price`, `status`, `created_at`, `updated_at`, `compare_price`, `has_variants`, `attributes`, `featured_image`) VALUES
-	(1, 'Umpan Lele Siap Pakai Pala Ayam Premium 250gram', 'umpan-lele-siap-pakai-pala-ayam-premium-250gram', '<p>Pala Ayam Premium</p><p>- Merupakan produk umpan yang dikemas secara praktis dan siap pakai. Terbuat dari 100% kepala ayam pilihan.</p><p>- Beraroma amis yang kuat dan khas membuat ikan menjadi lebih cepat kumpul.</p><p>- Sangat cocok dipakai untuk memancing ikan lele, di antaranya :</p><p>1. Galatama Ikan Lele</p><p>2. Lomba Harian Ikan Lele</p><p>3. Galapung Ikan Lele</p><p>4. Harian Ikan Lele</p><p><br><br></p><p>Netto : 250gram/cup</p><p><br><br></p><p>Tata Cara Pemakaian :</p><p>* Ketika paket sampai simpan BAM PALA AYAM PREMIUM dilemari es bagian bawah/frezeer. Pada saat ingin dipakai, keluarkan BAM PALA AYAM PREMIUM dari lemari es kemudian diamkan selama 10-30 menit sampai kondisi suhu normal. Lalu tambahkan ESSEN OPLOSAN ADUN MANCING 35 tetes s/d 1 tutup botol essen oplosan (aduk sampai tercampur rata). Tambahkan BAM PENGERAS secukupnya apabila tekstur belum sesuai dengan yang di inginkan. Aduk sampai semua bahan tercampur rata dan umpan siap digunakan.</p><p><br><br></p><p>* MASA SIMPAN :&nbsp;</p><p>- BAM PALA AYAM PREMIUM diluar frezeer/pendingin tahan 5 s/d 7 hari.&nbsp;</p><p>- BAM PALA AYAM PREMIUM didalam chiller tahan 6 bulan.</p><p>- BAM PALA AYAM PREMIUM didalam frezeer tahan 1 tahun&nbsp;</p>', 11900.00, 1, '2025-06-30 18:09:23', '2025-07-07 03:45:41', 15000.00, NULL, '{"warna":null}', 'product/01JZJ7VNE1PSBETJ3VR16AZDJ1.webp'),
-	(2, 'Non Variant', 'non-variant', '<p>ini barang non variant</p>', 1000000.00, 1, '2025-07-04 16:48:06', '2025-07-07 03:48:25', 1500000.00, NULL, '{"warna":null}', 'product/01JZJ80NS93HFAWYYWV008JC55.webp'),
-	(4, 'Non variant 2', 'non-variant-2', '<p>tseting</p>', 1000000.00, 1, '2025-07-04 16:50:05', '2025-07-07 03:50:07', NULL, NULL, '{"warna":null}', 'product/01JZJ83SDN680BFN2ZZKQD85JC.webp'),
-	(5, 'product', 'product', '<p>testing</p>', 10000.00, 0, '2025-07-04 17:49:17', '2025-07-04 18:51:17', NULL, NULL, '{"warna":"Hijau"}', NULL);
+-- Dumping data for table adunmancing.products: ~5 rows (approximately)
+INSERT INTO `products` (`id`, `name`, `slug`, `description`, `price`, `status`, `created_at`, `updated_at`, `compare_price`, `has_variants`, `featured_image`, `views`, `sales_count`, `weight`, `dimension_l`, `dimension_w`, `dimension_h`, `product_id`) VALUES
+	(1, 'Umpan Lele Siap Pakai Pala Ayam Premium 250gram', 'umpan-lele-siap-pakai-pala-ayam-premium-250gram', '<p>Pala Ayam Premium</p><p>- Merupakan produk umpan yang dikemas secara praktis dan siap pakai. Terbuat dari 100% kepala ayam pilihan.</p><p>- Beraroma amis yang kuat dan khas membuat ikan menjadi lebih cepat kumpul.</p><p>- Sangat cocok dipakai untuk memancing ikan lele, di antaranya :</p><p>1. Galatama Ikan Lele</p><p>2. Lomba Harian Ikan Lele</p><p>3. Galapung Ikan Lele</p><p>4. Harian Ikan Lele</p><p><br><br></p><p>Netto : 250gram/cup</p><p><br><br></p><p>Tata Cara Pemakaian :</p><p>* Ketika paket sampai simpan BAM PALA AYAM PREMIUM dilemari es bagian bawah/frezeer. Pada saat ingin dipakai, keluarkan BAM PALA AYAM PREMIUM dari lemari es kemudian diamkan selama 10-30 menit sampai kondisi suhu normal. Lalu tambahkan ESSEN OPLOSAN ADUN MANCING 35 tetes s/d 1 tutup botol essen oplosan (aduk sampai tercampur rata). Tambahkan BAM PENGERAS secukupnya apabila tekstur belum sesuai dengan yang di inginkan. Aduk sampai semua bahan tercampur rata dan umpan siap digunakan.</p><p><br><br></p><p>* MASA SIMPAN :&nbsp;</p><p>- BAM PALA AYAM PREMIUM diluar frezeer/pendingin tahan 5 s/d 7 hari.&nbsp;</p><p>- BAM PALA AYAM PREMIUM didalam chiller tahan 6 bulan.</p><p>- BAM PALA AYAM PREMIUM didalam frezeer tahan 1 tahun&nbsp;</p>', 11900.00, 1, '2025-06-30 18:09:23', '2025-07-07 20:46:30', 15000.00, NULL, 'product/01JZJ7VNE1PSBETJ3VR16AZDJ1.webp', 12, NULL, NULL, NULL, NULL, NULL, NULL),
+	(2, 'Non Variant', 'non-variant', '<p>ini barang non variant</p>', 1000000.00, 1, '2025-07-04 16:48:06', '2025-07-07 03:48:25', 1500000.00, NULL, 'product/01JZJ80NS93HFAWYYWV008JC55.webp', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+	(4, 'Umpan Lele Siap Pakai Peren Premium 250grm', 'umpan-lele-siap-pakai-peren-premium-250grm', '<p>- Merupakan produk umpan yang dikemas secara praktis dan siap pakai. Terbuat dari 100% Telor Muda pilihan.</p><p>- Beraroma amis Asam yang kuat dan khas membuat ikan menjadi lebih cepat kumpul.</p><p>- Sangat cocok dipakai untuk memancing ikan lele, di antaranya :</p><p>1. Galatama Ikan Lele</p><p>2. Lomba Harian Ikan Lele</p><p>3. Galapung Ikan Lele</p><p>4. Harian Ikan Lele</p><p><br><br></p><p>Netto : 250gram/cup</p><p><br><br></p><p>Tata Cara Pemakaian :</p><p>* Ketika paket sampai simpan BAM PEREN PREMIUM dilemari es bagian bawah/frezeer. Pada saat ingin dipakai, keluarkan BAM PEREN PREMIUM dari lemari es kemudian diamkan selama 10-30 menit sampai kondisi suhu normal. Lalu tambahkan ESSEN OPLOSAN ADUN MANCING 35 tetes s/d 1 tutup botol essen oplosan (aduk sampai tercampur rata). Tambahkan BAM PENGERAS secukupnya apabila tekstur belum sesuai dengan yang di inginkan. Aduk sampai semua bahan tercampur rata dan umpan siap digunakan.</p><p><br><br></p><p>* MASA SIMPAN :&nbsp;</p><p>- BAM PEREN PREMIUM diluar frezeer/pendingin tahan 5 s/d 7 hari.&nbsp;</p><p>- BAM PEREN PREMIUM didalam chiller tahan 6 bulan.</p><p>- BAM PEREN PREMIUM didalam frezeer tahan 1 tahun.</p>', 23000.00, 1, '2025-07-04 16:50:05', '2025-07-07 14:18:24', NULL, NULL, 'product/01JZJ83SDN680BFN2ZZKQD85JC.webp', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+	(5, 'Essen Oplosan Brajamusti Wangi asem melati Cocok untuk Galatama / Harian Ikan Lele', 'essen-oplosan-brajamusti-wangi-asem-melati-cocok-untuk-galatama-harian-ikan-lele', '<p>Cara menggunakan sangat mudah, Campurkan Essen ke media yang sering kalian gunakan, Aduk sampai adonan tercampur dengan rata &amp; Media siap di gunakan&nbsp;</p>', 10000.00, 1, '2025-07-04 17:49:17', '2025-07-07 14:05:15', 65000.00, NULL, 'product/01JZKBA463NCX5P2G0SQ489DDW.webp', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+	(6, 'Lemak Kuda Premium Adun Mancing', 'lemak-kuda-premium-adun-mancing', '<p>Berpungsi Sebagai Campuran Umpan Olahan Maupun Umpan Alam Galatama Dan Harian Lele&nbsp;</p><p>Dan Berhasiat Sebagai Perangsang Agar Ikan Lebih Cepat Kumpul</p>', 45000.00, 1, '2025-07-07 13:47:51', '2025-07-07 13:48:06', NULL, NULL, 'product/01JZKAA8VHANYFJ7E5AG3HTMCH.webp', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- Dumping structure for table adunmancing.product_attributes
 CREATE TABLE IF NOT EXISTS `product_attributes` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `product_id` bigint unsigned NOT NULL,
-  `name` varchar(100) NOT NULL,
+  `attribute_id` bigint NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
+  `attribute_name` text,
+  `attribute_value` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `show_in_product` int DEFAULT NULL,
+  `use_as_variation` int DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `product_id` (`product_id`),
   CONSTRAINT `product_attributes_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table adunmancing.product_attributes: ~0 rows (approximately)
+-- Dumping data for table adunmancing.product_attributes: ~1 rows (approximately)
+INSERT INTO `product_attributes` (`id`, `product_id`, `attribute_id`, `created_at`, `attribute_name`, `attribute_value`, `show_in_product`, `use_as_variation`, `updated_at`) VALUES
+	(1, 1, 1, '2025-07-07 20:04:36', NULL, NULL, 1, 1, '2025-07-07 20:10:52');
 
 -- Dumping structure for table adunmancing.product_attribute_values
 CREATE TABLE IF NOT EXISTS `product_attribute_values` (
@@ -442,11 +458,12 @@ CREATE TABLE IF NOT EXISTS `product_images` (
   PRIMARY KEY (`id`),
   KEY `product_images_product_id_foreign` (`product_id`),
   CONSTRAINT `product_images_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table adunmancing.product_images: ~0 rows (approximately)
+-- Dumping data for table adunmancing.product_images: ~3 rows (approximately)
 INSERT INTO `product_images` (`id`, `product_id`, `path`, `is_main`, `created_at`, `updated_at`) VALUES
-	(3, 1, 'product-images/id-11134207-7r98o-luyq7gek814h3b@resize_w450_nl.webp', 0, '2025-06-30 18:27:40', '2025-06-30 18:37:13');
+	(3, 1, 'product-images/id-11134207-7r98o-luyq7gek814h3b@resize_w450_nl.webp', 0, '2025-06-30 18:27:40', '2025-06-30 18:37:13'),
+	(5, 1, 'product-images/id-11134207-7r991-lzppndk9gtm092.webp', 0, '2025-07-07 19:04:26', '2025-07-07 19:04:26');
 
 -- Dumping structure for table adunmancing.product_reviews
 CREATE TABLE IF NOT EXISTS `product_reviews` (

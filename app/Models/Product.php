@@ -9,7 +9,12 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'slug', 'description', 'price', 'status', 'compare_price', 'sku', 'attributes', 'status', 'featured_image'];
+    protected $fillable = ['name', 'slug', 'description', 'price', 'status', 'compare_price', 'sku', 'status', 'featured_image'];
+
+    public function attributes()
+    {
+        return $this->hasMany(ProductAttribute::class);
+    }
 
     public function categories()
     {
@@ -47,5 +52,10 @@ class Product extends Model
             return round((($this->compare_price - $this->price) / $this->compare_price) * 100);
         }
         return 0;
+    }
+
+    public function getPermalinkAttribute()
+    {
+        return route('frontend.product-detail', $this->slug);
     }
 }

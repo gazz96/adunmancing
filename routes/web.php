@@ -36,7 +36,7 @@ Route::get('/', [WebController::class, 'index'])
     ->name('frontend.index');
 Route::get('/shop', [WebController::class, 'shop']) 
     ->name('frontend.shop');
-Route::get('/product/{?slug}', [WebController::class, 'productDetail']) 
+Route::get('/product/{slug?}', [WebController::class, 'productDetail']) 
     ->name('frontend.product-detail');
 
 Route::get('my-account', [WebController::class, 'myAccount'])
@@ -44,3 +44,6 @@ Route::get('my-account', [WebController::class, 'myAccount'])
 
 Route::get('/shop', [WebController::class, 'shop'])
     ->name('web.shop');
+
+Route::post('cart/add', [WebController::class, 'addToCart'])
+    ->name('web.cart.add');

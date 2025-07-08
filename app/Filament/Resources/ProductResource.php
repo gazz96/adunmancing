@@ -118,8 +118,53 @@ class ProductResource extends Resource
                             ->label('Kategori')
                     ]),
 
-                Section::make('Attributes')
-                    ->schema(self::getAttributesForm($form)),
+               
+                Repeater::make('attributes')
+                    ->label('Atribut Produk')
+                    ->relationship('attributes')
+                    ->schema([
+                        Select::make('attribute_id')
+                            ->label('Atribut')
+                            ->options(\App\Models\Attribute::all()->pluck('name', 'id'))
+                            ->searchable()
+                            ->required(),
+
+                        Toggle::make('show_in_product')
+                            ->label('Tampilkan di Halaman Produk'),
+                        Toggle::make('use_as_variation')
+                            ->label('Gunakan sebagai Variasi'),
+                    ])
+                    ->columns(1)
+                    ->defaultItems(0)
+                    ->collapsible()
+                    ->columnSpanFull(),
+
+                // Section::make('Variasi Produk')
+                //     ->schema([
+                //         Repeater::make('variants')
+                //             ->label('Variasi Produk')
+                //             ->relationship('variants')
+                //             ->schema([
+                //                 TextInput::make('name')
+                //                     ->label('Nama Variasi')
+                //                     ->required(),
+                //                 TextInput::make('sku')
+                //                     ->label('SKU'),
+                //                 TextInput::make('price')
+                //                     ->label('Harga')
+                //                     ->numeric(),
+                //                 FileUpload::make('featured_image')
+                //                     ->label('Gambar Variasi')
+                //                     ->image()
+                //                     ->disk('public')
+                //                     ->directory('product/variants')
+                //                     ->visibility('public'),
+                //             ])
+                //             ->columns(1)
+                //             ->defaultItems(0)
+                //             ->collapsible()
+                //             ->columnSpanFull(),
+                //     ]),
 
         ]);
     }

@@ -251,7 +251,7 @@
                 <div class="col">
                     <div class="animate-underline mb-sm-2">
                         {{-- hover-effect-opacity  --}}
-                        <a class="ratio ratio-1x1 d-block mb-3" href="{{ route('frontend.product-detail', $product) }}">
+                        <a class="ratio ratio-1x1 d-block mb-3" href="{{ $product->permalink }}">
                             @if($product->compare_price)
                             <div class="position-absolute top-0 start-0 z-2 mt-2 mt-sm-3 ms-2 ms-sm-3">
                                 <span class="badge text-bg-danger">-{{$product->percentage_discount_by_compare_price}}%</span>
