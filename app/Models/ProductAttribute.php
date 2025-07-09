@@ -18,6 +18,11 @@ class ProductAttribute extends Model
         'use_as_variation'
     ];
 
+    public function attribute()
+    {
+        return $this->belongsTo(Attribute::class);
+    }
+
     public function product()
     {
         return $this->belongsTo(Product::class);

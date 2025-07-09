@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\WebController;
 use Illuminate\Support\Facades\Route;
 
@@ -44,6 +45,13 @@ Route::get('my-account', [WebController::class, 'myAccount'])
 
 Route::get('/shop', [WebController::class, 'shop'])
     ->name('web.shop');
+    // CART ROUTES
+Route::middleware('auth')->group(function () {
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+    Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
+    Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
+    Route::get('checkout', [WebController::class, 'checkout'])->name('web.checkout');
+    Route::post('checkout', [WebController::class, 'doCheckout'])->name('web.do-checkout');
+});
 
-Route::post('cart/add', [WebController::class, 'addToCart'])
-    ->name('web.cart.add');

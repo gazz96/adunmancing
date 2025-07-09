@@ -9,11 +9,11 @@
         content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover">
 
     <!-- SEO Meta Tags -->
-    <title>Cartzilla | Furniture Store</title>
-    <meta name="description" content="Cartzilla - Multipurpose Bootstrap E-Commerce HTML Template">
+    <title>{{ $option->getByKey('site_name') }} | Furniture Store</title>
+    <meta name="description" content="{{ $option->getByKey('site_description') }}">
     <meta name="keywords"
         content="online shop, e-commerce, online store, market, multipurpose, product landing, cart, checkout, ui kit, light and dark mode, bootstrap, html5, css3, javascript, gallery, slider, mobile, pwa">
-    <meta name="author" content="Createx Studio">
+    <meta name="author" content="Bagas Topati">
 
     <!-- Webmanifest + Favicon / App icons -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -21,6 +21,7 @@
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" type="image/png" href="assets/app-icons/icon-32x32.png" sizes="32x32">
     <link rel="apple-touch-icon" href="assets/app-icons/icon-180x180.png">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Theme switcher (color modes) -->
     <script src="assets/js/theme-switcher.js"></script>
@@ -29,14 +30,15 @@
     <link rel="preload" href="assets/fonts/inter-variable-latin.woff2" as="font" type="font/woff2" crossorigin>
 
     <!-- Font icons -->
-    <link rel="preload" href="assets/icons/cartzilla-icons.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="assets/icons/cartzilla-icons.min.css">
+    <link rel="preload" href="{{ url('assets/icons/cartzilla-icons.woff2') }}" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="{{ url('assets/icons/cartzilla-icons.min.css') }}">
 
     <!-- Vendor styles -->
     <link rel="stylesheet" href="{{ url('assets/vendor/choices.js/public/assets/styles/choices.min.css') }}">
-    <link rel="stylesheet" href="{{ url('assets/vendor/swiper/swiper-bundle.min.css')}}">
+    <link rel="stylesheet" href="{{ url('assets/vendor/swiper/swiper-bundle.min.css') }}">
     <link rel="stylesheet" href="{{ url('assets/vendor/simplebar/dist/simplebar.min.css') }}">
     <link rel="stylesheet" href="{{ url('assets/vendor/glightbox/dist/css/glightbox.min.css') }}">
+    <link rel="stylesheet" href="{{ url('assets/vendor/sweet-alert/sweet-alert.min.css') }}">
 
     <!-- Bootstrap + Theme styles -->
     <link rel="stylesheet" href="{{ url('assets/css/theme.min.css') }}" id="theme-styles">
@@ -54,19 +56,17 @@
             <h4 class="offcanvas-title" id="shoppingCartLabel">Shopping cart</h4>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
-        <div class="offcanvas-body text-center">
-            <svg class="d-block mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" width="60" viewBox="0 0 29.5 30">
-                <path class="text-body-tertiary"
-                    d="M17.8 4c.4 0 .8-.3.8-.8v-2c0-.4-.3-.8-.8-.8-.4 0-.8.3-.8.8v2c0 .4.3.8.8.8zm3.2.6c.4.2.8 0 1-.4l.4-.9c.2-.4 0-.8-.4-1s-.8 0-1 .4l-.4.9c-.2.4 0 .9.4 1zm-7.5-.4c.2.4.6.6 1 .4s.6-.6.4-1l-.4-.9c-.2-.4-.6-.6-1-.4s-.6.6-.4 1l.4.9z"
-                    fill="currentColor" />
-                <path class="text-body-emphasis"
-                    d="M10.7 24.5c-1.5 0-2.8 1.2-2.8 2.8S9.2 30 10.7 30s2.8-1.2 2.8-2.8-1.2-2.7-2.8-2.7zm0 4c-.7 0-1.2-.6-1.2-1.2s.6-1.2 1.2-1.2 1.2.6 1.2 1.2-.5 1.2-1.2 1.2zm11.1-4c-1.5 0-2.8 1.2-2.8 2.8a2.73 2.73 0 0 0 2.8 2.8 2.73 2.73 0 0 0 2.8-2.8c0-1.6-1.3-2.8-2.8-2.8zm0 4c-.7 0-1.2-.6-1.2-1.2s.6-1.2 1.2-1.2 1.2.6 1.2 1.2-.6 1.2-1.2 1.2zM8.7 18h16c.3 0 .6-.2.7-.5l4-10c.2-.5-.2-1-.7-1H9.3c-.4 0-.8.3-.8.8s.4.7.8.7h18.3l-3.4 8.5H9.3L5.5 1C5.4.7 5.1.5 4.8.5h-4c-.5 0-.8.3-.8.7s.3.8.8.8h3.4l3.7 14.6a3.24 3.24 0 0 0-2.3 3.1C5.5 21.5 7 23 8.7 23h16c.4 0 .8-.3.8-.8s-.3-.8-.8-.8h-16a1.79 1.79 0 0 1-1.8-1.8c0-1 .9-1.6 1.8-1.6z"
-                    fill="currentColor" />
-            </svg>
-            <h6 class="mb-2">Your shopping cart is currently empty!</h6>
-            <p class="fs-sm mb-4">Explore our wide range of products and add items to your cart to proceed with your
-                purchase.</p>
-            <a class="btn btn-dark rounded-pill" href="shop-catalog-furniture.html">Continue shopping</a>
+        <div class="offcanvas-body">
+
+            @include('frontend.cart.list')
+
+            
+        </div>
+        <div class="offcanvas-header flex-column align-items-start">
+            
+            <div class="d-flex w-100 gap-3">
+                <a class="btn btn-lg btn-dark w-100" href="{{ route('web.checkout')}}">Checkout</a>
+            </div>
         </div>
     </div>
 
@@ -77,7 +77,7 @@
             <span class="text-secondary-emphasis fs-xs me-1">Contact us <span
                     class="d-none d-sm-inline">24/7</span></span>
             <a class="nav-link animate-target fs-xs fw-semibold p-0"
-                href="tel:{{$option->getByKey('contact')}}">{{ $option->getByKey('contact')}}</a>
+                href="tel:{{ $option->getByKey('contact') }}">{{ $option->getByKey('contact') }}</a>
         </div>
         {{-- <a class="text-secondary-emphasis fs-xs text-decoration-none d-none d-md-inline" href="#!">🔥 The Biggest
             Sale Ever 50% Off</a> --}}
@@ -92,7 +92,8 @@
                 </li>
             @else
                 <li class="animate-underline">
-                    <a class="nav-link animate-target fs-xs p-0" href="{{ route('web.auth.login') }}">Login/Register</a>
+                    <a class="nav-link animate-target fs-xs p-0"
+                        href="{{ route('web.auth.login') }}">Login/Register</a>
                 </li>
             @endif
         </ul>
@@ -102,11 +103,12 @@
     <!-- Navigation bar (Page header) -->
     <header class="navbar-sticky sticky-top container z-fixed px-2" data-sticky-element>
         <div class="navbar navbar-expand-lg flex-nowrap bg-body rounded-pill shadow ps-0 mx-1">
-            <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark rounded-pill z-0 d-none d-block-dark"></div>
+            <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark rounded-pill z-0 d-none d-block-dark">
+            </div>
 
             <!-- Mobile offcanvas menu toggler (Hamburger) -->
-            <button type="button" class="navbar-toggler ms-3" data-bs-toggle="offcanvas" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-label="Toggle navigation">
+            <button type="button" class="navbar-toggler ms-3" data-bs-toggle="offcanvas"
+                data-bs-target="#navbarNav" aria-controls="navbarNav" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
@@ -123,22 +125,18 @@
                 </div>
                 <div class="offcanvas-body pt-3 pb-4 py-lg-0 mx-lg-auto">
                     <ul class="navbar-nav position-relative">
-                        <li class="nav-item me-lg-n2 me-xl-0">
-                            <a class="nav-link fs-sm" href="docs/typography.html">Home</a>
-                        </li>
 
-                        <li class="nav-item me-lg-n2 me-xl-0">
-                            <a class="nav-link fs-sm" href="docs/typography.html">Blogs</a>
-                        </li>
-                        
-                        <li class="nav-item me-lg-n2 me-xl-0">
-                            <a class="nav-link fs-sm" href="docs/typography.html">Shop</a>
-                        </li>
+                        @if ($mainMenus->items->count() > 0)
+                            @foreach ($mainMenus->items()->orderBy('order', 'ASC')->get() as $menu)
+                                <li class="nav-item me-lg-n2 me-xl-0">
+                                    <a class="nav-link fs-sm" href="{{ $menu->url }}">{{ $menu->label }}</a>
+                                </li>
+                            @endforeach
+                        @endif
 
-                        <li class="nav-item me-lg-n2 me-xl-0">
-                            <a class="nav-link fs-sm" href="docs/typography.html">Contact Us</a>
-                        </li>
-                        <li class="nav-item dropdown me-lg-n1 me-xl-0">
+
+
+                        {{-- <li class="nav-item dropdown me-lg-n1 me-xl-0">
                             <a class="nav-link dropdown-toggle fs-sm active" aria-current="page" href="#"
                                 role="button" data-bs-toggle="dropdown" data-bs-trigger="hover"
                                 aria-expanded="false">Home</a>
@@ -295,270 +293,7 @@
                                     </a>
                                 </li>
                             </ul>
-                        </li>
-                        <li class="nav-item dropdown position-static me-lg-n1 me-xl-0">
-                            <a class="nav-link dropdown-toggle fs-sm" href="#" role="button"
-                                data-bs-toggle="dropdown" data-bs-trigger="hover" aria-expanded="false">Shop</a>
-                            <div class="dropdown-menu p-4" style="--cz-dropdown-spacer: 1rem">
-                                <div class="d-flex flex-column flex-lg-row gap-4">
-                                    <div style="min-width: 190px">
-                                        <div class="h6 mb-2">Electronics Store</div>
-                                        <ul class="nav flex-column gap-2 mt-0">
-                                            <li class="d-flex w-100 pt-1">
-                                                <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                                                    href="shop-categories-electronics.html">Categories Page</a>
-                                            </li>
-                                            <li class="d-flex w-100 pt-1">
-                                                <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                                                    href="shop-catalog-electronics.html">Catalog with Side Filters</a>
-                                            </li>
-                                            <li class="d-flex w-100 pt-1">
-                                                <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                                                    href="shop-product-general-electronics.html">Product General
-                                                    Info</a>
-                                            </li>
-                                            <li class="d-flex w-100 pt-1">
-                                                <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                                                    href="shop-product-details-electronics.html">Product Details</a>
-                                            </li>
-                                            <li class="d-flex w-100 pt-1">
-                                                <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                                                    href="shop-product-reviews-electronics.html">Product Reviews</a>
-                                            </li>
-                                        </ul>
-                                        <div class="h6 pt-4 mb-2">Fashion Store</div>
-                                        <ul class="nav flex-column gap-2 mt-0">
-                                            <li class="d-flex w-100 pt-1">
-                                                <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                                                    href="shop-catalog-fashion.html">Catalog with Side Filters</a>
-                                            </li>
-                                            <li class="d-flex w-100 pt-1">
-                                                <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                                                    href="shop-product-fashion.html">Product Page</a>
-                                            </li>
-                                        </ul>
-                                        <div class="h6 pt-4 mb-2">Furniture Store</div>
-                                        <ul class="nav flex-column gap-2 mt-0">
-                                            <li class="d-flex w-100 pt-1">
-                                                <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                                                    href="shop-catalog-furniture.html">Catalog with Top Filters</a>
-                                            </li>
-                                            <li class="d-flex w-100 pt-1">
-                                                <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                                                    href="shop-product-furniture.html">Product Page</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div style="min-width: 190px">
-                                        <div class="h6 mb-2">Grocery Store</div>
-                                        <ul class="nav flex-column gap-2 mt-0">
-                                            <li class="d-flex w-100 pt-1">
-                                                <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                                                    href="shop-catalog-grocery.html">Catalog with Side Filters</a>
-                                            </li>
-                                            <li class="d-flex w-100 pt-1">
-                                                <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                                                    href="shop-product-grocery.html">Product Page</a>
-                                            </li>
-                                        </ul>
-                                        <div class="h6 pt-4 mb-2">Marketplace</div>
-                                        <ul class="nav flex-column gap-2 mt-0">
-                                            <li class="d-flex w-100 pt-1">
-                                                <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                                                    href="shop-catalog-marketplace.html">Catalog with Top Filters</a>
-                                            </li>
-                                            <li class="d-flex w-100 pt-1">
-                                                <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                                                    href="shop-product-marketplace.html">Digital Product Page</a>
-                                            </li>
-                                            <li class="d-flex w-100 pt-1">
-                                                <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                                                    href="checkout-marketplace.html">Cart / Checkout</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div style="min-width: 190px">
-                                        <div class="h6 mb-2">Checkout v.1</div>
-                                        <ul class="nav flex-column gap-2 mt-0">
-                                            <li class="d-flex w-100 pt-1">
-                                                <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                                                    href="checkout-v1-cart.html">Shopping Cart</a>
-                                            </li>
-                                            <li class="d-flex w-100 pt-1">
-                                                <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                                                    href="checkout-v1-delivery-1.html">Delivery Info (Step 1)</a>
-                                            </li>
-                                            <li class="d-flex w-100 pt-1">
-                                                <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                                                    href="checkout-v1-delivery-2.html">Delivery Info (Step 2)</a>
-                                            </li>
-                                            <li class="d-flex w-100 pt-1">
-                                                <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                                                    href="checkout-v1-shipping.html">Shipping Address</a>
-                                            </li>
-                                            <li class="d-flex w-100 pt-1">
-                                                <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                                                    href="checkout-v1-payment.html">Payment</a>
-                                            </li>
-                                            <li class="d-flex w-100 pt-1">
-                                                <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                                                    href="checkout-v1-thankyou.html">Thank You Page</a>
-                                            </li>
-                                        </ul>
-                                        <div class="h6 pt-4 mb-2">Checkout v.2</div>
-                                        <ul class="nav flex-column gap-2 mt-0">
-                                            <li class="d-flex w-100 pt-1">
-                                                <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                                                    href="checkout-v2-cart.html">Shopping Cart</a>
-                                            </li>
-                                            <li class="d-flex w-100 pt-1">
-                                                <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                                                    href="checkout-v2-delivery.html">Delivery Info</a>
-                                            </li>
-                                            <li class="d-flex w-100 pt-1">
-                                                <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                                                    href="checkout-v2-pickup.html">Pickup from Store</a>
-                                            </li>
-                                            <li class="d-flex w-100 pt-1">
-                                                <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                                                    href="checkout-v2-thankyou.html">Thank You Page</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="nav-item dropdown me-lg-n1 me-xl-0">
-                            <a class="nav-link dropdown-toggle fs-sm" href="#" role="button"
-                                data-bs-toggle="dropdown" data-bs-trigger="hover" data-bs-auto-close="outside"
-                                aria-expanded="false">Account</a>
-                            <ul class="dropdown-menu" style="--cz-dropdown-spacer: 1rem">
-                                <li class="dropend">
-                                    <a class="dropdown-item dropdown-toggle" href="#!" role="button"
-                                        data-bs-toggle="dropdown" data-bs-trigger="hover" aria-expanded="false">Auth
-                                        Pages</a>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="account-signin.html">Sign In</a></li>
-                                        <li><a class="dropdown-item" href="account-signup.html">Sign Up</a></li>
-                                        <li><a class="dropdown-item" href="account-password-recovery.html">Password
-                                                Recovery</a></li>
-                                    </ul>
-                                </li>
-                                <li class="dropend">
-                                    <a class="dropdown-item dropdown-toggle" href="#!" role="button"
-                                        data-bs-toggle="dropdown" data-bs-trigger="hover" aria-expanded="false">Shop
-                                        User</a>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="account-orders.html">Orders History</a>
-                                        </li>
-                                        <li><a class="dropdown-item" href="account-wishlist.html">Wishlist</a></li>
-                                        <li><a class="dropdown-item" href="account-payment.html">Payment Methods</a>
-                                        </li>
-                                        <li><a class="dropdown-item" href="account-reviews.html">My Reviews</a></li>
-                                        <li><a class="dropdown-item" href="account-info.html">Personal Info</a></li>
-                                        <li><a class="dropdown-item" href="account-addresses.html">Addresses</a></li>
-                                        <li><a class="dropdown-item"
-                                                href="account-notifications.html">Notifications</a></li>
-                                    </ul>
-                                </li>
-                                <li class="dropend">
-                                    <a class="dropdown-item dropdown-toggle" href="#!" role="button"
-                                        data-bs-toggle="dropdown" data-bs-trigger="hover"
-                                        aria-expanded="false">Marketplace User</a>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item"
-                                                href="account-marketplace-dashboard.html">Dashboard</a></li>
-                                        <li><a class="dropdown-item"
-                                                href="account-marketplace-products.html">Products</a></li>
-                                        <li><a class="dropdown-item" href="account-marketplace-sales.html">Sales</a>
-                                        </li>
-                                        <li><a class="dropdown-item"
-                                                href="account-marketplace-payouts.html">Payouts</a></li>
-                                        <li><a class="dropdown-item"
-                                                href="account-marketplace-purchases.html">Purchases</a></li>
-                                        <li><a class="dropdown-item"
-                                                href="account-marketplace-favorites.html">Favorites</a></li>
-                                        <li><a class="dropdown-item"
-                                                href="account-marketplace-settings.html">Settings</a></li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item dropdown me-lg-n1 me-xl-0">
-                            <a class="nav-link dropdown-toggle fs-sm" href="#" role="button"
-                                data-bs-toggle="dropdown" data-bs-trigger="hover" data-bs-auto-close="outside"
-                                aria-expanded="false">Pages</a>
-                            <ul class="dropdown-menu" style="--cz-dropdown-spacer: 1rem">
-                                <li class="dropend">
-                                    <a class="dropdown-item dropdown-toggle" href="#!" role="button"
-                                        data-bs-toggle="dropdown" data-bs-trigger="hover"
-                                        aria-expanded="false">About</a>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="about-v1.html">About v.1</a></li>
-                                        <li><a class="dropdown-item" href="about-v2.html">About v.2</a></li>
-                                    </ul>
-                                </li>
-                                <li class="dropend">
-                                    <a class="dropdown-item dropdown-toggle" href="#!" role="button"
-                                        data-bs-toggle="dropdown" data-bs-trigger="hover"
-                                        aria-expanded="false">Blog</a>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="blog-grid-v1.html">Grid View v.1</a></li>
-                                        <li><a class="dropdown-item" href="blog-grid-v2.html">Grid View v.2</a></li>
-                                        <li><a class="dropdown-item" href="blog-list.html">List View</a></li>
-                                        <li><a class="dropdown-item" href="blog-single-v1.html">Single Post v.1</a>
-                                        </li>
-                                        <li><a class="dropdown-item" href="blog-single-v2.html">Single Post v.2</a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li class="dropend">
-                                    <a class="dropdown-item dropdown-toggle" href="#!" role="button"
-                                        data-bs-toggle="dropdown" data-bs-trigger="hover"
-                                        aria-expanded="false">Contact</a>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="contact-v1.html">Contact v.1</a></li>
-                                        <li><a class="dropdown-item" href="contact-v2.html">Contact v.2</a></li>
-                                        <li><a class="dropdown-item" href="contact-v3.html">Contact v.3</a></li>
-                                    </ul>
-                                </li>
-                                <li class="dropend">
-                                    <a class="dropdown-item dropdown-toggle" href="#!" role="button"
-                                        data-bs-toggle="dropdown" data-bs-trigger="hover" aria-expanded="false">Help
-                                        Center</a>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="help-topics-v1.html">Help Topics v.1</a>
-                                        </li>
-                                        <li><a class="dropdown-item" href="help-topics-v2.html">Help Topics v.2</a>
-                                        </li>
-                                        <li><a class="dropdown-item" href="help-single-article-v1.html">Help Single
-                                                Article v.1</a></li>
-                                        <li><a class="dropdown-item" href="help-single-article-v2.html">Help Single
-                                                Article v.2</a></li>
-                                    </ul>
-                                </li>
-                                <li class="dropend">
-                                    <a class="dropdown-item dropdown-toggle" href="#!" role="button"
-                                        data-bs-toggle="dropdown" data-bs-trigger="hover" aria-expanded="false">404
-                                        Error</a>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="404-electronics.html">404 Electronics</a>
-                                        </li>
-                                        <li><a class="dropdown-item" href="404-fashion.html">404 Fashion</a></li>
-                                        <li><a class="dropdown-item" href="404-furniture.html">404 Furniture</a></li>
-                                        <li><a class="dropdown-item" href="404-grocery.html">404 Grocery</a></li>
-                                    </ul>
-                                </li>
-                                <li><a class="dropdown-item" href="terms-and-conditions.html">Terms &amp;
-                                        Conditions</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item me-lg-n2 me-xl-0">
-                            <a class="nav-link fs-sm" href="docs/installation.html">Docs</a>
-                        </li>
-                        <li class="nav-item me-lg-n2 me-xl-0">
-                            <a class="nav-link fs-sm" href="docs/typography.html">Components</a>
-                        </li>
+                        </li> --}}
                     </ul>
                 </div>
             </nav>
@@ -644,7 +379,7 @@
 
 
     @yield('content')
-    
+
     <!-- Page footer -->
     <footer class="footer bg-dark pb-4 py-lg-5" data-bs-theme="dark">
         <div class="container pt-5 pt-lg-4 mt-sm-2 mt-md-3">
@@ -705,24 +440,21 @@
                 <div class="col-md-auto col-xl-2 text-center order-md-1 pt-4 pt-md-0">
                     <ul class="nav d-inline-flex flex-md-column justify-content-center align-items-center gap-md-2">
                         <li class="animate-underline my-1 mx-2 m-md-0">
-                            <a class="nav-link d-inline-flex fw-normal p-0 animate-target"
-                                href="#!">Bedroom</a>
+                            <a class="nav-link d-inline-flex fw-normal p-0 animate-target" href="#!">Bedroom</a>
                         </li>
                         <li class="animate-underline my-1 mx-2 m-md-0">
                             <a class="nav-link d-inline-flex fw-normal p-0 animate-target" href="#!">Living
                                 room</a>
                         </li>
                         <li class="animate-underline my-1 mx-2 m-md-0">
-                            <a class="nav-link d-inline-flex fw-normal p-0 animate-target"
-                                href="#!">Bathroom</a>
+                            <a class="nav-link d-inline-flex fw-normal p-0 animate-target" href="#!">Bathroom</a>
                         </li>
                         <li class="animate-underline my-1 mx-2 m-md-0">
                             <a class="nav-link d-inline-flex fw-normal p-0 animate-target"
                                 href="#!">Decoration</a>
                         </li>
                         <li class="animate-underline my-1 mx-2 m-md-0">
-                            <a class="nav-link d-inline-flex fw-normal p-0 animate-target"
-                                href="#!">Kitchen</a>
+                            <a class="nav-link d-inline-flex fw-normal p-0 animate-target" href="#!">Kitchen</a>
                         </li>
                         <li class="animate-underline my-1 mx-2 m-md-0">
                             <a class="nav-link d-inline-flex fw-normal p-0 animate-target" href="#!">Sale</a>
@@ -787,15 +519,74 @@
 
 
     <!-- Vendor scripts -->
+    <script src="{{ url('assets/js/jquery.min.js')}}"></script>
     <script src="{{ url('assets/vendor/choices.js/public/assets/scripts/choices.min.js') }}"></script>
     <script src="{{ url('assets/vendor/swiper/swiper-bundle.min.js') }}"></script>
     <script src="{{ url('assets/vendor/simplebar/dist/simplebar.min.js') }}"></script>
     <script src="{{ url('assets/vendor/glightbox/dist/js/glightbox.min.js') }}"></script>
+    <script src="{{ url('assets/vendor/sweet-alert/sweet-alert.min.js') }}"></script>
 
-    
+
 
     <!-- Bootstrap + Theme scripts -->
     <script src="{{ url('assets/js/theme.min.js') }}"></script>
+
+    <script>
+
+            const removeCart = async(key) => {
+                return await $.ajax({
+                    url: "{{route('cart.remove')}}",
+                    method: 'POST',
+                    data:{
+                        key: key
+                    }
+                })
+            }
+
+            const addToCart = async (data) => {
+                let form = $('#form-add_to_cart');
+                return await $.ajax({
+                    url: "{{ route('cart.add') }}",
+                    method: 'POST',
+                    data: data
+                })
+            }
+
+            const refreshCart = async () => {
+                try {
+                    const response = await $.ajax({
+                        url: "{{ route('cart.index') }}"
+                    });
+                    
+                    let shoppingCartBody = $('#shoppingCart').find('.offcanvas-body')// Update cart UI with the new data
+                    shoppingCartBody.html(response);
+                    
+                } catch (error) {
+                    console.error('Error fetching cart:', error);
+                }
+            };
+
+            // Add to cart form submission
+            $('#form-add_to_cart').on('submit', async function(e) {
+                e.preventDefault();
+                await addToCart($(this).serialize());
+                await refreshCart();
+            });
+
+            $(document).on('click', '.btn-remove_from_cart', async function(e){
+                e.preventDefault();
+                await removeCart($(this).data('key'));
+                await refreshCart();
+            })
+
+            $(document).on('click', '.btn-single_add_to_cart', async function(e){
+                e.preventDefault();
+                await addToCart({
+                    product_id: $(this).data('key')
+                })
+                await refreshCart();
+            })
+    </script>
 
     @yield('footer_scripts')
 </body>

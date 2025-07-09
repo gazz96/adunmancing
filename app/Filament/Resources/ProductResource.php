@@ -184,7 +184,7 @@ class ProductResource extends Resource
 
             $values = [];
 
-            foreach(explode(',', $attribute->values) as $value) {
+            foreach(explode('|', $attribute->values) as $value) {
                 $values[trim($value)] = trim($value);
             }
 

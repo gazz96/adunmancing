@@ -71,9 +71,11 @@ class MenuResource extends Resource
                     ])
                     ->columns(1)
                     ->required()
-                    ->minItems(1)
-                    ->maxItems(10)
-                    ->columnSpanFull(),
+                    ->minItems(0)
+                    ->columnSpanFull()
+                    ->reorderableWithDragAndDrop(true)
+                    ->collapsible()
+                    ->orderColumn('order'),
             ]);
     }
 

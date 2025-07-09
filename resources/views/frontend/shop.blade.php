@@ -19,228 +19,229 @@
 
 
             <!-- Filters -->
-            <div class="sticky-top bg-body mb-3 mb-sm-4" style="margin-top: -4.5rem">
-                <div class="row align-items-center pt-5">
-                    <div class="col-5 col-sm-8 col-md-9 d-flex gap-2 pb-3 mt-4">
-                        <div class="d-none d-sm-block w-100 me-1">
-                            <select class="form-select rounded-pill"
-                                data-select='{"classNames": {"containerInner": ["form-select", "filter-select", "rounded-pill"]}}'
-                                aria-label="Sorting">
-                                <option value="">Sort by</option>
-                                <option value="popular" selected>Most popular</option>
-                                <option value="match">Best match</option>
-                                <option value="new">New arrivals</option>
-                                <option value="price-asc">Price ascending</option>
-                                <option value="price-desc">Price descending</option>
-                            </select>
-                        </div>
-                        <div class="dropdown w-100 d-none d-md-block me-1">
-                            <button type="button"
-                                class="btn btn-outline-secondary dropdown-toggle filter-select justify-content-between w-100 text-body fw-normal rounded-pill px-3"
-                                data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true"
-                                aria-expanded="false">Category <span class="ms-1 me-auto"
-                                    id="categoryCount"></span></button>
-                            <div class="dropdown-menu w-100 p-3">
-                                <div class="d-flex flex-column gap-2">
-                                    @foreach ($productCategories as $productCategory)
+            <form action="">
+                <div class="sticky-top bg-body mb-3 mb-sm-4" style="margin-top: -4.5rem">
+                    <div class="row align-items-center pt-5">
+                        <div class="col-5 col-sm-8 col-md-9 d-flex gap-2 pb-3 mt-4">
+                            <div class="d-none d-sm-block w-100 me-1">
+                                <select class="form-select rounded-pill"
+                                    data-select='{"classNames": {"containerInner": ["form-select", "filter-select", "rounded-pill"]}}'
+                                    aria-label="Sorting">
+                                    <option value="">Sort by</option>
+                                    <option value="popular" selected>Most popular</option>
+                                    <option value="match">Best match</option>
+                                    <option value="new">New arrivals</option>
+                                    <option value="price-asc">Price ascending</option>
+                                    <option value="price-desc">Price descending</option>
+                                </select>
+                            </div>
+                            <div class="dropdown w-100 d-none d-md-block me-1">
+                                <button type="button"
+                                    class="btn btn-outline-secondary dropdown-toggle filter-select justify-content-between w-100 text-body fw-normal rounded-pill px-3"
+                                    data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true"
+                                    aria-expanded="false">Category <span class="ms-1 me-auto"
+                                        id="categoryCount"></span></button>
+                                <div class="dropdown-menu w-100 p-3">
+                                    <div class="d-flex flex-column gap-2">
+                                        @foreach ($productCategories as $productCategory)
+                                            <div class="form-check m-0">
+                                                <input type="checkbox" class="form-check-input fs-base" name="category_id[]"
+                                                    id="product-cat-{{ $productCategory->id }}"
+                                                    {{ in_array($productCategory->id, (request('category_id') ?? [])) ? 'checked' : '' }}
+                                                    onclick="updateFilterCount('categoryCount')" data-count-id="categoryCount" value="{{$productCategory->id}}">
+                                                <label for="product-cat-{{ $productCategory->id }}"
+                                                    class="form-check-label d-flex align-items-end">
+                                                    {{ $productCategory->name }}
+                                                    {{-- <span class="fs-xs text-body-secondary ps-2 ms-auto">657</span> --}}
+                                                </label>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                            {{-- <div class="dropdown w-100 d-none d-lg-block me-1">
+                                <button type="button"
+                                    class="btn btn-outline-secondary dropdown-toggle filter-select justify-content-between w-100 text-body fw-normal rounded-pill px-3"
+                                    data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true"
+                                    aria-expanded="false">Type <span class="ms-1 me-auto" id="typeCount"></span></button>
+                                <div class="dropdown-menu w-100 p-3">
+                                    <div class="d-flex flex-column gap-2">
                                         <div class="form-check m-0">
-                                            <input type="checkbox" class="form-check-input fs-base" name="category_id[]"
-                                                id="product-cat-{{ $productCategory->id }}"
-                                                {{ in_array($productCategory->id, request('category_id') ?? []) ? checked : '' }}
-                                                onclick="updateFilterCount('categoryCount')" data-count-id="categoryCount">
-                                            <label for="product-cat-{{ $productCategory->id }}"
-                                                class="form-check-label d-flex align-items-end">
-                                                {{ $productCategory->name }}
-                                                {{-- <span class="fs-xs text-body-secondary ps-2 ms-auto">657</span> --}}
+                                            <input type="checkbox" class="form-check-input fs-base" id="armchair"
+                                                onclick="updateFilterCount('typeCount')" data-count-id="typeCount">
+                                            <label for="armchair" class="form-check-label d-flex align-items-end">
+                                                Armchair
+                                                <span class="fs-xs text-body-secondary ps-2 ms-auto">324</span>
                                             </label>
                                         </div>
-                                    @endforeach
+                                        <div class="form-check m-0">
+                                            <input type="checkbox" class="form-check-input fs-base" id="sofa"
+                                                onclick="updateFilterCount('typeCount')" data-count-id="typeCount">
+                                            <label for="sofa" class="form-check-label d-flex align-items-end">
+                                                Sofa
+                                                <span class="fs-xs text-body-secondary ps-2 ms-auto">275</span>
+                                            </label>
+                                        </div>
+                                        <div class="form-check m-0">
+                                            <input type="checkbox" class="form-check-input fs-base" id="ottoman"
+                                                onclick="updateFilterCount('typeCount')" data-count-id="typeCount">
+                                            <label for="ottoman" class="form-check-label d-flex align-items-end">
+                                                Ottoman
+                                                <span class="fs-xs text-body-secondary ps-2 ms-auto">117</span>
+                                            </label>
+                                        </div>
+                                        <div class="form-check m-0">
+                                            <input type="checkbox" class="form-check-input fs-base" id="bench"
+                                                onclick="updateFilterCount('typeCount')" data-count-id="typeCount">
+                                            <label for="bench" class="form-check-label d-flex align-items-end">
+                                                Bench
+                                                <span class="fs-xs text-body-secondary ps-2 ms-auto">86</span>
+                                            </label>
+                                        </div>
+                                        <div class="form-check m-0">
+                                            <input type="checkbox" class="form-check-input fs-base" id="bed"
+                                                onclick="updateFilterCount('typeCount')" data-count-id="typeCount">
+                                            <label for="bed" class="form-check-label d-flex align-items-end">
+                                                Bed frame
+                                                <span class="fs-xs text-body-secondary ps-2 ms-auto">263</span>
+                                            </label>
+                                        </div>
+                                        <div class="form-check m-0">
+                                            <input type="checkbox" class="form-check-input fs-base" id="lamp"
+                                                onclick="updateFilterCount('typeCount')" data-count-id="typeCount">
+                                            <label for="lamp" class="form-check-label d-flex align-items-end">
+                                                Lamp
+                                                <span class="fs-xs text-body-secondary ps-2 ms-auto">415</span>
+                                            </label>
+                                        </div>
+                                        <div class="form-check m-0">
+                                            <input type="checkbox" class="form-check-input fs-base" id="stool"
+                                                onclick="updateFilterCount('typeCount')" data-count-id="typeCount">
+                                            <label for="stool" class="form-check-labe d-flex align-items-end">
+                                                Stool
+                                                <span class="fs-xs text-body-secondary ps-2 ms-auto">104</span>
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+                            </div> --}}
+                            {{-- <div class="dropdown w-100 d-none d-xl-block me-1">
+                                <button type="button"
+                                    class="btn btn-outline-secondary dropdown-toggle filter-select justify-content-between w-100 text-body fw-normal rounded-pill px-3"
+                                    data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true"
+                                    aria-expanded="false">Color <span class="ms-1 me-auto" id="colorCount"></span></button>
+                                <div class="dropdown-menu w-100 p-3">
+                                    <div class="d-flex flex-column gap-2">
+                                        <div class="form-check m-0">
+                                            <input type="checkbox" class="form-check-input fs-base" id="emerald"
+                                                onclick="updateFilterCount('colorCount')" data-count-id="colorCount">
+                                            <label for="emerald" class="form-check-label d-flex align-items-end">
+                                                <span class="align-self-center rounded-circle border border-2 p-1 me-2"
+                                                    style="--cz-border-color: #32808e; background-color: #32808e"></span>
+                                                Emerald
+                                                <span class="fs-xs text-body-secondary ps-2 ms-auto">97</span>
+                                            </label>
+                                        </div>
+                                        <div class="form-check m-0">
+                                            <input type="checkbox" class="form-check-input fs-base" id="dark-gray"
+                                                onclick="updateFilterCount('colorCount')" data-count-id="colorCount">
+                                            <label for="dark-gray" class="form-check-label d-flex align-items-end">
+                                                <span class="align-self-center rounded-circle border border-2 p-1 me-2"
+                                                    style="--cz-border-color: #6a6f7b; background-color: #6a6f7b"></span>
+                                                Dark gray
+                                                <span class="fs-xs text-body-secondary ps-2 ms-auto">346</span>
+                                            </label>
+                                        </div>
+                                        <div class="form-check m-0">
+                                            <input type="checkbox" class="form-check-input fs-base" id="light-gray"
+                                                onclick="updateFilterCount('colorCount')" data-count-id="colorCount">
+                                            <label for="light-gray" class="form-check-label d-flex align-items-end">
+                                                <span class="align-self-center rounded-circle border border-2 p-1 me-2"
+                                                    style="--cz-border-color: #bdc5da; background-color: #bdc5da"></span>
+                                                Light gray
+                                                <span class="fs-xs text-body-secondary ps-2 ms-auto">291</span>
+                                            </label>
+                                        </div>
+                                        <div class="form-check m-0">
+                                            <input type="checkbox" class="form-check-input fs-base" id="brown"
+                                                onclick="updateFilterCount('colorCount')" data-count-id="colorCount">
+                                            <label for="brown" class="form-check-label d-flex align-items-end">
+                                                <span class="align-self-center rounded-circle border border-2 p-1 me-2"
+                                                    style="--cz-border-color: #af8d6a; background-color: #af8d6a"></span>
+                                                Brown
+                                                <span class="fs-xs text-body-secondary ps-2 ms-auto">105</span>
+                                            </label>
+                                        </div>
+                                        <div class="form-check m-0">
+                                            <input type="checkbox" class="form-check-input fs-base" id="blue"
+                                                onclick="updateFilterCount('colorCount')" data-count-id="colorCount">
+                                            <label for="blue" class="form-check-label d-flex align-items-end">
+                                                <span class="align-self-center rounded-circle border border-2 p-1 me-2"
+                                                    style="--cz-border-color: #216aae; background-color: #216aae"></span>
+                                                Blue
+                                                <span class="fs-xs text-body-secondary ps-2 ms-auto">84</span>
+                                            </label>
+                                        </div>
+                                        <div class="form-check m-0">
+                                            <input type="checkbox" class="form-check-input fs-base" id="green"
+                                                onclick="updateFilterCount('colorCount')" data-count-id="colorCount">
+                                            <label for="green" class="form-check-label d-flex align-items-end">
+                                                <span class="align-self-center rounded-circle border border-2 p-1 me-2"
+                                                    style="--cz-border-color: #187c1c; background-color: #187c1c"></span>
+                                                Green
+                                                <span class="fs-xs text-body-secondary ps-2 ms-auto">69</span>
+                                            </label>
+                                        </div>
+                                        <div class="form-check m-0">
+                                            <input type="checkbox" class="form-check-input fs-base" id="beige"
+                                                onclick="updateFilterCount('colorCount')" data-count-id="colorCount">
+                                            <label for="beige" class="form-check-label d-flex align-items-end">
+                                                <span class="align-self-center rounded-circle border border-2 p-1 me-2"
+                                                    style="--cz-border-color: #bdaB9e; background-color: #bdaB9e"></span>
+                                                Beige
+                                                <span class="fs-xs text-body-secondary ps-2 ms-auto">173</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> --}}
+
+                            <!-- All filters offcanvas toggle -->
+                            <nav class="nav">
+                                {{-- <a class="nav-link animate-underline px-2" href="#shopFilters" data-bs-toggle="offcanvas"
+                                    aria-controls="shopFilters">
+                                    <i class="ci-filter me-1"></i>
+                                    <span class="animate-target text-nowrap">All filters</span>
+                                </a> --}}
+                                <button class="btn btn-primary">    
+                                    <i class="ci-filter me-1"></i>
+                                    <span>Terapkan</span>
+                                </button>
+                            </nav>
                         </div>
-                        {{-- <div class="dropdown w-100 d-none d-lg-block me-1">
-                            <button type="button"
-                                class="btn btn-outline-secondary dropdown-toggle filter-select justify-content-between w-100 text-body fw-normal rounded-pill px-3"
-                                data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true"
-                                aria-expanded="false">Type <span class="ms-1 me-auto" id="typeCount"></span></button>
-                            <div class="dropdown-menu w-100 p-3">
-                                <div class="d-flex flex-column gap-2">
-                                    <div class="form-check m-0">
-                                        <input type="checkbox" class="form-check-input fs-base" id="armchair"
-                                            onclick="updateFilterCount('typeCount')" data-count-id="typeCount">
-                                        <label for="armchair" class="form-check-label d-flex align-items-end">
-                                            Armchair
-                                            <span class="fs-xs text-body-secondary ps-2 ms-auto">324</span>
-                                        </label>
-                                    </div>
-                                    <div class="form-check m-0">
-                                        <input type="checkbox" class="form-check-input fs-base" id="sofa"
-                                            onclick="updateFilterCount('typeCount')" data-count-id="typeCount">
-                                        <label for="sofa" class="form-check-label d-flex align-items-end">
-                                            Sofa
-                                            <span class="fs-xs text-body-secondary ps-2 ms-auto">275</span>
-                                        </label>
-                                    </div>
-                                    <div class="form-check m-0">
-                                        <input type="checkbox" class="form-check-input fs-base" id="ottoman"
-                                            onclick="updateFilterCount('typeCount')" data-count-id="typeCount">
-                                        <label for="ottoman" class="form-check-label d-flex align-items-end">
-                                            Ottoman
-                                            <span class="fs-xs text-body-secondary ps-2 ms-auto">117</span>
-                                        </label>
-                                    </div>
-                                    <div class="form-check m-0">
-                                        <input type="checkbox" class="form-check-input fs-base" id="bench"
-                                            onclick="updateFilterCount('typeCount')" data-count-id="typeCount">
-                                        <label for="bench" class="form-check-label d-flex align-items-end">
-                                            Bench
-                                            <span class="fs-xs text-body-secondary ps-2 ms-auto">86</span>
-                                        </label>
-                                    </div>
-                                    <div class="form-check m-0">
-                                        <input type="checkbox" class="form-check-input fs-base" id="bed"
-                                            onclick="updateFilterCount('typeCount')" data-count-id="typeCount">
-                                        <label for="bed" class="form-check-label d-flex align-items-end">
-                                            Bed frame
-                                            <span class="fs-xs text-body-secondary ps-2 ms-auto">263</span>
-                                        </label>
-                                    </div>
-                                    <div class="form-check m-0">
-                                        <input type="checkbox" class="form-check-input fs-base" id="lamp"
-                                            onclick="updateFilterCount('typeCount')" data-count-id="typeCount">
-                                        <label for="lamp" class="form-check-label d-flex align-items-end">
-                                            Lamp
-                                            <span class="fs-xs text-body-secondary ps-2 ms-auto">415</span>
-                                        </label>
-                                    </div>
-                                    <div class="form-check m-0">
-                                        <input type="checkbox" class="form-check-input fs-base" id="stool"
-                                            onclick="updateFilterCount('typeCount')" data-count-id="typeCount">
-                                        <label for="stool" class="form-check-labe d-flex align-items-end">
-                                            Stool
-                                            <span class="fs-xs text-body-secondary ps-2 ms-auto">104</span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> --}}
-                        {{-- <div class="dropdown w-100 d-none d-xl-block me-1">
-                            <button type="button"
-                                class="btn btn-outline-secondary dropdown-toggle filter-select justify-content-between w-100 text-body fw-normal rounded-pill px-3"
-                                data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true"
-                                aria-expanded="false">Color <span class="ms-1 me-auto" id="colorCount"></span></button>
-                            <div class="dropdown-menu w-100 p-3">
-                                <div class="d-flex flex-column gap-2">
-                                    <div class="form-check m-0">
-                                        <input type="checkbox" class="form-check-input fs-base" id="emerald"
-                                            onclick="updateFilterCount('colorCount')" data-count-id="colorCount">
-                                        <label for="emerald" class="form-check-label d-flex align-items-end">
-                                            <span class="align-self-center rounded-circle border border-2 p-1 me-2"
-                                                style="--cz-border-color: #32808e; background-color: #32808e"></span>
-                                            Emerald
-                                            <span class="fs-xs text-body-secondary ps-2 ms-auto">97</span>
-                                        </label>
-                                    </div>
-                                    <div class="form-check m-0">
-                                        <input type="checkbox" class="form-check-input fs-base" id="dark-gray"
-                                            onclick="updateFilterCount('colorCount')" data-count-id="colorCount">
-                                        <label for="dark-gray" class="form-check-label d-flex align-items-end">
-                                            <span class="align-self-center rounded-circle border border-2 p-1 me-2"
-                                                style="--cz-border-color: #6a6f7b; background-color: #6a6f7b"></span>
-                                            Dark gray
-                                            <span class="fs-xs text-body-secondary ps-2 ms-auto">346</span>
-                                        </label>
-                                    </div>
-                                    <div class="form-check m-0">
-                                        <input type="checkbox" class="form-check-input fs-base" id="light-gray"
-                                            onclick="updateFilterCount('colorCount')" data-count-id="colorCount">
-                                        <label for="light-gray" class="form-check-label d-flex align-items-end">
-                                            <span class="align-self-center rounded-circle border border-2 p-1 me-2"
-                                                style="--cz-border-color: #bdc5da; background-color: #bdc5da"></span>
-                                            Light gray
-                                            <span class="fs-xs text-body-secondary ps-2 ms-auto">291</span>
-                                        </label>
-                                    </div>
-                                    <div class="form-check m-0">
-                                        <input type="checkbox" class="form-check-input fs-base" id="brown"
-                                            onclick="updateFilterCount('colorCount')" data-count-id="colorCount">
-                                        <label for="brown" class="form-check-label d-flex align-items-end">
-                                            <span class="align-self-center rounded-circle border border-2 p-1 me-2"
-                                                style="--cz-border-color: #af8d6a; background-color: #af8d6a"></span>
-                                            Brown
-                                            <span class="fs-xs text-body-secondary ps-2 ms-auto">105</span>
-                                        </label>
-                                    </div>
-                                    <div class="form-check m-0">
-                                        <input type="checkbox" class="form-check-input fs-base" id="blue"
-                                            onclick="updateFilterCount('colorCount')" data-count-id="colorCount">
-                                        <label for="blue" class="form-check-label d-flex align-items-end">
-                                            <span class="align-self-center rounded-circle border border-2 p-1 me-2"
-                                                style="--cz-border-color: #216aae; background-color: #216aae"></span>
-                                            Blue
-                                            <span class="fs-xs text-body-secondary ps-2 ms-auto">84</span>
-                                        </label>
-                                    </div>
-                                    <div class="form-check m-0">
-                                        <input type="checkbox" class="form-check-input fs-base" id="green"
-                                            onclick="updateFilterCount('colorCount')" data-count-id="colorCount">
-                                        <label for="green" class="form-check-label d-flex align-items-end">
-                                            <span class="align-self-center rounded-circle border border-2 p-1 me-2"
-                                                style="--cz-border-color: #187c1c; background-color: #187c1c"></span>
-                                            Green
-                                            <span class="fs-xs text-body-secondary ps-2 ms-auto">69</span>
-                                        </label>
-                                    </div>
-                                    <div class="form-check m-0">
-                                        <input type="checkbox" class="form-check-input fs-base" id="beige"
-                                            onclick="updateFilterCount('colorCount')" data-count-id="colorCount">
-                                        <label for="beige" class="form-check-label d-flex align-items-end">
-                                            <span class="align-self-center rounded-circle border border-2 p-1 me-2"
-                                                style="--cz-border-color: #bdaB9e; background-color: #bdaB9e"></span>
-                                            Beige
-                                            <span class="fs-xs text-body-secondary ps-2 ms-auto">173</span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> --}}
 
-                        <!-- All filters offcanvas toggle -->
-                        <nav class="nav">
-                            <a class="nav-link animate-underline px-2" href="#shopFilters" data-bs-toggle="offcanvas"
-                                aria-controls="shopFilters">
-                                <i class="ci-filter me-1"></i>
-                                <span class="animate-target text-nowrap">All filters</span>
-                            </a>
-                        </nav>
                     </div>
-
                 </div>
-            </div>
 
 
-            <!-- Selected filters -->
-            <div class="d-flex flex-wrap align-items-center gap-2 text-nowrap mt-n3 mb-3 mb-lg-4">
-                <button type="button" class="btn btn-sm btn-secondary rounded-pill me-1">
-                    <i class="ci-close fs-sm me-1 ms-n1"></i>
-                    Living room
-                </button>
-                <button type="button" class="btn btn-sm btn-secondary rounded-pill me-1">
-                    <i class="ci-close fs-sm me-1 ms-n1"></i>
-                    Bedroom
-                </button>
-                <button type="button" class="btn btn-sm btn-secondary rounded-pill me-1">
-                    <i class="ci-close fs-sm me-1 ms-n1"></i>
-                    Lighting
-                </button>
-                <button type="button" class="btn btn-sm btn-secondary rounded-pill me-1">
-                    <i class="ci-close fs-sm me-1 ms-n1"></i>
-                    Accessories
-                </button>
-                <div class="nav ps-1">
-                    <a class="nav-link fs-xs text-decoration-underline px-0" href="#!">Clear all</a>
+                <!-- Selected filters -->
+                <div class="d-flex flex-wrap align-items-center gap-2 text-nowrap mt-n3 mb-3 mb-lg-4">
+                    @if(request('category_id'))
+                        @foreach(request('category_id') as $categoryId)
+                        <button type="button" class="btn btn-sm btn-secondary rounded-pill me-1">
+                            <i class="ci-close fs-sm me-1 ms-n1"></i>
+                            {{ $productCategories->where('id', $categoryId)->first()->name }}
+                        </button>
+                        @endforeach
+                    @endif
+
+                    @if(request('category_id'))
+                    <div class="nav ps-1">
+                        <a class="nav-link fs-xs text-decoration-underline px-0" href="{{ route('web.shop') }}">Clear all</a>
+                    </div>
+                    @endif
                 </div>
-            </div>
+            </form>
 
 
             <!-- Product grid -->
@@ -275,7 +276,11 @@
                             @endif
                         </div>
                         <div class="d-flex gap-2">
-                            <button type="button" class="btn btn-dark w-100 rounded-pill px-3">Add to cart</button>
+                            @if($product->attributes->count())
+                            <a href="{{ $product->permalink }}" class="btn btn-dark w-100 rounded-pill px-3">Lihat</a>
+                            @else 
+                            <button type="button" class="btn btn-dark w-100 rounded-pill px-3 btn-single_add_to_cart" data-key="{{$product->id}}">Add to cart</button>
+                            @endif
                             {{-- <button type="button" class="btn btn-icon btn-secondary rounded-circle animate-pulse"
                                 aria-label="Add to wishlist">
                                 <i class="ci-heart fs-base animate-target"></i>
@@ -289,20 +294,7 @@
 
 
             <!-- Pagination -->
-            <div class="text-center pt-5 mt-md-2 mt-lg-3 mt-xl-4 mb-xxl-3 mx-auto" style="max-width: 306px">
-                <p class="fs-sm">Showing 16 from 64</p>
-                <div class="progress mb-3" role="progressbar" aria-label="Items shown" aria-valuenow="25"
-                    aria-valuemin="0" aria-valuemax="100" style="height: 4px">
-                    <div class="progress-bar bg-dark rounded-pill d-none-dark" style="width: 25%"></div>
-                    <div class="progress-bar bg-light rounded-pill d-none d-block-dark" style="width: 25%"></div>
-                </div>
-                <div class="nav justify-content-center">
-                    <a class="nav-link animate-underline fs-base pt-2 pb-0 px-0" href="#!">
-                        <span class="animate-target my-1 me-2">Show more</span>
-                        <i class="ci-chevron-down fs-lg"></i>
-                    </a>
-                </div>
-            </div>
+
         </div>
     </main>
 @endsection

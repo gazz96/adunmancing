@@ -176,37 +176,38 @@
                                 </label>
                             </div>
                         </div> --}}
-                            
-                        @foreach($product->attributes ?? [] as $attribute)
-                        <!-- {{ $attribute->name }} select -->
-                        <div class="mb-4">
-                            <label class="form-label fw-semibold pb-1 mb-2">{{ $attribute->name }}</label>
-                            <select class="form-select form-select-lg rounded-pill"
-                                data-select='{
-                                    "classNames": {
-                                        "containerInner": ["form-select", "form-select-lg", "rounded-pill"]
-                                    }
-                                    }'
-                                aria-label="Material select">
-                                <option value="">Pilih {{$attribute->name}}</option>
-                                @foreach(explode(',', $attribute->attribute_value) as $value)
-                                <option value="{{ $value }}">{{ $value }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        @endforeach
+                        <form action="{{ route('cart.add') }}" method="POST" id="form-add_to_cart">
 
-                        <!-- Add to cart + Wishlist buttons -->
-                        <div class="d-flex gap-3 pb-4 mb-2 mb-lg-3">
-                            <form action="" id="form-cart">
-                                <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                <button type="button" class="btn btn-lg btn-dark w-100 rounded-pill">Add to cart</button>
-                            </form>
-                            {{-- <button type="button" class="btn btn-icon btn-lg btn-secondary rounded-circle animate-pulse"
-                                aria-label="Add to Wishlist">
-                                <i class="ci-heart fs-lg animate-target"></i>
-                            </button> --}}
-                        </div>
+                            @foreach($product->attributes ?? [] as $attribute)
+                            <!-- {{ $attribute->attribute->name }} select -->
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold pb-1 mb-2">{{ $attribute->attribute->name }}</label>
+                                <select name="attributes[{{$attribute->attribute->name}}]" class="form-select form-select-lg rounded-pill"
+                                    data-select='{
+                                        "classNames": {
+                                            "containerInner": ["form-select", "form-select-lg", "rounded-pill"]
+                                        }
+                                        }'
+                                    aria-label="Material select">
+                                    @foreach(explode('|', $attribute->attribute->values) as $value)
+                                    <option value="{{ $value }}">{{ $value }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            @endforeach
+
+                            <!-- Add to cart + Wishlist buttons -->
+                            <div class="d-flex gap-3 pb-4 mb-2 mb-lg-3">
+                                
+                                    <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                    <button type="submit" class="btn btn-lg btn-dark w-100 rounded-pill btn-add_to_cart">Add to cart</button>
+                                {{-- <button type="button" class="btn btn-icon btn-lg btn-secondary rounded-circle animate-pulse"
+                                    aria-label="Add to Wishlist">
+                                    <i class="ci-heart fs-lg animate-target"></i>
+                                </button> --}}
+                            </div>
+
+                        </form>
 
                      
 
@@ -261,9 +262,7 @@
             <!-- Product description -->
             <section class="row pb-5 mb-2 mb-sm-3 mb-lg-4 mb-xl-5">
                 <div class="col-md-7 col-xl-8 mb-xxl-3">
-                    <p>The chair will bring a stylish retro atmosphere to your room, inspired by the Scandinavian design.
-                        The classic look fits anywhere in your home and provides a sturdy and durable place to sit for years
-                        to come.</p>
+                    <div>{!! $product->description !!}</div>
                     <ul class="list-unstyled pb-md-2 pb-lg-3">
                         <li class="mt-1"><span class="h6 mb-0">Backrest height:</span> 46 cm</li>
                         <li class="mt-1"><span class="h6 mb-0">Width:</span> 64 cm</li>
@@ -1244,4 +1243,9 @@
             </section>
         </div>
     </main>
+@endsection
+
+
+@section('footer_scripts')
+    
 @endsection

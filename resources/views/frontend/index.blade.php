@@ -184,7 +184,7 @@
                                 style="min-width: 165px">
                                 <div class="category-card-body-x">
                                     <a class="d-block text-decoration-none"
-                                        href="{{ route('frontend.shop', [
+                                        href="{{ route('web.shop', [
                                             'category_id' => $productCategory->id,
                                         ]) }}">
                                         <div class="bg-body-tertiary rounded-pill mb-3 mx-auto" style="max-width: 164px">
