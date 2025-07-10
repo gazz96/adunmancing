@@ -10,6 +10,7 @@ class UserAddress extends Model
     use HasFactory;
 
     protected $fillable = [
+        'name',
         'user_id',
         'receipt_name',
         'phone_number',

@@ -224,10 +224,19 @@ class WebController extends Controller
         ]);
     }
 
+    public function accountAddresses()
+    {
+        return view('frontend.my-account.addresses',[
+            'addresses' => UserAddress::where('user_id', Auth::id())->get()
+        ]);
+    }
+
     public function myPersonalInfo()
     {
         return view('frontend.my-account.personal-info');
     }
 
-    public function myAccountReviews() {}
+    public function myAccountReviews() {
+        echo 'testing';
+    }
 }

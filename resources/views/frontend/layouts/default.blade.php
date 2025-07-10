@@ -533,6 +533,25 @@
 
     <script>
 
+            const App = {
+                Models: {
+                    Shipping: {
+                        getProvinces: async(data = {}) => {
+                            return $.ajax({
+                                url: "{{ route('web.shipping.provinces') }}",
+                                data: data
+                            })
+                        },
+                        getRegencies: async(data) => {
+                            return $.ajax({
+                                url: "{{ route('web.shipping.regencies') }}",
+                                data: data
+                            })
+                        }
+                    }
+                }
+            }
+
             const removeCart = async(key) => {
                 return await $.ajax({
                     url: "{{route('cart.remove')}}",

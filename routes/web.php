@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\ShippingController;
 use App\Http\Controllers\WebController;
 use Illuminate\Support\Facades\Route;
 
@@ -40,8 +41,21 @@ Route::get('/shop', [WebController::class, 'shop'])
 Route::get('/product/{slug?}', [WebController::class, 'productDetail']) 
     ->name('frontend.product-detail');
 
-Route::get('my-account', [WebController::class, 'myAccount'])
-    ->name('web.my-account');
+
+Route::prefix('my-account')->middleware('auth')->group(function(){
+    Route::get('/', [WebController::class, 'myAccount'])
+        ->name('web.my-account');
+    Route::get('/addresses', [WebController::class, 'accountAddresses'])
+        ->name('web.my-account.addresses');
+});
+
+Route::prefix('shipping')
+    ->group(function(){
+        Route::get('provinces', [ShippingController::class, 'getProvinces'])
+            ->name('web.shipping.provinces');
+        Route::get('regencies', [ShippingController::class, 'getRegencies'])
+            ->name('web.shipping.regencies');
+    });
 
 Route::get('/shop', [WebController::class, 'shop'])
     ->name('web.shop');
