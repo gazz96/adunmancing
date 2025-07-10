@@ -115,12 +115,13 @@
 
                         <!-- Page title -->
                         <h1 class="h2 mb-1 mb-sm-2">Addresses</h1>
-
+                        
+                        @forelse($addresses as $address)
                         <!-- Primary shipping address -->
                         <div class="border-bottom py-4">
                             <div class="nav flex-nowrap align-items-center justify-content-between pb-1 mb-3">
                                 <div class="d-flex align-items-center gap-3 me-4">
-                                    <h2 class="h6 mb-0">Shipping address</h2>
+                                    <h2 class="h6 mb-0">{{ $address->name }}</h2>
                                     <span class="badge text-bg-info rounded-pill">Primary</span>
                                 </div>
                                 <a class="nav-link hiding-collapse-toggle text-decoration-underline p-0 collapsed"
@@ -246,6 +247,7 @@
                                 </form>
                             </div>
                         </div>
+                        @endforelse
 
 
                         <!-- Add address button -->
