@@ -12,11 +12,13 @@ class UserAddress extends Model
     protected $fillable = [
         'name',
         'user_id',
-        'receipt_name',
+        'recipient_name',
         'phone_number',
         'province_id',
+        'province_name',
         'regency_id',
         'city_id',
+        'city_name',
         'district_id',
         'postal_code',
         'address',
@@ -26,5 +28,15 @@ class UserAddress extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function regency()
+    {
+        return $this->belongsTo(Regency::class, 'city_id');
+    }
+
+    public function province()
+    {
+        return $this->belongsTo(Province::class);
     }
 }

@@ -9,7 +9,11 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'order_number', 'status', 'total_amount', 'note', 'address'];
+    protected $fillable = ['user_id', 'order_number', 'status', 'total_amount', 'note', 'address', 'courier', 'courier_package', 'delivery_price', 'total_weight', 'origin', 'originType', 'destination', 'destinationType', 'postal_code', 'recepient_name', 'recepient_phone_number', 'awb', 'send_date' ];
+
+    protected $appends = [
+        'destination_name'
+    ];
 
     public function user()
     {
@@ -41,12 +45,29 @@ class Order extends Model
         return $this->hasManyThrough(Product::class, OrderItem::class, 'order_id', 'id', 'id', 'product_id');
     }
 
+    public function getTotalAttribute()
+    {
+        return $this->total_amount + $this->delivery_price;
+    }
+
+    public function city() 
+    {
+        return $this->belongsTo(Regency::class, 'destination');
+    }
+
     protected static function booted()
     {
         static::creating(function ($order) {
             $order->order_number = self::generateOrderNumber();
         });
     }
+
+    public function getDestinationNameAttribute()
+    {
+        $name = Regency::find($this->destination)->name ?? '';
+        return $name;
+    }
+    
 
     protected static function generateOrderNumber(): string
     {
@@ -67,4 +88,22 @@ class Order extends Model
 
         return $prefix . $date . '-' . str_pad($sequence, 4, '0', STR_PAD_LEFT);
     }
+
+    public function getCourierPackageDataAttribute(){
+        return explode('|', $this->courier_package);
+    }
+
+    public function getEstimationArrivalDateAttribubte()
+    {
+        if($this->courier_package) {
+            $date = $this->courier_package_data[3] ?? '';
+            if($date) {
+                return '';
+                // return date('strtotime')
+            }
+        }
+
+        return '';
+    }
+
 }

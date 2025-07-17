@@ -42,17 +42,18 @@ class Settings extends Page implements Forms\Contracts\HasForms
                 ->tabs([
                     Tabs\Tab::make('General')
                         ->schema([
-                            FileUpload::make('options.site_logo')
-                                ->label('Site Logo')
-                                ->image()
-                                ->disk('public')
-                                ->directory('site_logos')
-                                ->visibility(true)
-                                ->columnSpanFull()
-                                ->previewable(false),
+                            // FileUpload::make('options.site_logo')
+                            //     ->label('Site Logo')
+                            //     ->image()
+                            //     ->disk('public')
+                            //     ->directory('site_logos')
+                            //     ->visibility(true)
+                            //     ->columnSpanFull()
+                            //     ->previewable(false),
                             TextInput::make('options.site_name')->label('Site Name'),
                             TextInput::make('options.contact')->label('Site Contact'),
                             Textarea::make('options.site_description')->label('Description'),
+                            TextInput::make('options.site_copyright')->label('Copyright')
                         ]),
                     Tabs\Tab::make('Product')
                         ->schema([
@@ -110,7 +111,7 @@ class Settings extends Page implements Forms\Contracts\HasForms
                                     TextInput::make('options.store_address_2')->label('Address Line 2'),
                                     Select::make('options.store_regency_id')
                                         ->label('City/Regency')
-                                        ->options(\App\Models\Regency::get()->pluck('name', 'id'))
+                                        ->options(\App\Models\Regency::get()->pluck('relation_name', 'id'))
                                         ->searchable(),
                                     TextInput::make('options.store_postcode')->label('Postcode')->required(),
                                     TextInput::make('options.store_phone')->label('Phone Number'),

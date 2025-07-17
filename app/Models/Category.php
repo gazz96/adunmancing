@@ -20,4 +20,9 @@ class Category extends Model
     {
         return $this->icon ? asset('storage/' . $this->icon) : null;
     }
+
+    public function getPermalinkAttribute()
+    {
+        return url('product-category/' . $this->slug);
+    }
 }

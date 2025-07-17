@@ -26,4 +26,9 @@ class Regency extends \Illuminate\Database\Eloquent\Model
     {
         return $this->name . ' (' . $this->alt_name . ')';
     }
+
+    public function getRelationNameAttribute()
+    {
+        return $this->province->name . ' - ' . $this->name;
+    }
 }

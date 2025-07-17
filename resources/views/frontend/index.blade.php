@@ -5,53 +5,12 @@
     <main class="content-wrapper">
 
         <!-- Hero slider -->
-        <section class="bg-body-tertiary min-vh-100 d-flex align-items-center overflow-hidden"
+        {{-- <section class="bg-body-tertiary min-vh-100 d-flex align-items-center overflow-hidden"
             style="margin-top: -110px; padding-top: 110px">
             <div class="container h-100 py-5 my-md-2 my-lg-3 my-xl-4 mb-xxl-5">
                 <h1 class="display-4 text-center mx-auto mb-4" style="max-width: 680px">Peralatan Memancing yang Anda Butuhkan
                 </h1>
                 <div class="row align-items-center justify-content-center gx-3 gx-sm-4 mb-3 mb-sm-4">
-
-                    <!-- Prev slide preview (controlled slider) -->
-                    <div class="col-lg-1 col-xl-2 d-none d-lg-flex justify-content-end">
-                        <div class="position-relative user-select-none" style="width: 262px">
-                            <span
-                                class="position-absolute top-0 start-0 w-100 h-100 bg-white opacity-50 rounded-circle d-none-dark"></span>
-                            <span
-                                class="position-absolute top-0 start-0 w-100 h-100 bg-white rounded-circle d-none-dark d-none d-block-dark"
-                                style="opacity: .05"></span>
-                            <div class="swiper position-relative z-2 opacity-60 rounded-circle pe-none" id="thumbsPrev"
-                                data-swiper='{
-                                  "allowTouchMove": false,
-                                  "loop": true,
-                                  "effect": "coverflow",
-                                  "coverflowEffect": {
-                                    "rotate": 0,
-                                    "scale": 1.3,
-                                    "depth": -200,
-                                    "stretch": -100,
-                                    "slideShadows": false
-                                  }
-                                }'>
-                                <div class="swiper-wrapper">
-                                    @php 
-                                   
-                                    $slidersPrevs = $sliders;
-                                    $temp = $slidersPrevs->pop();
-                                    $slidersPrevs->prepend($temp);
-                                    @endphp 
-                                    @foreach ($slidersPrevs as $slidersPrev)
-                                        <div class="swiper-slide">
-                                            <div class="ratio ratio-1x1">
-                                                <img src="{{ $slidersPrev->featured_image_url }}" alt="{{ $slidersPrev->name }}">
-                                            </div>
-                                        </div>
-                                    @endforeach
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
                     <!-- Prev button -->
                     <div class="col-auto col-sm-1 order-1 order-lg-2 d-flex align-items-center justify-content-center">
@@ -97,54 +56,8 @@
                         </div>
                     </div>
 
-                    <!-- Next button -->
-                    <div
-                        class="col-auto col-sm-1 order-2 order-sm-3 order-lg-4 d-flex align-items-center justify-content-center">
-                        <button type="button"
-                            class="btn-next btn btn-lg btn-icon btn-outline-secondary rounded-circle animate-slide-end"
-                            aria-label="Next">
-                            <i class="ci-chevron-right fs-xl animate-target"></i>
-                        </button>
-                    </div>
+                 
 
-                    <!-- Next slide preview (controlled slider) -->
-                    <div class="col-lg-1 col-xl-2 order-lg-5 d-none d-lg-block">
-                        <div class="position-relative user-select-none" style="width: 262px">
-                            <span
-                                class="position-absolute top-0 start-0 w-100 h-100 bg-white opacity-50 rounded-circle d-none-dark"></span>
-                            <span
-                                class="position-absolute top-0 start-0 w-100 h-100 bg-white rounded-circle d-none-dark d-none d-block-dark"
-                                style="opacity: .05"></span>
-                            <div class="swiper position-relative z-2 opacity-60 rounded-circle pe-none" id="thumbsNext"
-                                data-swiper='{
-                                    "allowTouchMove": false,
-                                    "loop": true,
-                                    "effect": "coverflow",
-                                    "coverflowEffect": {
-                                      "rotate": 0,
-                                      "scale": 1.3,
-                                      "depth": -200,
-                                      "stretch": -100,
-                                      "slideShadows": false
-                                    }
-                                  }'>
-                                <div class="swiper-wrapper">
-                                    @php 
-                                    $slidersNext = $sliders;
-                                    $temp = $slidersNext->shift();
-                                    $slidersNext->push($temp);
-                                    @endphp 
-                                    @foreach ($slidersNext as $slider)
-                                        <div class="swiper-slide">
-                                            <div class="ratio ratio-1x1">
-                                                <img src="{{ $slider->featured_image_url }}" alt="{{ $slider->name }}">
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Linked captions (controlled slider) -->
@@ -169,7 +82,7 @@
                     </div>
                 </div>
             </div>
-        </section>
+        </section> --}}
 
 
         <!-- Categories -->
@@ -212,9 +125,9 @@
 
             <!-- Heading -->
             <div class="d-flex align-items-center justify-content-between border-bottom pb-3 pb-md-4">
-                <h2 class="h3 mb-0">Popular products</h2>
+                <h2 class="h3 mb-0">Product Terbaru</h2>
                 <div class="nav ms-3">
-                    <a class="nav-link animate-underline px-0 py-2" href="shop-catalog-furniture.html">
+                    <a class="nav-link animate-underline px-0 py-2" href="{{ route('web.shop') }}">
                         <span class="animate-target">View all</span>
                         <i class="ci-chevron-right fs-base ms-1"></i>
                     </a>
@@ -239,271 +152,69 @@
                 <!-- Slider -->
                 <div class="swiper pt-3 pt-sm-4"
                     data-swiper='{
-            "slidesPerView": 2,
-            "spaceBetween": 24,
-            "loop": true,
-            "navigation": {
-              "prevEl": ".popular-prev",
-              "nextEl": ".popular-next"
-            },
-            "breakpoints": {
-              "768": {
-                "slidesPerView": 3
-              },
-              "992": {
-                "slidesPerView": 4
-              }
-            }
-          }'>
+                        "slidesPerView": 2,
+                        "spaceBetween": 24,
+                        "loop": true,
+                        "navigation": {
+                        "prevEl": ".popular-prev",
+                        "nextEl": ".popular-next"
+                        },
+                        "breakpoints": {
+                        "768": {
+                            "slidesPerView": 3
+                        },
+                        "992": {
+                            "slidesPerView": 4
+                        }
+                        }
+                    }'>
                     <div class="swiper-wrapper">
 
+                        @foreach($newProducts as $newProduct)
+                        
                         <!-- Item -->
                         <div class="swiper-slide">
-                            <div class="animate-underline">
-                                <a class="hover-effect-opacity ratio ratio-1x1 d-block mb-3"
-                                    href="shop-product-furniture.html">
-                                    <img src="assets/img/shop/furniture/04.png" class="hover-effect-target opacity-100"
-                                        alt="Product">
-                                    <img src="assets/img/shop/furniture/04-hover.jpg"
-                                        class="position-absolute top-0 start-0 hover-effect-target opacity-0 rounded-4"
-                                        alt="Room">
-                                </a>
-                                <div class="d-flex gap-2 mb-3">
-                                    <input type="radio" class="btn-check" name="colors-4" id="color-4-1" checked>
-                                    <label for="color-4-1" class="btn btn-color fs-base" style="color: #384043">
-                                        <span class="visually-hidden">Dark gray</span>
-                                    </label>
-                                    <input type="radio" class="btn-check" name="colors-4" id="color-4-2">
-                                    <label for="color-4-2" class="btn btn-color fs-base" style="color: #bdc5da">
-                                        <span class="visually-hidden">Light gray</span>
-                                    </label>
-                                    <input type="radio" class="btn-check" name="colors-4" id="color-4-3">
-                                    <label for="color-4-3" class="btn btn-color fs-base" style="color: #526f99">
-                                        <span class="visually-hidden">Bluish gray</span>
-                                    </label>
-                                </div>
-                                <h3 class="mb-2">
-                                    <a class="d-block fs-sm fw-medium text-truncate" href="shop-product-furniture.html">
-                                        <span class="animate-target">Bed frame light gray 140x200 cm</span>
-                                    </a>
-                                </h3>
-                                <div class="h6">$760.00</div>
-                                <div class="d-flex gap-2">
-                                    <button type="button" class="btn btn-dark w-100 rounded-pill px-3">Add to
-                                        cart</button>
-                                    <button type="button" class="btn btn-icon btn-secondary rounded-circle animate-pulse"
-                                        aria-label="Add to wishlist">
-                                        <i class="ci-heart fs-base animate-target"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Item -->
-                        <div class="swiper-slide">
-                            <div class="animate-underline">
-                                <a class="hover-effect-opacity ratio ratio-1x1 d-block mb-3"
-                                    href="shop-product-furniture.html">
-                                    <img src="assets/img/shop/furniture/05.png" class="hover-effect-target opacity-100"
-                                        alt="Product">
-                                    <img src="assets/img/shop/furniture/05-hover.jpg"
-                                        class="position-absolute top-0 start-0 hover-effect-target opacity-0 rounded-4"
-                                        alt="Room">
-                                </a>
-                                <div class="d-flex gap-2 mb-3">
-                                    <input type="radio" class="btn-check" name="colors-5" id="color-5-1" checked>
-                                    <label for="color-5-1" class="btn btn-color fs-base" style="color: #3a94b5">
-                                        <span class="visually-hidden">Blue</span>
-                                    </label>
-                                    <input type="radio" class="btn-check" name="colors-5" id="color-5-2">
-                                    <label for="color-5-2" class="btn btn-color fs-base" style="color: #777d7E">
-                                        <span class="visually-hidden">Gray</span>
-                                    </label>
-                                </div>
-                                <h3 class="mb-2">
-                                    <a class="d-block fs-sm fw-medium text-truncate" href="shop-product-furniture.html">
-                                        <span class="animate-target">Blue armchair with iron legs</span>
-                                    </a>
-                                </h3>
-                                <div class="h6">$220.00</div>
-                                <div class="d-flex gap-2">
-                                    <button type="button" class="btn btn-dark w-100 rounded-pill px-3">Add to
-                                        cart</button>
-                                    <button type="button" class="btn btn-icon btn-secondary rounded-circle animate-pulse"
-                                        aria-label="Add to wishlist">
-                                        <i class="ci-heart fs-base animate-target"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Item -->
-                        <div class="swiper-slide">
-                            <div class="animate-underline">
-                                <a class="hover-effect-opacity ratio ratio-1x1 d-block mb-3"
-                                    href="shop-product-furniture.html">
+                            <div class="animate-underline mb-sm-2">
+                                {{-- hover-effect-opacity  --}}
+                                <a class="ratio ratio-1x1 d-block mb-3" href="{{ $newProduct->permalink }}">
+                                    @if($newProduct->compare_price)
                                     <div class="position-absolute top-0 start-0 z-2 mt-2 mt-sm-3 ms-2 ms-sm-3">
-                                        <span class="badge text-bg-danger">-13%</span>
+                                        <span class="badge text-bg-danger">-{{$newProduct->percentage_discount_by_compare_price}}%</span>
                                     </div>
-                                    <img src="assets/img/shop/furniture/06.png" class="hover-effect-target opacity-100"
-                                        alt="Product">
-                                    <img src="assets/img/shop/furniture/06-hover.jpg"
+                                    @endif
+                                    <img src="{{$newProduct->featured_image_url}}" class="hover-effect-target opacity-100"
+                                        alt="{{$newProduct->name}}">
+                                    <img src="assets/img/shop/furniture/01-hover.jpg"
                                         class="position-absolute top-0 start-0 hover-effect-target opacity-0 rounded-4"
                                         alt="Room">
                                 </a>
-                                <div class="d-flex gap-2 mb-3">
-                                    <input type="radio" class="btn-check" name="colors-6" id="color-6-1" checked>
-                                    <label for="color-6-1" class="btn btn-color fs-base" style="color: #bdaB9e">
-                                        <span class="visually-hidden">Beige</span>
-                                    </label>
-                                    <input type="radio" class="btn-check" name="colors-6" id="color-6-2">
-                                    <label for="color-6-2" class="btn btn-color fs-base" style="color: #d65c46">
-                                        <span class="visually-hidden">Terracotta</span>
-                                    </label>
-                                    <input type="radio" class="btn-check" name="colors-6" id="color-6-3">
-                                    <label for="color-6-3" class="btn btn-color fs-base" style="color: #e0e5eb">
-                                        <span class="visually-hidden">White</span>
-                                    </label>
-                                </div>
+                                
                                 <h3 class="mb-2">
-                                    <a class="d-block fs-sm fw-medium text-truncate" href="shop-product-furniture.html">
-                                        <span class="animate-target">Loft-style lamp 120x80 cm</span>
+                                    <a class="d-block fs-sm fw-medium text-truncate" href="{{ $newProduct->permalink }}">
+                                        <span class="animate-target">{{$newProduct->name}}</span>
                                     </a>
                                 </h3>
-                                <div class="h6">$140.00 <del class="fs-sm fw-normal text-body-tertiary">$160.00</del>
+                                <div class="h6">{{ $newProduct->price_label}}
+                                    @if($newProduct->compare_price)
+                                    <span class="text-body-secondary text-decoration-line-through ms-1">{{ $newProduct->compare_price_label }}</span>
+                                    @endif
                                 </div>
                                 <div class="d-flex gap-2">
-                                    <button type="button" class="btn btn-dark w-100 rounded-pill px-3">Add to
-                                        cart</button>
-                                    <button type="button" class="btn btn-icon btn-secondary rounded-circle animate-pulse"
+                                    @if($newProduct->attributes->count())
+                                    <a href="{{ $newProduct->permalink }}" class="btn btn-dark w-100 rounded-pill px-3">Lihat</a>
+                                    @else 
+                                    <button type="button" class="btn btn-dark w-100 rounded-pill px-3 btn-single_add_to_cart" data-key="{{$newProduct->id}}">Add to cart</button>
+                                    @endif
+                                    {{-- <button type="button" class="btn btn-icon btn-secondary rounded-circle animate-pulse"
                                         aria-label="Add to wishlist">
                                         <i class="ci-heart fs-base animate-target"></i>
-                                    </button>
+                                    </button> --}}
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Item -->
-                        <div class="swiper-slide">
-                            <div class="animate-underline">
-                                <a class="hover-effect-opacity ratio ratio-1x1 d-block mb-3"
-                                    href="shop-product-furniture.html">
-                                    <img src="assets/img/shop/furniture/08.png" class="hover-effect-target opacity-100"
-                                        alt="Product">
-                                    <img src="assets/img/shop/furniture/08-hover.jpg"
-                                        class="position-absolute top-0 start-0 hover-effect-target opacity-0 rounded-4"
-                                        alt="Room">
-                                </a>
-                                <div class="d-flex gap-2 mb-3">
-                                    <input type="radio" class="btn-check" name="colors-8" id="color-8-1" checked>
-                                    <label for="color-8-1" class="btn btn-color fs-base" style="color: #305853">
-                                        <span class="visually-hidden">Green</span>
-                                    </label>
-                                    <input type="radio" class="btn-check" name="colors-8" id="color-8-2">
-                                    <label for="color-8-2" class="btn btn-color fs-base" style="color: #34598f">
-                                        <span class="visually-hidden">Blue</span>
-                                    </label>
-                                </div>
-                                <h3 class="mb-2">
-                                    <a class="d-block fs-sm fw-medium text-truncate" href="shop-product-furniture.html">
-                                        <span class="animate-target">Armchair with wooden legs 60x100 cm</span>
-                                    </a>
-                                </h3>
-                                <div class="h6">$320.50</div>
-                                <div class="d-flex gap-2">
-                                    <button type="button" class="btn btn-dark w-100 rounded-pill px-3">Add to
-                                        cart</button>
-                                    <button type="button" class="btn btn-icon btn-secondary rounded-circle animate-pulse"
-                                        aria-label="Add to wishlist">
-                                        <i class="ci-heart fs-base animate-target"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                        @endforeach
 
-                        <!-- Item -->
-                        <div class="swiper-slide">
-                            <div class="animate-underline">
-                                <a class="hover-effect-opacity ratio ratio-1x1 d-block mb-3"
-                                    href="shop-product-furniture.html">
-                                    <img src="assets/img/shop/furniture/02.png" class="hover-effect-target opacity-100"
-                                        alt="Product">
-                                    <img src="assets/img/shop/furniture/02-hover.jpg"
-                                        class="position-absolute top-0 start-0 hover-effect-target opacity-0 rounded-4"
-                                        alt="Room">
-                                </a>
-                                <div class="d-flex gap-2 mb-3">
-                                    <input type="radio" class="btn-check" name="colors-2" id="color-2-1" checked>
-                                    <label for="color-2-1" class="btn btn-color fs-base" style="color: #6a6f7b">
-                                        <span class="visually-hidden">Gray</span>
-                                    </label>
-                                    <input type="radio" class="btn-check" name="colors-2" id="color-2-2">
-                                    <label for="color-2-2" class="btn btn-color fs-base" style="color: #373b42">
-                                        <span class="visually-hidden">Dark gray</span>
-                                    </label>
-                                    <input type="radio" class="btn-check" name="colors-2" id="color-2-3">
-                                    <label for="color-2-3" class="btn btn-color fs-base" style="color: #216aae">
-                                        <span class="visually-hidden">Blue</span>
-                                    </label>
-                                    <input type="radio" class="btn-check" name="colors-2" id="color-2-4">
-                                    <label for="color-2-4" class="btn btn-color fs-base" style="color: #187c1c">
-                                        <span class="visually-hidden">Green</span>
-                                    </label>
-                                </div>
-                                <h3 class="mb-2">
-                                    <a class="d-block fs-sm fw-medium text-truncate" href="shop-product-furniture.html">
-                                        <span class="animate-target">Decorative flowerpot with a plant</span>
-                                    </a>
-                                </h3>
-                                <div class="h6">$107.50</div>
-                                <div class="d-flex gap-2">
-                                    <button type="button" class="btn btn-dark w-100 rounded-pill px-3">Add to
-                                        cart</button>
-                                    <button type="button" class="btn btn-icon btn-secondary rounded-circle animate-pulse"
-                                        aria-label="Add to wishlist">
-                                        <i class="ci-heart fs-base animate-target"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Item -->
-                        <div class="swiper-slide">
-                            <div class="animate-underline">
-                                <a class="hover-effect-opacity ratio ratio-1x1 d-block mb-3"
-                                    href="shop-product-furniture.html">
-                                    <img src="assets/img/shop/furniture/07.png" class="hover-effect-target opacity-100"
-                                        alt="Product">
-                                    <img src="assets/img/shop/furniture/07-hover.jpg"
-                                        class="position-absolute top-0 start-0 hover-effect-target opacity-0 rounded-4"
-                                        alt="Room">
-                                </a>
-                                <div class="d-flex gap-2 mb-3">
-                                    <input type="radio" class="btn-check" name="colors-7" id="color-7-1" checked>
-                                    <label for="color-7-1" class="btn btn-color fs-base" style="color: #71706c">
-                                        <span class="visually-hidden">Dark gray</span>
-                                    </label>
-                                    <input type="radio" class="btn-check" name="colors-7" id="color-7-2">
-                                    <label for="color-7-2" class="btn btn-color fs-base" style="color: #c1c3b8">
-                                        <span class="visually-hidden">Light gray</span>
-                                    </label>
-                                </div>
-                                <h3 class="mb-2">
-                                    <a class="d-block fs-sm fw-medium text-truncate" href="shop-product-furniture.html">
-                                        <span class="animate-target">Chair with a cushion for the legs</span>
-                                    </a>
-                                </h3>
-                                <div class="h6">$435.00</div>
-                                <div class="d-flex gap-2">
-                                    <button type="button" class="btn btn-dark w-100 rounded-pill px-3">Add to
-                                        cart</button>
-                                    <button type="button" class="btn btn-icon btn-secondary rounded-circle animate-pulse"
-                                        aria-label="Add to wishlist">
-                                        <i class="ci-heart fs-base animate-target"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -522,6 +233,122 @@
                 </button>
             </div>
         </section>
+
+        <!-- Makanan products carousel -->
+        <section class="container pb-5 mt-md-n2 mb-2 mb-sm-3 mb-md-4 mb-xl-5">
+
+            <!-- Heading -->
+            <div class="d-flex align-items-center justify-content-between border-bottom pb-3 pb-md-4">
+                <h2 class="h3 mb-0">Umpan</h2>
+                <div class="nav ms-3">
+                    <a class="nav-link animate-underline px-0 py-2" href="{{ route('web.shop', [
+                    'category_id' => 1]) }}">
+                        <span class="animate-target">View all</span>
+                        <i class="ci-chevron-right fs-base ms-1"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Product carousel -->
+            <div class="position-relative pb-xxl-3">
+
+                <!-- External slider prev/next buttons visible on screens > 500px wide (sm breakpoint) -->
+                <button type="button"
+                    class="popular-prev btn btn-icon btn-outline-secondary bg-body rounded-circle animate-slide-start position-absolute top-50 start-0 z-2 translate-middle mt-n5 d-none d-sm-inline-flex"
+                    aria-label="Prev">
+                    <i class="ci-chevron-left fs-lg animate-target"></i>
+                </button>
+                <button type="button"
+                    class="popular-next btn btn-icon btn-outline-secondary bg-body rounded-circle animate-slide-end position-absolute top-50 start-100 z-2 translate-middle mt-n5 d-none d-sm-inline-flex"
+                    aria-label="Next">
+                    <i class="ci-chevron-right fs-lg animate-target"></i>
+                </button>
+
+                <!-- Slider -->
+                <div class="swiper pt-3 pt-sm-4"
+                    data-swiper='{
+                        "slidesPerView": 2,
+                        "spaceBetween": 24,
+                        "loop": true,
+                        "navigation": {
+                        "prevEl": ".popular-prev",
+                        "nextEl": ".popular-next"
+                        },
+                        "breakpoints": {
+                        "768": {
+                            "slidesPerView": 3
+                        },
+                        "992": {
+                            "slidesPerView": 4
+                        }
+                        }
+                    }'>
+                    <div class="swiper-wrapper">
+
+                        @foreach($makanProducts as $newProduct)
+                        
+                        <!-- Item -->
+                        <div class="swiper-slide">
+                            <div class="animate-underline mb-sm-2">
+                                {{-- hover-effect-opacity  --}}
+                                <a class="ratio ratio-1x1 d-block mb-3" href="{{ $newProduct->permalink }}">
+                                    @if($newProduct->compare_price)
+                                    <div class="position-absolute top-0 start-0 z-2 mt-2 mt-sm-3 ms-2 ms-sm-3">
+                                        <span class="badge text-bg-danger">-{{$newProduct->percentage_discount_by_compare_price}}%</span>
+                                    </div>
+                                    @endif
+                                    <img src="{{$newProduct->featured_image_url}}" class="hover-effect-target opacity-100"
+                                        alt="{{$newProduct->name}}">
+                                    <img src="assets/img/shop/furniture/01-hover.jpg"
+                                        class="position-absolute top-0 start-0 hover-effect-target opacity-0 rounded-4"
+                                        alt="Room">
+                                </a>
+                                
+                                <h3 class="mb-2">
+                                    <a class="d-block fs-sm fw-medium text-truncate" href="{{ $newProduct->permalink }}">
+                                        <span class="animate-target">{{$newProduct->name}}</span>
+                                    </a>
+                                </h3>
+                                <div class="h6">{{ $newProduct->price_label}}
+                                    @if($newProduct->compare_price)
+                                    <span class="text-body-secondary text-decoration-line-through ms-1">{{ $newProduct->compare_price_label }}</span>
+                                    @endif
+                                </div>
+                                <div class="d-flex gap-2">
+                                    @if($newProduct->attributes->count())
+                                    <a href="{{ $newProduct->permalink }}" class="btn btn-dark w-100 rounded-pill px-3">Lihat</a>
+                                    @else 
+                                    <button type="button" class="btn btn-dark w-100 rounded-pill px-3 btn-single_add_to_cart" data-key="{{$newProduct->id}}">Add to cart</button>
+                                    @endif
+                                    {{-- <button type="button" class="btn btn-icon btn-secondary rounded-circle animate-pulse"
+                                        aria-label="Add to wishlist">
+                                        <i class="ci-heart fs-base animate-target"></i>
+                                    </button> --}}
+                                </div>
+                            </div>
+                        </div>
+
+                        @endforeach
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- External slider prev/next buttons visible on screens < 500px wide (sm breakpoint) -->
+            <div class="d-flex justify-content-center gap-2 mt-1 pt-4 d-sm-none">
+                <button type="button"
+                    class="popular-prev btn btn-icon btn-outline-secondary bg-body rounded-circle animate-slide-start me-1"
+                    aria-label="Prev">
+                    <i class="ci-chevron-left fs-lg animate-target"></i>
+                </button>
+                <button type="button"
+                    class="popular-next btn btn-icon btn-outline-secondary bg-body rounded-circle animate-slide-end"
+                    aria-label="Next">
+                    <i class="ci-chevron-right fs-lg animate-target"></i>
+                </button>
+            </div>
+        </section>
+
 
 
         <!-- Gallery -->
@@ -652,7 +479,7 @@
 
 
         <!-- Features -->
-        <section class="container pb-5 mb-sm-2 mb-md-3 mb-lg-4 mb-xl-5">
+        {{-- <section class="container pb-5 mb-sm-2 mb-md-3 mb-lg-4 mb-xl-5">
             <div class="row row-cols-1 row-cols-md-3 gy-3 gy-sm-4 gx-2 gx-lg-4 mb-xxl-3">
                 <div class="col text-center">
                     <svg class="d-block text-dark-emphasis mx-auto mb-3 mb-lg-4" xmlns="http://www.w3.org/2000/svg"
@@ -685,10 +512,10 @@
                         100% satisfied, let us know within 30 days and we'll solve the problem.</p>
                 </div>
             </div>
-        </section>
+        </section> --}}
 
-        <!--
-            <section class="container">
+        
+            {{-- <section class="container">
                 <div class="row row-cols-1 row-cols-md-2 g-0 overflow-hidden rounded-5">
 
                     <div class="col position-relative">
@@ -722,12 +549,12 @@
                         </div>
                     </div>
                 </div>
-            </section>
-          -->
+            </section> --}}
+          
 
 
         <!-- Blog grid -->
-        <section class="container py-5 my-2 my-sm-3 my-lg-4 my-xl-5">
+        {{-- <section class="container py-5 my-2 my-sm-3 my-lg-4 my-xl-5">
 
             <!-- Heading -->
             <div class="d-flex align-items-center justify-content-between pb-3 mb-2 mb-sm-3 mt-xxl-3">
@@ -817,6 +644,6 @@
                     </div>
                 </div>
             </div>
-        </section>
+        </section> --}}
     </main>
 @endsection

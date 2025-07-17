@@ -18,7 +18,7 @@
 
     <!-- Body (Navigation) -->
     <div class="offcanvas-body d-block pt-2 pt-lg-4 pb-lg-0">
-        <nav class="list-group list-group-borderless">
+        {{-- <nav class="list-group list-group-borderless">
             <a class="list-group-item list-group-item-action d-flex align-items-center pe-none active"
                 href="account-orders.html">
                 <i class="ci-shopping-bag fs-base opacity-75 me-2"></i>
@@ -37,10 +37,10 @@
                 <i class="ci-star fs-base opacity-75 me-2"></i>
                 My reviews
             </a>
-        </nav>
+        </nav> --}}
         <h6 class="pt-4 ps-2 ms-1">Manage account</h6>
         <nav class="list-group list-group-borderless">
-            <a class="list-group-item list-group-item-action d-flex align-items-center" href="account-info.html">
+            <a class="list-group-item list-group-item-action d-flex align-items-center" href="{{ route('web.my-account.personal-info')}}">
                 <i class="ci-user fs-base opacity-75 me-2"></i>
                 Personal info
             </a>
@@ -48,13 +48,19 @@
                 <i class="ci-map-pin fs-base opacity-75 me-2"></i>
                 Addresses
             </a>
-            <a class="list-group-item list-group-item-action d-flex align-items-center"
+            <a class="list-group-item list-group-item-action d-flex align-items-center pe-none active"
+                href="{{ route('web.my-account')}}">
+                <i class="ci-shopping-bag fs-base opacity-75 me-2"></i>
+                Orders
+                {{-- <span class="badge bg-primary rounded-pill ms-auto">1</span> --}}
+            </a>
+            {{-- <a class="list-group-item list-group-item-action d-flex align-items-center"
                 href="account-notifications.html">
                 <i class="ci-bell fs-base opacity-75 mt-1 me-2"></i>
                 Notifications
-            </a>
+            </a> --}}
         </nav>
-        <h6 class="pt-4 ps-2 ms-1">Customer service</h6>
+        {{-- <h6 class="pt-4 ps-2 ms-1">Customer service</h6>
         <nav class="list-group list-group-borderless">
             <a class="list-group-item list-group-item-action d-flex align-items-center" href="help-topics-v1.html">
                 <i class="ci-help-circle fs-base opacity-75 me-2"></i>
@@ -65,9 +71,9 @@
                 <i class="ci-info fs-base opacity-75 me-2"></i>
                 Terms and conditions
             </a>
-        </nav>
+        </nav> --}}
         <nav class="list-group list-group-borderless pt-3">
-            <a class="list-group-item list-group-item-action d-flex align-items-center" href="account-signin.html">
+            <a class="list-group-item list-group-item-action d-flex align-items-center" href="{{ route('web.my-account.logout') }}">
                 <i class="ci-log-out fs-base opacity-75 me-2"></i>
                 Log out
             </a>

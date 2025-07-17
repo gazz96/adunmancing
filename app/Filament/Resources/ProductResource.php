@@ -118,6 +118,14 @@ class ProductResource extends Resource
                             ->label('Kategori')
                     ]),
 
+                Section::make('Berat & Dimensi')
+                    ->schema([
+                        TextInput::make('weight')
+                            ->label('Weight (dalam gram)'),
+                        TextInput::make('dimension') 
+                    ])
+                    ->columns(2),
+
                
                 Repeater::make('attributes')
                     ->label('Atribut Produk')

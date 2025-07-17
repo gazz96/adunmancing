@@ -41,12 +41,30 @@ Route::get('/shop', [WebController::class, 'shop'])
 Route::get('/product/{slug?}', [WebController::class, 'productDetail']) 
     ->name('frontend.product-detail');
 
+Route::get('blogs', [WebController::class, 'blogs'])
+    ->name('web.blogs');
+Route::get('/post/{slug?}', [WebController::class, 'blogPost'])
+    ->name('web.blog-post');
+
+Route::get('about-us', [WebController::class, 'about']);
+Route::get('contact-us', [WebController::class, 'contact']);
+
+Route::get('/logout', [AuthController::class, 'logout'])->name('web.my-account.logout');
+
 
 Route::prefix('my-account')->middleware('auth')->group(function(){
     Route::get('/', [WebController::class, 'myAccount'])
         ->name('web.my-account');
     Route::get('/addresses', [WebController::class, 'accountAddresses'])
         ->name('web.my-account.addresses');
+    Route::post('/addresses', [WebController::class, 'saveAccountAddresses'])
+        ->name('web.my-account.save-addresses');
+    Route::get('/personal-info', [WebController::class, 'personalInfo'])
+        ->name('web.my-account.personal-info');
+    Route::post('/personal-info', [WebController::class, 'savePersonalInfo'])
+        ->name('web.my-account.save-personal-info');
+    Route::post('/update-password', [WebController::class, 'updatePassword'])
+        ->name('web.my-account.update-password');
 });
 
 Route::prefix('shipping')
@@ -55,6 +73,9 @@ Route::prefix('shipping')
             ->name('web.shipping.provinces');
         Route::get('regencies', [ShippingController::class, 'getRegencies'])
             ->name('web.shipping.regencies');
+        
+        Route::post('cost', [ShippingController::class, 'getCost'])
+            ->name('web.shipping.cost');
     });
 
 Route::get('/shop', [WebController::class, 'shop'])

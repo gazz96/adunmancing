@@ -2,13 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Blog;
+use App\Models\BlogCategory;
+use App\Models\Category;
+use App\Models\Option;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\Regency;
 use App\Models\UserAddress;
+use App\Services\Rajaongkir;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 
 class WebController extends Controller
@@ -26,6 +34,16 @@ class WebController extends Controller
                 ->limit(3)
                 ->whereStatus(1)
                 ->get(),
+
+            'newProducts' => \App\Models\Product::orderBy('created_at', 'DESC')
+                ->take(5)
+                ->get(),
+            'makanProducts' => \App\Models\Product::orderBy('created_at', 'DESC')
+                ->whereHas('categories', function($query){
+                    return $query->where('categories.id', 1);
+                })
+                ->take(5)
+                ->get()
         ]);
     }
 
@@ -91,6 +109,7 @@ class WebController extends Controller
                 'quantity' => 1,
                 'price' => $product->price,
                 'image' => $product->featured_image,
+                'weight' => $product->weight
             ];
         }
 
@@ -101,16 +120,23 @@ class WebController extends Controller
 
     public function checkout()
     {
+        $couriers = Rajaongkir::new()->getCouriers();
         return view('frontend.checkout', [
-            'addresses' => UserAddress::where('user_id', Auth::id())->get()
+            'addresses' => UserAddress::where('user_id', Auth::id())->get(),
+            'couriers' => $couriers
         ]);
     }
 
     public function doCheckout(Request $request)
     {
         $request->validate([
-            'note' => 'sometimes'
+            'note' => 'sometimes',
+            'courier' => 'required',
+            'courier_package' => 'required'
         ]);
+
+        $deliveryPrice = explode('|', $request->courier_package)[2];
+
 
         DB::beginTransaction();
 
@@ -125,7 +151,9 @@ class WebController extends Controller
                 return back()->with('error', 'Cart is empty.');
             }
 
+    
             $total = 0;
+            $total_weight = 0;
 
             // Hitung total
             foreach ($cartItems as $item) {
@@ -133,11 +161,19 @@ class WebController extends Controller
                 if (!$product) continue;
 
                 $total += $product->price * $item['quantity'];
+                $total_weight += (double)$product->weight * (double)$item['quantity'];
+            }
+
+            if($total_weight <= 1000) {
+                $total_weight = 1000;
             }
 
             $address = UserAddress::where('user_id', Auth::id())
                 ->where('is_default', 1)
                 ->first();
+
+            $originId  = Option::getByKey('store_regency_id');
+            $origin = Regency::find($originId);
 
             // Simpan order
             $order = Order::create([
@@ -145,7 +181,18 @@ class WebController extends Controller
                 'address' => $address->address,
                 'total_amount' => $total,
                 'status' => 'pending',
-                'note' => $request->note
+                'note' => $request->note,
+                'courier' => $request->courier,
+                'courier_package' => $request->courier_package,
+                'delivery_price' => $deliveryPrice,
+                'origin' => $originId,
+                'originType' => 'city',
+                'destination' => $address->city_id,
+                'destinationType' => 'city',
+                'total_weight' => $total_weight,
+                'postal_code' => $address->postal_code,
+                'recepient_name' => $address->recipient_name,
+                'recepient_phone_number' => $address->phone_number
             ]);
 
 
@@ -161,6 +208,7 @@ class WebController extends Controller
                     'quantity' => $item['quantity'],
                     'price' => $product->price,
                     'subtotal' => $product->price * $item['quantity'],
+                    'weight' => $product->weight
                 ]);
             }
 
@@ -215,28 +263,168 @@ class WebController extends Controller
         return view('frontend.thankyou');
     }
 
-    public function myAccount()
+    public function myAccount(Request $request)
     {
         return view('frontend.my-account.index', [
             'user' => auth()->user(),
             'orders' => Order::where('user_id', Auth::id())
+                ->when($request->status, function($query, $status){
+                    return $query->where('status', $status);
+                })
                 ->get()
         ]);
     }
 
     public function accountAddresses()
     {
+
+        $cities = Cache::remember('regencies', 86400, function () {
+            $response = \App\Services\Rajaongkir::new()->getRegencies(); 
+            $data = $response->getData();
+            $cities = collect($data->rajaongkir->results ?? []);
+            return $cities;
+        });
         return view('frontend.my-account.addresses',[
-            'addresses' => UserAddress::where('user_id', Auth::id())->get()
+            'addresses' => UserAddress::where('user_id', Auth::id())->get(),
+            'cities' => $cities
         ]);
     }
 
-    public function myPersonalInfo()
+    public function saveAccountAddresses(Request $request) 
     {
-        return view('frontend.my-account.personal-info');
+        $validated = $request->validate([
+            'id' => 'sometimes',
+            'name' => 'required',
+            'recipient_name' => 'required',
+            'phone_number' => 'required',
+            'province_id' => 'required',
+            'province_name' => 'required',
+            'city_name' => 'required',
+            'city_id' => 'required',
+            'postal_code' => 'required',
+            'address' => 'required',
+            'is_default' => 'sometimes'
+        ]);
+
+        $validated['user_id'] = Auth::id();
+
+        $userAddress = UserAddress::updateOrCreate(
+            [
+                'id' => $validated['id'] ?? ''
+            ], 
+            $validated
+        );
+
+        $id = $validated['id'] ?? $userAddress->id;
+
+        if($validated['is_default'] ?? '')
+        {
+            UserAddress::where('user_id', Auth::id())
+                ->whereNotIn('id', [$id])
+                ->update([
+                    'is_default' => 0
+                ]);
+        }
+
+        return back();
+
+    }
+
+    public function personalInfo()
+    {
+
+       
+
+        return view('frontend.my-account.personal-info', [
+            'user' => Auth::user()
+        ]);
+    }
+
+    public function savePersonalInfo(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|max:100',
+            'birth_date' => 'required|date',
+            'phone_number' => 'required|max:100'
+        ]);
+
+        Auth::user()
+            ->update($validated);
+
+        return back()
+            ->with('success', 'Profile berhasil diperbarui');
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $validated = $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required'
+        ]);
+
+        $user = Auth::user();
+
+        // Cek apakah password lama cocok
+        if (!Hash::check($request->current_password, $user->password)) {
+            return back()->withErrors(['current_password' => 'Password lama salah']);
+        }
+
+        $user->update([
+            'password' => Hash::make($validated['new_password'])
+        ]);
+
+        return back()->with('success', 'Password berhasil diperbarui');
+
+
+    }
+
+    public function blogs(Request $request)
+    {
+        $posts = Blog::whereIsPublished(1)
+            ->when($request->s, function($query, $keyword){
+                return $query->where('title', 'LIKE', '%' . $keyword . '%');
+            })
+            ->when($request->category_id, function($query, $category_id){
+               return $query->whereHas('categories', function ($query) use ($category_id) {
+                if (is_array($category_id)) {
+                    return $query->whereIn('blog_category_id', $category_id);
+                }
+
+                return $query->where('blog_category_id', $category_id);
+            });
+            })
+            ->paginate(20);
+        $trendingPosts = Blog::trending()->take(5)->get();
+
+        return view('frontend.blogs', [
+            'posts' => $posts,
+            'categories' => BlogCategory::orderBy('name', 'ASC')->get(),
+            'trendingPosts' => $trendingPosts
+        ]);
+    }
+
+    public function blogPost($slug)
+    {
+        $post = Blog::where('slug', $slug)->firstOrFail();
+
+        $post->increment('views');
+
+        return view('frontend.blog-post', compact('post'));
     }
 
     public function myAccountReviews() {
         echo 'testing';
     }
+
+    public function about()
+    {
+        return view('frontend.about');
+    }
+
+    public function contact()
+    {
+        return view('frontend.contact');
+    }
 }
+
+

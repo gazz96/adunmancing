@@ -7,6 +7,7 @@ use App\Filament\Resources\OrderResource\RelationManagers;
 use App\Models\Order;
 use Filament\Forms;
 use Filament\Forms\Components\Card;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -40,11 +41,11 @@ class OrderResource extends Resource
                             ->searchable()
                             ->required(),
 
-                        Select::make('coupon_id')
-                            ->label('Coupon')
-                            ->relationship('coupon', 'code')
-                            ->searchable()
-                            ->nullable(),
+                        // Select::make('coupon_id')
+                        //     ->label('Coupon')
+                        //     ->relationship('coupon', 'code')
+                        //     ->searchable()
+                        //     ->nullable(),
 
                         Repeater::make('items')
                             ->label('Order Items')
@@ -81,7 +82,7 @@ class OrderResource extends Resource
                                     ->required()
                                     ->live()
                                     ->afterStateUpdated(function($state, callable $set, callable $get) {
-                                        $set('subtotal', (float) $get('price') * (int) $state);
+                                        $set('subtotal', (float) $get('price') * (int)$state);
                                     }),
 
                                 TextInput::make('subtotal')
@@ -109,15 +110,20 @@ class OrderResource extends Resource
 
                 Section::make('Shipping Information')
                     ->schema([
-                        TextInput::make('shipping.recipient_name')->required(),
-                        TextInput::make('shipping.phone')->required(),
-                        TextInput::make('shipping.address')->required(),
-                        TextInput::make('shipping.city')->required(),
-                        TextInput::make('shipping.postal_code')->required(),
+                        TextInput::make('recepient_name')->disabled(),
+                        TextInput::make('recepient_phone_number')->disabled(),
+                        TextInput::make('address')->disabled(),
+                        TextInput::make('destination_name')->disabled(),
+                        TextInput::make('postal_code')->disabled(),
+                        TextInput::make('courier')->disabled(),
+                        TextInput::make('delivery_price')->disabled(),
                     ]),
 
                 Section::make('Status')
                     ->schema([
+
+                        TextInput::make('awb')->label('Nomor Resi'),
+                        DatePicker::make('send_date')->label('Send Date'),
                         Select::make('status')
                             ->label('Order Status')
                             ->options([
@@ -125,6 +131,7 @@ class OrderResource extends Resource
                                 'paid' => 'Paid',
                                 'shipped' => 'Shipped',
                                 'cancelled' => 'Cancelled',
+                                'completed' => 'Completed',
                             ])
                             ->default('pending')
                             ->required(),

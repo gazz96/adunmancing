@@ -797,54 +797,6 @@
     </div>
     <!-- Page specific scripts -->
     <script>
-        // Dynamically update count number of selected items inside filter dropdown
-        window.onload = () => {
-            updateFilterCount('categoryCount')
-            updateFilterCount('categoryCount-2')
-        }
-
-        const updateFilterCount = (countId) => {
-            const checkedCheckboxes = document.querySelectorAll(`[data-count-id="${countId}"]:checked`)
-            const countElement = document.getElementById(countId)
-            if (checkedCheckboxes.length > 0) {
-                countElement.textContent = '(' + checkedCheckboxes.length + ')'
-            } else {
-                countElement.textContent = ''
-            }
-        }
-
-
-        // Switch between product and room view
-        const viewSwitcher = document.getElementById('viewShwitcher')
-        const productThumbs = Array.from(
-            document
-            .getElementById('productGrid')
-            .querySelectorAll('.hover-effect-opacity')
-        )
-
-        viewSwitcher.addEventListener('click', (e) => {
-            const target = e.target
-            if (target.classList.contains('nav-link')) {
-                viewSwitcher
-                    .querySelectorAll('.nav-link.active')
-                    .forEach((navLink) => navLink.classList.remove('active'))
-                target.classList.add('active')
-                const id = target.getAttribute('id')
-                productThumbs.forEach((thumb) => {
-                    const images = thumb.querySelectorAll('img')
-                    if (id === 'showRoom') {
-                        images[0].classList.remove('opacity-100')
-                        images[0].classList.add('opacity-0')
-                        images[1].classList.remove('opacity-0')
-                        images[1].classList.add('opacity-100')
-                    } else if (id === 'showProduct') {
-                        images[0].classList.remove('opacity-0')
-                        images[0].classList.add('opacity-100')
-                        images[1].classList.remove('opacity-100')
-                        images[1].classList.add('opacity-0')
-                    }
-                })
-            }
-        })
+     
     </script>
 @endsection

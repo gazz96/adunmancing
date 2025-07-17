@@ -23,48 +23,50 @@
                             <h1 class="h2 me-3 mb-0">Orders</h1>
                         </div>
                         <div class="col-md-8 col-xl-6">
-                            <div class="row row-cols-1 row-cols-sm-2 g-3 g-xxl-4">
-                                <div class="col">
-                                    <select class="form-select"
-                                        data-select='{
-                        "placeholderValue": "Select status",
-                        "choices": [
-                          {
-                            "value": "",
-                            "label": "Select status",
-                            "placeholder": true
-                          },
-                          {
-                            "value": "inprogress",
-                            "label": "<div class=\"d-flex align-items-center text-nowrap\"><span class=\"bg-info rounded-circle p-1 me-2\"></span>In progress</div>"
-                          },
-                          {
-                            "value": "delivered",
-                            "label": "<div class=\"d-flex align-items-center text-nowrap\"><span class=\"bg-success rounded-circle p-1 me-2\"></span>Delivered</div>"
-                          },
-                          {
-                            "value": "canceled",
-                            "label": "<div class=\"d-flex align-items-center text-nowrap\"><span class=\"bg-danger rounded-circle p-1 me-2\"></span>Canceled</div>"
-                          },
-                          {
-                            "value": "delayed",
-                            "label": "<div class=\"d-flex align-items-center text-nowrap\"><span class=\"bg-warning rounded-circle p-1 me-2\"></span>Delayed</div>"
-                          }
-                        ]
-                      }'
-                                        data-select-template="true" aria-label="Status sorting"></select>
+                            <form action="">
+                                <div class="row row-cols-1 row-cols-sm-2 g-3 g-xxl-4 d-flex justify-content-end">
+                                    <div class="col">
+                                        <select name="status" class="form-select"
+                                            data-select='{
+                                                "placeholderValue": "Select status",
+                                                "choices": [
+                                                {
+                                                    "value": "",
+                                                    "label": "Select status",
+                                                    "placeholder": true
+                                                },
+                                                {
+                                                    "value": "pending",
+                                                    "label": "<div class=\"d-flex align-items-center text-nowrap\"><span class=\"bg-info rounded-circle p-1 me-2\"></span>Pending</div>"
+                                                },
+                                                {
+                                                    "value": "delivered",
+                                                    "label": "<div class=\"d-flex align-items-center text-nowrap\"><span class=\"bg-success rounded-circle p-1 me-2\"></span>Delivered</div>"
+                                                },
+                                                {
+                                                    "value": "canceled",
+                                                    "label": "<div class=\"d-flex align-items-center text-nowrap\"><span class=\"bg-danger rounded-circle p-1 me-2\"></span>Canceled</div>"
+                                                },
+                                                {
+                                                    "value": "delayed",
+                                                    "label": "<div class=\"d-flex align-items-center text-nowrap\"><span class=\"bg-warning rounded-circle p-1 me-2\"></span>Delayed</div>"
+                                                }
+                                                ]
+                                            }'
+                                            data-select-template="true" aria-label="Status sorting" onchange="this.form.submit()"></select>
+                                    </div>
+                                    {{-- <div class="col">
+                                        <select class="form-select" data-select='{"removeItemButton": false}'
+                                            aria-label="Timeframe sorting">
+                                            <option value="all-time">For all time</option>
+                                            <option value="last-year">For last year</option>
+                                            <option value="last-3-months">For last 3 months</option>
+                                            <option value="last-30-days">For last 30 days</option>
+                                            <option value="last-week">For last week</option>
+                                        </select>
+                                    </div> --}}
                                 </div>
-                                <div class="col">
-                                    <select class="form-select" data-select='{"removeItemButton": false}'
-                                        aria-label="Timeframe sorting">
-                                        <option value="all-time">For all time</option>
-                                        <option value="last-year">For last year</option>
-                                        <option value="last-3-months">For last 3 months</option>
-                                        <option value="last-30-days">For last 30 days</option>
-                                        <option value="last-week">For last week</option>
-                                    </select>
-                                </div>
-                            </div>
+                            </form>
                         </div>
                     </div>
 
@@ -81,14 +83,16 @@
                                     </th>
                                     <th scope="col" class="py-3 d-none d-md-table-cell">
                                         <button type="button" class="btn orders-sort fw-normal text-body p-0"
-                                            data-sort="date">Order date</button>
+                                            {{-- data-sort="date" --}}
+                                            >Order date</button>
                                     </th>
                                     <th scope="col" class="py-3 d-none d-md-table-cell">
                                         <span class="text-body fw-normal">Status</span>
                                     </th>
                                     <th scope="col" class="py-3 d-none d-md-table-cell">
                                         <button type="button" class="btn orders-sort fw-normal text-body p-0"
-                                            data-sort="total">Total</button>
+                                            {{-- data-sort="total" --}}
+                                            >Total</button>
                                     </th>
                                     <th scope="col" class="py-3">&nbsp;</th>
                                 </tr>
@@ -109,7 +113,7 @@
                                                 <span class="bg-info rounded-circle p-1 me-2"></span>
                                                 {{ $order->status }}
                                             </li>
-                                            <li class="fw-medium text-body-emphasis">{{ number_format($order->total_amount)}}</li>
+                                            <li class="fw-medium text-body-emphasis">{{ number_format($order->total)}}</li>
                                         </ul>
                                     </td>
                                     <td class="fw-medium py-3 d-none d-md-table-cell">
@@ -123,24 +127,24 @@
                                         </span>
                                     </td>
                                     <td class="fw-medium py-3 d-none d-md-table-cell">
-                                        {{ number_format($order->total_amount)}}
-                                        <span class="total d-none">{{ number_format($order->total_amount)}}</span>
+                                        {{ number_format($order->total)}}
+                                        <span class="total d-none">{{ number_format($order->total)}}</span>
                                     </td>
                                     <td class="py-3 pe-0">
-                                        {{-- <span
+                                        <span
                                             class="d-flex align-items-center justify-content-end position-relative gap-1 gap-sm-2 ms-n2 ms-sm-0">
-                                            <span><img src="assets/img/shop/electronics/thumbs/20.png" width="64"
+                                            {{-- <span><img src="assets/img/shop/electronics/thumbs/20.png" width="64"
                                                     alt="Thumbnail"></span>
                                             <span><img src="assets/img/shop/electronics/thumbs/16.png" width="64"
                                                     alt="Thumbnail"></span>
                                             <span><img src="assets/img/shop/electronics/thumbs/15.png" width="64"
-                                                    alt="Thumbnail"></span>
+                                                    alt="Thumbnail"></span> --}}
                                             <a class="btn btn-icon btn-ghost btn-secondary stretched-link border-0"
-                                                href="#orderDetails" data-bs-toggle="offcanvas"
+                                                href="#orderDetails-{{$order->id}}" data-bs-toggle="offcanvas"
                                                 aria-controls="orderDetails" aria-label="Show order details">
                                                 <i class="ci-chevron-right fs-lg"></i>
                                             </a>
-                                        </span> --}}
+                                        </span>
                                     </td>
                                 </tr>
                                 @endforeach
@@ -175,5 +179,95 @@
     </div>
 </main>
 
+
+@endsection
+
+
+@section('footer_scripts')
+
+    @foreach($orders as $order)
+    <!-- Order details offcanvas -->
+    <div class="offcanvas offcanvas-end pb-sm-2 px-sm-2" id="orderDetails-{{$order->id}}" tabindex="-1" aria-labelledby="orderDetailsLabel" style="width: 500px">
+
+      <!-- Header -->
+      <div class="offcanvas-header align-items-start py-3 pt-lg-4">
+        <div>
+          <h4 class="offcanvas-title mb-1" id="orderDetailsLabel">Order # {{$order->order_number}}</h4>
+          <span class="d-flex align-items-center fs-sm fw-medium text-body-emphasis">
+            <span class="bg-info rounded-circle p-1 me-2"></span>
+            {{ $order->status }}
+          </span>
+        </div>
+        <button type="button" class="btn-close mt-0" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="offcanvas-body d-flex flex-column gap-4 pt-2 pb-3">
+
+        <!-- Items -->
+        <div class="d-flex flex-column gap-3">
+        
+          @foreach($order->items as $item)
+            @if($item->product)
+            <!-- Item -->
+            <div class="d-flex align-items-center">
+                <a class="flex-shrink-0" href="{{$item->product->permalink}}">
+                <img src="{{$item->product->featured_image_url}}" width="110" alt="{{$item->product->name}}">
+                </a>
+                <div class="w-100 min-w-0 ps-2 ps-sm-3">
+                <h5 class="d-flex animate-underline mb-2">
+                    <a class="d-block fs-sm fw-medium text-truncate animate-target" href="shop-product-general-electronics.html">{{$item->product->name}}</a>
+                </h5>
+                <div class="h6 mb-2">{{ number_format($item->price) }}</div>
+                <div class="fs-xs">Qty: {{$item->quantity}}</div>
+                </div>
+            </div>
+            @endif
+          @endforeach
+
+        </div>
+
+
+        <!-- Delivery + Payment info -->
+        <div class="border-top pt-4">
+          <h6>Delivery</h6>
+          <ul class="list-unstyled fs-sm mb-4">
+            <li class="d-flex justify-content-between mb-1">
+              Estimated delivery:
+              <span class="text-body-emphasis fw-medium text-end ms-2">{{ $order->courier_package_data[3] ?? ''}} days</span>
+            </li>
+            <li class="d-flex justify-content-between mb-1">
+              Shipping method:
+              <span class="text-body-emphasis fw-medium text-end ms-2">{{ strtoupper($order->courier) }}</span>
+            </li>
+            <li class="d-flex justify-content-between">
+              Shipping address:
+              <span class="text-body-emphasis fw-medium text-end ms-2">{{$order->address}}, {{$order->postal_code}}</span>
+            </li>
+          </ul>
+          <h6>Payment</h6>
+          <ul class="list-unstyled fs-sm m-0">
+        
+            <li class="d-flex justify-content-between">
+              Shipping:
+              <span class="text-body-emphasis fw-medium text-end ms-2">{{number_format($order->delivery_price)}}</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Total -->
+        <div class="d-flex align-items-center justify-content-between fs-sm border-top pt-4">
+          Estimated total:
+          <span class="h5 text-end ms-2 mb-0">{{ number_format($order->total)}}</span>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      {{-- <div class="offcanvas-header">
+        <a class="btn btn-lg btn-secondary w-100" href="#!">Change the delivery time</a>
+      </div> --}}
+    </div>
+
+    @endforeach
 
 @endsection

@@ -12,4 +12,9 @@ class BlogCategory extends Model
     {
         return $this->belongsToMany(Blog::class, 'blog_post_category');
     }
+
+    public function getPermalinkAttribute()
+    {
+        return url('blog-category/' . $this->slug);
+    }
 }

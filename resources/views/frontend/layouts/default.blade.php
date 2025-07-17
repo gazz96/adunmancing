@@ -5,8 +5,7 @@
     <meta charset="utf-8">
 
     <!-- Viewport -->
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover">
 
     <!-- SEO Meta Tags -->
     <title>{{ $option->getByKey('site_name') }} | Furniture Store</title>
@@ -24,7 +23,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Theme switcher (color modes) -->
-    <script src="assets/js/theme-switcher.js"></script>
+    {{-- <script src="assets/js/theme-switcher.js"></script> --}}
 
     <!-- Preloaded local web font (Inter) -->
     <link rel="preload" href="assets/fonts/inter-variable-latin.woff2" as="font" type="font/woff2" crossorigin>
@@ -35,10 +34,12 @@
 
     <!-- Vendor styles -->
     <link rel="stylesheet" href="{{ url('assets/vendor/choices.js/public/assets/styles/choices.min.css') }}">
+    <link rel="stylesheet" href="{{ url('assets/vendor/flatpickr/dist/flatpickr.min.css') }}">
     <link rel="stylesheet" href="{{ url('assets/vendor/swiper/swiper-bundle.min.css') }}">
     <link rel="stylesheet" href="{{ url('assets/vendor/simplebar/dist/simplebar.min.css') }}">
     <link rel="stylesheet" href="{{ url('assets/vendor/glightbox/dist/css/glightbox.min.css') }}">
     <link rel="stylesheet" href="{{ url('assets/vendor/sweet-alert/sweet-alert.min.css') }}">
+    
 
     <!-- Bootstrap + Theme styles -->
     <link rel="stylesheet" href="{{ url('assets/css/theme.min.css') }}" id="theme-styles">
@@ -114,7 +115,17 @@
 
             <!-- Navbar brand (Logo) -->
             <a class="navbar-brand position-relative z-1 ms-4 ms-sm-5 ms-lg-4 me-2 me-sm-0 me-lg-3"
-                href="{{ url('/') }}">{{ $option->getByKey('site_name') }}</a>
+                href="{{ url('/') }}">
+                
+                @if($logo = $option->getByKey('site_logo'))
+                
+               <img src="{{ url('storage/' . $logo) }}" alt="{{$option->getByKey('site_name')}}" width="40">
+
+                @else 
+                     {{ $option->getByKey('site_name') }}
+                @endif
+            
+            </a>
 
             <!-- Main navigation that turns into offcanvas on screens < 992px wide (lg breakpoint) -->
             <nav class="offcanvas offcanvas-start" id="navbarNav" tabindex="-1" aria-labelledby="navbarNavLabel">
@@ -303,14 +314,14 @@
 
                 <!-- Theme switcher (light/dark/auto) -->
                 <div class="dropdown">
-                    <button type="button"
+                    {{-- <button type="button"
                         class="theme-switcher btn btn-icon btn-outline-secondary fs-lg border-0 rounded-circle animate-scale"
                         data-bs-toggle="dropdown" data-bs-display="dynamic" aria-expanded="false"
                         aria-label="Toggle theme (light)">
                         <span class="theme-icon-active d-flex animate-target">
                             <i class="ci-sun"></i>
                         </span>
-                    </button>
+                    </button> --}}
                     <ul class="dropdown-menu start-50 translate-middle-x"
                         style="--cz-dropdown-min-width: 9rem; --cz-dropdown-spacer: 1rem">
                         <li>
@@ -362,9 +373,9 @@
                     </button>
                     <div class="dropdown-menu dropdown-menu-end p-3"
                         style="--cz-dropdown-min-width: 20rem; --cz-dropdown-spacer: 1rem">
-                        <form class="position-relative">
-                            <input type="search" class="form-control rounded-pill" placeholder="Search..."
-                                data-autofocus="dropdown">
+                        <form class="position-relative" action="{{route('web.blogs')}}">
+                            <input name="s" type="search" class="form-control rounded-pill" placeholder="Search..."
+                                data-autofocus="dropdown" value="{{request('s')}}">
                             <button type="submit"
                                 class="btn btn-icon btn-sm fs-lg btn-secondary rounded-circle position-absolute top-0 end-0 mt-1 me-1"
                                 aria-label="Search">
@@ -381,125 +392,160 @@
     @yield('content')
 
     <!-- Page footer -->
-    <footer class="footer bg-dark pb-4 py-lg-5" data-bs-theme="dark">
-        <div class="container pt-5 pt-lg-4 mt-sm-2 mt-md-3">
-            <div class="row pb-5">
+    <footer class="footer bg-dark pb-4" data-bs-theme="dark">
 
-                <!-- Subscription + Social account links -->
-                <div class="col-md col-xl-8 order-md-2">
-                    <div class="text-center px-sm-4 mx-auto" style="max-width: 568px">
-                        <h3 class="pb-1 mb-2">Stay in touch with us</h3>
-                        <p class="fs-sm text-body pb-2 pb-sm-3">Receive the latest updates about our products &amp;
-                            promotions</p>
-                        <form class="needs-validation position-relative" novalidate>
-                            <input type="email" class="form-control form-control-lg rounded-pill text-start"
-                                placeholder="You email" aria-label="Your email address" required>
-                            <div class="invalid-tooltip bg-transparent p-0">Please enter you email address!</div>
-                            <button type="submit"
-                                class="btn btn-icon fs-xl btn-dark rounded-circle position-absolute top-0 end-0 mt-1 me-1"
-                                aria-label="Submit your email address" data-bs-theme="light">
-                                <i class="ci-arrow-up-right"></i>
-                            </button>
-                        </form>
-                        <div class="d-flex justify-content-center gap-2 pt-4 pt-md-5 mt-1 mt-md-0">
-                            <a class="btn btn-icon fs-base btn-outline-secondary border-0" href="#!"
-                                data-bs-toggle="tooltip"
-                                data-bs-template='<div class="tooltip fs-xs mb-n2" role="tooltip"><div class="tooltip-inner bg-transparent text-white p-0"></div></div>'
-                                title="YouTube" aria-label="Follow us on YouTube">
-                                <i class="ci-youtube"></i>
-                            </a>
-                            <a class="btn btn-icon fs-base btn-outline-secondary border-0" href="#!"
-                                data-bs-toggle="tooltip"
-                                data-bs-template='<div class="tooltip fs-xs mb-n2" role="tooltip"><div class="tooltip-inner bg-transparent text-white p-0"></div></div>'
-                                title="Facebook" aria-label="Follow us on Facebook">
-                                <i class="ci-facebook"></i>
-                            </a>
-                            <a class="btn btn-icon fs-base btn-outline-secondary border-0" href="#!"
-                                data-bs-toggle="tooltip"
-                                data-bs-template='<div class="tooltip fs-xs mb-n2" role="tooltip"><div class="tooltip-inner bg-transparent text-white p-0"></div></div>'
-                                title="Instagram" aria-label="Follow us on Instagram">
-                                <i class="ci-instagram"></i>
-                            </a>
-                            <a class="btn btn-icon fs-base btn-outline-secondary border-0" href="#!"
-                                data-bs-toggle="tooltip"
-                                data-bs-template='<div class="tooltip fs-xs mb-n2" role="tooltip"><div class="tooltip-inner bg-transparent text-white p-0"></div></div>'
-                                title="Telegram" aria-label="Follow us on Telegram">
-                                <i class="ci-telegram"></i>
-                            </a>
-                            <a class="btn btn-icon fs-base btn-outline-secondary border-0" href="#!"
-                                data-bs-toggle="tooltip"
-                                data-bs-template='<div class="tooltip fs-xs mb-n2" role="tooltip"><div class="tooltip-inner bg-transparent text-white p-0"></div></div>'
-                                title="Pinterest" aria-label="Follow us on Pinterest">
-                                <i class="ci-pinterest"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
+      <div class="container py-4 py-md-5">
+        <div class="row pt-3 pb-4 py-md-1 py-lg-3">
 
-                <!-- Category links -->
-                <div class="col-md-auto col-xl-2 text-center order-md-1 pt-4 pt-md-0">
-                    <ul class="nav d-inline-flex flex-md-column justify-content-center align-items-center gap-md-2">
-                        <li class="animate-underline my-1 mx-2 m-md-0">
-                            <a class="nav-link d-inline-flex fw-normal p-0 animate-target" href="#!">Bedroom</a>
-                        </li>
-                        <li class="animate-underline my-1 mx-2 m-md-0">
-                            <a class="nav-link d-inline-flex fw-normal p-0 animate-target" href="#!">Living
-                                room</a>
-                        </li>
-                        <li class="animate-underline my-1 mx-2 m-md-0">
-                            <a class="nav-link d-inline-flex fw-normal p-0 animate-target" href="#!">Bathroom</a>
-                        </li>
-                        <li class="animate-underline my-1 mx-2 m-md-0">
-                            <a class="nav-link d-inline-flex fw-normal p-0 animate-target"
-                                href="#!">Decoration</a>
-                        </li>
-                        <li class="animate-underline my-1 mx-2 m-md-0">
-                            <a class="nav-link d-inline-flex fw-normal p-0 animate-target" href="#!">Kitchen</a>
-                        </li>
-                        <li class="animate-underline my-1 mx-2 m-md-0">
-                            <a class="nav-link d-inline-flex fw-normal p-0 animate-target" href="#!">Sale</a>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Customer links -->
-                <div class="col-md-auto col-xl-2 text-center order-md-3 pt-3 pt-md-0">
-                    <ul class="nav d-inline-flex flex-md-column justify-content-center align-items-center gap-md-2">
-                        <li class="animate-underline my-1 mx-2 m-md-0">
-                            <a class="nav-link d-inline-flex fw-normal p-0 animate-target" href="#!">Shipping
-                                options</a>
-                        </li>
-                        <li class="animate-underline my-1 mx-2 m-md-0">
-                            <a class="nav-link d-inline-flex fw-normal p-0 animate-target" href="#!">Tracking a
-                                package</a>
-                        </li>
-                        <li class="animate-underline my-1 mx-2 m-md-0">
-                            <a class="nav-link d-inline-flex fw-normal p-0 animate-target" href="#!">Help
-                                center</a>
-                        </li>
-                        <li class="animate-underline my-1 mx-2 m-md-0">
-                            <a class="nav-link d-inline-flex fw-normal p-0 animate-target" href="#!">Contact
-                                us</a>
-                        </li>
-                        <li class="animate-underline my-1 mx-2 m-md-0">
-                            <a class="nav-link d-inline-flex fw-normal p-0 animate-target" href="#!">Product
-                                returns</a>
-                        </li>
-                        <li class="animate-underline my-1 mx-2 m-md-0">
-                            <a class="nav-link d-inline-flex fw-normal p-0 animate-target"
-                                href="#!">Locations</a>
-                        </li>
-                    </ul>
-                </div>
+          <!-- Promo text + Social account links -->
+          <div class="col-lg-3 text-center text-lg-start pb-sm-2 pb-md-0 mb-4 mb-md-5 mb-lg-0">
+            <h4 class="pb-2 mb-1">
+              <a class="text-dark-emphasis text-decoration-none" href="index.html">{{$option->getByKey('site_name')}}</a>
+            </h4>
+            <p class="fs-sm text-body mx-auto" style="max-width: 480px">{{$option->getByKey('site_description')}}</p>
+            <div class="d-flex justify-content-center justify-content-lg-start gap-2 pt-2 pt-md-3">
+              <a class="btn btn-icon fs-base btn-outline-secondary border-0" href="#!" data-bs-toggle="tooltip" data-bs-template='<div class="tooltip fs-xs mb-n2" role="tooltip"><div class="tooltip-inner bg-transparent text-white p-0"></div></div>' title="Instagram" aria-label="Follow us on Instagram">
+                <i class="ci-instagram"></i>
+              </a>
+              <a class="btn btn-icon fs-base btn-outline-secondary border-0" href="#!" data-bs-toggle="tooltip" data-bs-template='<div class="tooltip fs-xs mb-n2" role="tooltip"><div class="tooltip-inner bg-transparent text-white p-0"></div></div>' title="Facebook" aria-label="Follow us on Facebook">
+                <i class="ci-facebook"></i>
+              </a>
+              <a class="btn btn-icon fs-base btn-outline-secondary border-0" href="#!" data-bs-toggle="tooltip" data-bs-template='<div class="tooltip fs-xs mb-n2" role="tooltip"><div class="tooltip-inner bg-transparent text-white p-0"></div></div>' title="Telegram" aria-label="Follow us on Telegram">
+                <i class="ci-telegram"></i>
+              </a>
+              <a class="btn btn-icon fs-base btn-outline-secondary border-0" href="#!" data-bs-toggle="tooltip" data-bs-template='<div class="tooltip fs-xs mb-n2" role="tooltip"><div class="tooltip-inner bg-transparent text-white p-0"></div></div>' title="WhatsApp" aria-label="Follow us on WhatsApp">
+                <i class="ci-whatsapp"></i>
+              </a>
             </div>
+          </div>
 
-            <!-- Copyright -->
-            <p class="fs-xs text-body text-center pt-lg-4 mt-n2 mt-md-0 mb-0">
-                &copy; All rights reserved. Made by <span class="animate-underline"><a
-                        class="animate-target text-white text-decoration-none" href="https://createx.studio/"
-                        target="_blank" rel="noreferrer">Createx Studio</a></span>
-            </p>
+          <!-- Columns with links that are turned into accordion on screens < 500px wide (sm breakpoint) -->
+          <div class="col-lg-8 offset-lg-1">
+            <div class="accordion" id="footerLinks">
+              <div class="row">
+                <div class="accordion-item col-sm-3 border-0">
+                  <h6 class="accordion-header" id="categoriesHeading">
+                    <span class="text-dark-emphasis d-none d-sm-block">Categories</span>
+                    <button type="button" class="accordion-button collapsed py-3 d-sm-none" data-bs-toggle="collapse" data-bs-target="#categoriesLinks" aria-expanded="false" aria-controls="categoriesLinks">Categories</button>
+                  </h6>
+                  <div class="accordion-collapse collapse d-sm-block" id="categoriesLinks" aria-labelledby="categoriesHeading" data-bs-parent="#footerLinks">
+                    <ul class="nav flex-column gap-2 pt-sm-3 pb-3 pb-sm-0 mt-n1 mb-1 mb-sm-0">
+                      <li class="d-flex w-100 pt-1">
+                        <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0" href="#!">Weekly sale</a>
+                      </li>
+                      <li class="d-flex w-100 pt-1">
+                        <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0" href="#!">Special price</a>
+                      </li>
+                      <li class="d-flex w-100 pt-1">
+                        <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0" href="#!">Easter is coming</a>
+                      </li>
+                      <li class="d-flex w-100 pt-1">
+                        <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0" href="#!">Italian dinner</a>
+                      </li>
+                      <li class="d-flex w-100 pt-1">
+                        <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0" href="#!">Fresh fruits</a>
+                      </li>
+                      <li class="d-flex w-100 pt-1">
+                        <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0" href="#!">Exotic fruits</a>
+                      </li>
+                    </ul>
+                  </div>
+                  <hr class="d-sm-none my-0">
+                </div>
+                <div class="accordion-item col-sm-3 border-0">
+                  <h6 class="accordion-header" id="companyHeading">
+                    <span class="text-dark-emphasis d-none d-sm-block">Company</span>
+                    <button type="button" class="accordion-button collapsed py-3 d-sm-none" data-bs-toggle="collapse" data-bs-target="#companyLinks" aria-expanded="false" aria-controls="companyLinks">Company</button>
+                  </h6>
+                  <div class="accordion-collapse collapse d-sm-block" id="companyLinks" aria-labelledby="companyHeading" data-bs-parent="#footerLinks">
+                    <ul class="nav flex-column gap-2 pt-sm-3 pb-3 pb-sm-0 mt-n1 mb-1 mb-sm-0">
+                      <li class="d-flex w-100 pt-1">
+                        <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0" href="#!">Blog and news</a>
+                      </li>
+                      <li class="d-flex w-100 pt-1">
+                        <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0" href="#!">About us</a>
+                      </li>
+                      <li class="d-flex w-100 pt-1">
+                        <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0" href="#!">FAQ page</a>
+                      </li>
+                      <li class="d-flex w-100 pt-1">
+                        <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0" href="#!">Contact us</a>
+                      </li>
+                      <li class="d-flex w-100 pt-1">
+                        <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0" href="#!">Careers</a>
+                      </li>
+                    </ul>
+                  </div>
+                  <hr class="d-sm-none my-0">
+                </div>
+                <div class="accordion-item col-sm-3 border-0">
+                  <h6 class="accordion-header" id="accountHeading">
+                    <span class="text-dark-emphasis d-none d-sm-block">Account</span>
+                    <button type="button" class="accordion-button collapsed py-3 d-sm-none" data-bs-toggle="collapse" data-bs-target="#accountLinks" aria-expanded="false" aria-controls="accountLinks">Account</button>
+                  </h6>
+                  <div class="accordion-collapse collapse d-sm-block" id="accountLinks" aria-labelledby="accountHeading" data-bs-parent="#footerLinks">
+                    <ul class="nav flex-column gap-2 pt-sm-3 pb-3 pb-sm-0 mt-n1 mb-1 mb-sm-0">
+                      <li class="d-flex w-100 pt-1">
+                        <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0" href="#!">Your account</a>
+                      </li>
+                      <li class="d-flex w-100 pt-1">
+                        <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0" href="#!">Shipping &amp; policies</a>
+                      </li>
+                      <li class="d-flex w-100 pt-1">
+                        <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0" href="#!">Refunds &amp; replacements</a>
+                      </li>
+                      <li class="d-flex w-100 pt-1">
+                        <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0" href="#!">Order tracking</a>
+                      </li>
+                      <li class="d-flex w-100 pt-1">
+                        <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0" href="#!">Delivery info</a>
+                      </li>
+                      <li class="d-flex w-100 pt-1">
+                        <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0" href="#!">Taxes &amp; fees</a>
+                      </li>
+                    </ul>
+                  </div>
+                  <hr class="d-sm-none my-0">
+                </div>
+                <div class="accordion-item col-sm-3 border-0">
+                  <h6 class="accordion-header" id="customerHeading">
+                    <span class="text-dark-emphasis d-none d-sm-block">Customer service</span>
+                    <button type="button" class="accordion-button collapsed py-3 d-sm-none" data-bs-toggle="collapse" data-bs-target="#customerLinks" aria-expanded="false" aria-controls="customerLinks">Customer service</button>
+                  </h6>
+                  <div class="accordion-collapse collapse d-sm-block" id="customerLinks" aria-labelledby="customerHeading" data-bs-parent="#footerLinks">
+                    <ul class="nav flex-column gap-2 pt-sm-3 pb-3 pb-sm-0 mt-n1 mb-1 mb-sm-0">
+                      <li class="d-flex w-100 pt-1">
+                        <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0" href="#!">Payment methods</a>
+                      </li>
+                      <li class="d-flex w-100 pt-1">
+                        <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0" href="#!">Money back guarantee</a>
+                      </li>
+                      <li class="d-flex w-100 pt-1">
+                        <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0" href="#!">Refunds &amp; replacements</a>
+                      </li>
+                      <li class="d-flex w-100 pt-1">
+                        <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0" href="#!">Order tracking</a>
+                      </li>
+                      <li class="d-flex w-100 pt-1">
+                        <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0" href="#!">Delivery info</a>
+                      </li>
+                      <li class="d-flex w-100 pt-1">
+                        <a class="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0" href="#!">Shipping</a>
+                      </li>
+                    </ul>
+                  </div>
+                  <hr class="d-sm-none my-0">
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
+
+      <!-- Copyright -->
+      <p class="container fs-xs text-body text-center text-lg-start pb-md-3 mb-0">
+       {!! $option->getByKey('site_copyright') !!}
+      </p>
     </footer>
 
 
@@ -521,10 +567,13 @@
     <!-- Vendor scripts -->
     <script src="{{ url('assets/js/jquery.min.js')}}"></script>
     <script src="{{ url('assets/vendor/choices.js/public/assets/scripts/choices.min.js') }}"></script>
+    <script src="{{ url('assets/vendor/flatpickr/dist/flatpickr.min.js') }}"></script>
+    <script src="{{ url('assets/vendor/cleave.js/dist/cleave.min.js') }} "></script>
     <script src="{{ url('assets/vendor/swiper/swiper-bundle.min.js') }}"></script>
     <script src="{{ url('assets/vendor/simplebar/dist/simplebar.min.js') }}"></script>
     <script src="{{ url('assets/vendor/glightbox/dist/js/glightbox.min.js') }}"></script>
     <script src="{{ url('assets/vendor/sweet-alert/sweet-alert.min.js') }}"></script>
+    <script src="{{ url('assets/js/currency.min.js')}}  "></script>
 
 
 
@@ -547,7 +596,35 @@
                                 url: "{{ route('web.shipping.regencies') }}",
                                 data: data
                             })
-                        }
+                        },
+                        getCost: async(data) => {
+                            return $.ajax({
+                                method: 'POST',
+                                url: "{{ route('web.shipping.cost') }}",
+                                data: data
+                            })
+                        },
+                    }
+                },
+                Helper: {
+                    sumPrices: function(...prices) {
+                        let total = currency(0, {
+                            separator:',',
+                            decimal: '.',
+                            precision: 0,
+                            symbol: ''
+                        });
+
+                        prices.forEach(function (price) {
+                            total = total.add(currency(price, {
+                                separator: ',',
+                                decimal: '.',
+                                precision: 0,
+                                symbol: ''
+                            }));
+                        });
+
+                        return total.format(); // default: Rp10.000
                     }
                 }
             }
@@ -590,12 +667,25 @@
                 e.preventDefault();
                 await addToCart($(this).serialize());
                 await refreshCart();
+
+                await Swal.fire({
+                    icon: 'success',
+                    title: 'Information',
+                    text: 'Product added to cart'
+                })
             });
 
             $(document).on('click', '.btn-remove_from_cart', async function(e){
                 e.preventDefault();
                 await removeCart($(this).data('key'));
                 await refreshCart();
+
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'Information',
+                    text: 'Product deleted from cart'
+                })
+
             })
 
             $(document).on('click', '.btn-single_add_to_cart', async function(e){
@@ -604,7 +694,70 @@
                     product_id: $(this).data('key')
                 })
                 await refreshCart();
+
+                await Swal.fire({
+                    icon: 'success',
+                    title: 'Information',
+                    text: 'Product added to cart'
+                })
             })
+    </script>
+
+    <script>
+
+        let courierElement = $('#iCourier');
+
+        async function renderCosts(costs) {
+            let html = `<option value=''>Pilih</option>`;
+            $('#iCourierPackage').html('');
+
+            (costs ?? []).map((value, index) => {
+                value.costs.map((cost, index) => {
+                    cost.cost.map((price, index) => {
+                        console.log('price', price);
+                         html += `<option value="${value.code}|${cost.service}|${price.value}|${price.etd}">Harga ${price.value} | ETD ${price.etd}</option>`;
+                    })
+                }) 
+            })
+
+            $('#iCourierPackage').html(html)
+        }
+
+        $(document).on('change', '#iCourier', async function(e){
+
+            $('#delivery-price').val(0);
+            const value = $(this).val();
+            const costs = await App.Models.Shipping.getCost({
+                courier: value
+            });
+
+            console.log('costs', costs);
+
+            await renderCosts(costs?.results);
+        })
+
+        $(document).on('change', '#iCourierPackage', async function(e){
+            var value = $(this).val(); // ambil value terpilih
+            console.log('value', value);
+            if (value) {
+                let cartPrice = $('#cart-price').html();
+                var parts = value.split('|');
+                var price = App.Helper.sumPrices(parts[2]); // index ke-2 = harga
+                let total = App.Helper.sumPrices(price, cartPrice);
+
+                console.log('cartPrice', cartPrice);
+
+                $('#delivery-price').html(price);
+                $('#total-price').html(total);
+            } else {
+                $('#delivery-price').html('');
+            } 
+
+           
+        })
+
+
+
     </script>
 
     @yield('footer_scripts')

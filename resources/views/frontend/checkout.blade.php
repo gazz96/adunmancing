@@ -16,6 +16,7 @@
 
         <!-- Checkout form + Order summary -->
         <form action="" method="POST">
+            
             <section class="container pb-5 mb-2 mb-md-3 mb-lg-4 mb-xl-5">
                 <h1 class="h3 mb-4">Checkout</h1>
                 <div class="row">
@@ -30,105 +31,36 @@
                                 <i class="ci-map-pin fs-base text-primary me-2"></i>
                                 {{ $addresses->where('is_default', 1)->first()->address ?? 'Alamat belum ada' }}
                             </div>
-                            <div class="nav">
+                            {{-- <div class="nav">
                                 <a class="nav-link text-decoration-underline text-nowrap p-0" href="#deliveryOptions"
                                     data-bs-toggle="offcanvas" aria-controls="deliveryOptions">Ganti Alamat</a>
-                            </div>
+                            </div> --}}
                         </div>
                         
                         <!-- Payment method section -->
-                        <h2 class="h5 mt-5 mb-0">Payment method</h2>
-                        <div id="paymentMethod" role="list">
+                        <h2 class="h5 mt-5 mb-0">Courier</h2>
+                        
+                        <div class="row my-3">
 
-                            <!-- Credit card -->
-                            <div class="mt-4">
-                                <div class="form-check mb-0" role="listitem" data-bs-toggle="collapse"
-                                    data-bs-target="#card" aria-expanded="true" aria-controls="card">
-                                    <label class="form-check-label d-flex align-items-center text-dark-emphasis fw-semibold">
-                                        <input type="radio" class="form-check-input fs-base me-2 me-sm-3"
-                                            name="payment-method" checked>
-                                        Credit or debit card
-                                        <span class="d-none d-sm-flex gap-2 ms-3">
-                                            <img src="assets/img/payment-methods/amex.svg" class="d-block bg-info rounded-1"
-                                                width="36" alt="Amex">
-                                            <img src="assets/img/payment-methods/visa-light-mode.svg" class="d-none-dark"
-                                                width="36" alt="Visa">
-                                            <img src="assets/img/payment-methods/visa-dark-mode.svg"
-                                                class="d-none d-block-dark" width="36" alt="Visa">
-                                            <img src="assets/img/payment-methods/mastercard.svg" width="36"
-                                                alt="Mastercard">
-                                            <img src="assets/img/payment-methods/maestro.svg" width="36" alt="Maestro">
-                                        </span>
-                                    </label>
-                                </div>
-                                <div class="collapse show" id="card" data-bs-parent="#paymentMethod">
-                                    <form class="needs-validation pt-4 pb-2 ps-3 ms-2 ms-sm-3" novalidate>
-                                        <div class="position-relative mb-3 mb-sm-4" data-input-format='{"creditCard": true}'>
-                                            <input type="text"
-                                                class="form-control form-control-lg form-icon-end rounded-pill"
-                                                placeholder="Card number" required>
-                                            <span
-                                                class="position-absolute d-flex top-50 end-0 translate-middle-y fs-5 text-body-tertiary me-3"
-                                                data-card-icon></span>
-                                        </div>
-                                        <div class="row row-cols-1 row-cols-sm-2 g-3 g-sm-4">
-                                            <div class="col">
-                                                <input type="text" class="form-control form-control-lg rounded-pill"
-                                                    data-input-format='{"date": true, "datePattern": ["m", "y"]}'
-                                                    placeholder="MM/YY">
-                                            </div>
-                                            <div class="col">
-                                                <input type="text" class="form-control form-control-lg rounded-pill"
-                                                    maxlength="4"
-                                                    data-input-format='{"numeral": true, "numeralPositiveOnly": true, "numeralThousandsGroupStyle": "none"}'
-                                                    placeholder="CVC">
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
+                            <div class="mb-3 col-md-12">
+                                <option value="">Ekspedisi</option>
+                                <select name="courier" id="iCourier" class="form-control">
+                                    <option value="">Pilih</option>
+                                    @foreach($couriers as $courier_code => $courier_name)
+                                    <option value="{{$courier_code}}">{{ $courier_name }}</option>
+                                    @endforeach
+                                </select>
                             </div>
 
-                            <!-- PayPal -->
-                            <div class="mt-4">
-                                <div class="form-check mb-0" role="listitem" data-bs-toggle="collapse"
-                                    data-bs-target="#paypal" aria-expanded="false" aria-controls="paypal">
-                                    <label class="form-check-label d-flex align-items-center text-dark-emphasis fw-semibold">
-                                        <input type="radio" class="form-check-input fs-base me-2 me-sm-3"
-                                            name="payment-method">
-                                        PayPal
-                                        <img src="assets/img/payment-methods/paypal-icon.svg" class="ms-3" width="16"
-                                            alt="PayPal">
-                                    </label>
-                                </div>
-                                <div class="collapse" id="paypal" data-bs-parent="#paymentMethod"></div>
-                            </div>
-
-
-                            <!-- Cash on delivery -->
-                            <div class="mt-4">
-                                <div class="form-check mb-0" role="listitem" data-bs-toggle="collapse"
-                                    data-bs-target="#cash" aria-expanded="false" aria-controls="cash">
-                                    <label class="form-check-label w-100 text-dark-emphasis fw-semibold">
-                                        <input type="radio" class="form-check-input fs-base me-2 me-sm-3"
-                                            name="payment-method">
-                                        Cash on delivery
-                                    </label>
-                                </div>
-                                <div class="collapse" id="cash" data-bs-parent="#paymentMethod">
-                                    <div class="d-sm-flex align-items-center pt-3 pt-sm-4 pb-2 ps-3 ms-2 ms-sm-3">
-                                        <span class="fs-sm me-3">I would require a change from:</span>
-                                        <div class="input-group mt-2 mt-sm-0" style="max-width: 150px">
-                                            <span class="input-group-text rounded-pill rounded-end-0">
-                                                <i class="ci-dollar-sign"></i>
-                                            </span>
-                                            <input type="number" class="form-control rounded-pill rounded-start-0"
-                                                aria-label="Amount (to the nearest dollar)">
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="mb-3 col-md-12">
+                                <option value="">Paket</option>
+                                <select name="courier_package" id="iCourierPackage" class="form-control"></select>
                             </div>
 
                         </div>
+
+
+
 
                     </div>
 
@@ -145,7 +77,7 @@
                             <ul class="list-unstyled fs-sm gap-3 mb-0">
                                 <li class="d-flex justify-content-between">
                                     Subtotal ({{$carts->count()}} items):
-                                    <span class="text-dark-emphasis fw-medium">{{
+                                    <span class="text-dark-emphasis fw-medium" id="cart-price">{{
                                         number_format($carts->sum(function($row){
                                             return $row->quantity * $row->product->price;
                                         }))
@@ -154,16 +86,16 @@
                                 {{-- <li class="d-flex justify-content-between">
                                     Saving:
                                     <span class="text-danger fw-medium">-$2.79</span>
-                                </li>
+                                </li> --}}
                                 <li class="d-flex justify-content-between">
                                     Delivery:
-                                    <span class="text-dark-emphasis fw-medium">Free</span>
-                                </li> --}}
+                                    <span class="text-dark-emphasis fw-medium" id="delivery-price"></span>
+                                </li> 
                             </ul>
                             <div class="border-top pt-4 mt-4">
                                 <div class="d-flex justify-content-between mb-4">
                                     <span class="fs-sm">Estimated total:</span>
-                                    <span class="h5 mb-0">{{number_format($carts->sum(function($row){
+                                    <span class="h5 mb-0" id="total-price">{{number_format($carts->sum(function($row){
                                             return $row->quantity * $row->product->price;
                                         }))}}</span>
                                 </div>
@@ -240,7 +172,8 @@
                         <div class="form-check border-bottom py-4 m-0">
                             <input type="radio" class="form-check-input" id="address-{{$address->id}}" name="delivery-address[{{$address->id}}]"
                                 @if($address->is_default) checked @endif>
-                            <label for="address-{{$address->id}}" class="form-check-label text-dark-emphasis fw-semibold">{{ $address->alamat }}</label>
+                            
+                            <label for="address-{{$address->id}}" class="form-check-label text-dark-emphasis fw-semibold">{{$address->name}} | {{ $address->address }}</label>
                         </div>
                         @endforeach
                         
@@ -312,7 +245,7 @@
                     <a class="nav-link hiding-collapse-toggle animate-underline collapsed px-0 mt-4"
                         href=".delivery-address" data-bs-toggle="collapse" aria-expanded="false"
                         aria-controls="deliveryAddressOptions deliveryAddressAdd">
-                        <span class="animate-target">Add delivery address</span>
+                        <span class="animate-target">Tambah alamat pengiriman</span>
                         <i class="ci-plus fs-base ms-1"></i>
                     </a>
                 </div>
@@ -478,4 +411,9 @@
             <button type="button" class="btn btn-lg btn-primary w-100 rounded-pill">Confirm address</button>
         </div>
     </div>
+@endsection
+
+
+@section('footer_scripts')
+
 @endsection

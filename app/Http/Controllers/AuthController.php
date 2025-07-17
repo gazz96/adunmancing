@@ -4,12 +4,16 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
 
     public function login()
     {
+
+        //dd(Hash::make('bagas'));
+         
         return view('frontend.auth.login');
     }
 
@@ -38,5 +42,15 @@ class AuthController extends Controller
     public function register()
     {
         return view('frontend.auth.register');
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout(); // Hapus session user
+
+        $request->session()->invalidate();       // Invalidate session
+        $request->session()->regenerateToken();  // Regenerate CSRF token
+
+        return redirect('/login')->with('success', 'Anda berhasil logout');
     }
 }
