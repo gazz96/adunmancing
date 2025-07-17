@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS `blogs` (
 
 -- Dumping data for table adunmancing.blogs: ~1 rows (approximately)
 INSERT INTO `blogs` (`id`, `title`, `slug`, `content`, `featured_image`, `author_id`, `is_published`, `created_at`, `updated_at`, `views`) VALUES
-	(1, 'obi Mancing: Antara Relaksasi dan Tantangan Alam', 'hobi-mancing-antara-relaksasi-dan-tantangan-alam', 'Mancing bukan sekadar aktivitas menangkap ikan—bagi banyak orang, mancing adalah hobi yang menawarkan ketenangan, tantangan, dan rasa pencapaian tersendiri. Duduk di pinggir sungai, danau, atau di atas perahu, dengan joran di tangan dan semilir angin yang menyapa, menciptakan suasana yang menenangkan pikiran dan melepaskan stres.\n\nNamun, mancing juga menuntut kesabaran dan strategi. Memilih umpan yang tepat, membaca pergerakan air, hingga menanti waktu yang pas untuk menarik pancing adalah bagian dari seni memancing. Ikan bukan hanya sekadar tangkapan, tapi simbol keberhasilan dari kesabaran dan ketelitian.\n\nDi era modern, mancing juga menjadi ajang silaturahmi dan kompetisi. Banyak komunitas mancing bermunculan, mulai dari skala lokal hingga nasional. Mereka berbagi tips, lokasi potensial, hingga teknik terbaru untuk menaklukkan ikan-ikan besar.', 'blogs/featured-images/01JZJ670YXMG0QFDHR2503PZPV.jpg', 1, 1, '2025-06-30 21:36:24', '2025-07-10 20:27:12', NULL);
+	(1, 'obi Mancing: Antara Relaksasi dan Tantangan Alam', 'hobi-mancing-antara-relaksasi-dan-tantangan-alam', 'Mancing bukan sekadar aktivitas menangkap ikan—bagi banyak orang, mancing adalah hobi yang menawarkan ketenangan, tantangan, dan rasa pencapaian tersendiri. Duduk di pinggir sungai, danau, atau di atas perahu, dengan joran di tangan dan semilir angin yang menyapa, menciptakan suasana yang menenangkan pikiran dan melepaskan stres.\n\nNamun, mancing juga menuntut kesabaran dan strategi. Memilih umpan yang tepat, membaca pergerakan air, hingga menanti waktu yang pas untuk menarik pancing adalah bagian dari seni memancing. Ikan bukan hanya sekadar tangkapan, tapi simbol keberhasilan dari kesabaran dan ketelitian.\n\nDi era modern, mancing juga menjadi ajang silaturahmi dan kompetisi. Banyak komunitas mancing bermunculan, mulai dari skala lokal hingga nasional. Mereka berbagi tips, lokasi potensial, hingga teknik terbaru untuk menaklukkan ikan-ikan besar.', 'blogs/featured-images/01JZJ670YXMG0QFDHR2503PZPV.jpg', 1, 1, '2025-06-30 21:36:24', '2025-07-11 01:21:28', NULL);
 
 -- Dumping structure for table adunmancing.blog_categories
 CREATE TABLE IF NOT EXISTS `blog_categories` (
@@ -182,7 +182,7 @@ CREATE TABLE IF NOT EXISTS `menus` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table adunmancing.menus: ~1 rows (approximately)
+-- Dumping data for table adunmancing.menus: ~0 rows (approximately)
 INSERT INTO `menus` (`id`, `name`, `created_at`, `updated_at`) VALUES
 	(1, 'Main Menu', '2025-07-05 22:25:44', '2025-07-05 22:25:44');
 
@@ -354,7 +354,7 @@ CREATE TABLE IF NOT EXISTS `order_items` (
   CONSTRAINT `order_items_product_variant_id_foreign` FOREIGN KEY (`product_variant_id`) REFERENCES `product_variants` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table adunmancing.order_items: ~4 rows (approximately)
+-- Dumping data for table adunmancing.order_items: ~2 rows (approximately)
 INSERT INTO `order_items` (`id`, `order_id`, `product_variant_id`, `quantity`, `price`, `created_at`, `updated_at`, `product_id`, `weight`, `product_attributes`) VALUES
 	(14, 11, NULL, 1, 10000.00, '2025-07-10 23:58:19', '2025-07-10 23:58:19', 5, NULL, NULL),
 	(15, 11, NULL, 2, 23000.00, '2025-07-10 23:58:19', '2025-07-10 23:58:19', 4, NULL, NULL);
@@ -622,7 +622,7 @@ CREATE TABLE IF NOT EXISTS `regencies` (
   CONSTRAINT `regencies_province_id_foreign` FOREIGN KEY (`province_id`) REFERENCES `provinces` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table adunmancing.regencies: ~514 rows (approximately)
+-- Dumping data for table adunmancing.regencies: ~501 rows (approximately)
 INSERT INTO `regencies` (`id`, `province_id`, `name`, `alt_name`, `latitude`, `longitude`, `destination_type`) VALUES
 	(1, 21, 'Aceh Barat', 'Aceh Barat', NULL, NULL, 'Kabupaten'),
 	(2, 21, 'Aceh Barat Daya', 'Aceh Barat Daya', NULL, NULL, 'Kabupaten'),
@@ -1200,7 +1200,7 @@ CREATE TABLE IF NOT EXISTS `user_addresses` (
   CONSTRAINT `user_addresses_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table adunmancing.user_addresses: ~1 rows (approximately)
+-- Dumping data for table adunmancing.user_addresses: ~3 rows (approximately)
 INSERT INTO `user_addresses` (`id`, `user_id`, `name`, `recipient_name`, `phone_number`, `province_id`, `province_name`, `city_id`, `city_name`, `district_id`, `postal_code`, `destination_type`, `address`, `is_default`, `created_at`, `updated_at`, `est_date`) VALUES
 	(1, 1, 'Home', 'Bagas', '0895611508388', '34', 'Sumatera Utara', '278', 'Medan', NULL, '20225', '', 'JL. ILENG TAMAN PERMATA HIJAU BLOK B. NO. 13', 0, '2025-07-09 00:04:42', '2025-07-10 18:32:58', NULL),
 	(2, 1, 'Kantor', 'Firman', '088123412345', '19', 'Maluku', '14', 'Ambon', NULL, '20255', '', 'JL. AMBON KELURAHAN MALUKU', 0, '2025-07-10 18:29:06', '2025-07-10 18:32:58', NULL),
