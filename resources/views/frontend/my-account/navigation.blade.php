@@ -40,16 +40,21 @@
         </nav> --}}
         <h6 class="pt-4 ps-2 ms-1">Manage account</h6>
         <nav class="list-group list-group-borderless">
-            <a class="list-group-item list-group-item-action d-flex align-items-center" href="{{ route('web.my-account.personal-info')}}">
+            <a class="list-group-item list-group-item-action d-flex align-items-center" 
+               href="{{ route('web.my-account.personal-info')}}"
+               data-menu="personal-info">
                 <i class="ci-user fs-base opacity-75 me-2"></i>
                 Personal info
             </a>
-            <a class="list-group-item list-group-item-action d-flex align-items-center" href="{{ route('web.my-account.addresses')}}">
+            <a class="list-group-item list-group-item-action d-flex align-items-center" 
+               href="{{ route('web.my-account.addresses')}}"
+               data-menu="addresses">
                 <i class="ci-map-pin fs-base opacity-75 me-2"></i>
                 Addresses
             </a>
-            <a class="list-group-item list-group-item-action d-flex align-items-center pe-none active"
-                href="{{ route('web.my-account')}}">
+            <a class="list-group-item list-group-item-action d-flex align-items-center"
+               href="{{ route('web.my-account')}}"
+               data-menu="orders">
                 <i class="ci-shopping-bag fs-base opacity-75 me-2"></i>
                 Orders
                 {{-- <span class="badge bg-primary rounded-pill ms-auto">1</span> --}}

@@ -60,11 +60,11 @@
                     </a>
                 </header>
 
-                <h1 class="h2 mt-auto">Welcome back</h1>
+                <h1 class="h2 mt-auto">Selamat Datang</h1>
                 <div class="nav fs-sm mb-4">
-                    Don't have an account?
+                    Belum punya akun ?
                     <a class="nav-link text-decoration-underline p-0 ms-2"
-                        href="{{ route('web.auth.register') }}">Create an account</a>
+                        href="{{ route('web.auth.register') }}">Buat akun</a>
                 </div>
 
                 <!-- Form -->
@@ -85,7 +85,7 @@
                             </label>
                         </div>
                         @error('password')
-                            <div class="invalid-tooltip bg-transparent py-0">{{ $message }}</div>
+                            <div class="d-block invalid-feedback bg-transparent py-0">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="d-flex align-items-center justify-content-between mb-4">

@@ -9,10 +9,14 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'order_number', 'status', 'total_amount', 'note', 'address', 'courier', 'courier_package', 'delivery_price', 'total_weight', 'origin', 'originType', 'destination', 'destinationType', 'postal_code', 'recepient_name', 'recepient_phone_number', 'awb', 'send_date' ];
+    protected $fillable = ['user_id', 'order_number', 'status', 'total_amount', 'note', 'address', 'courier', 'courier_package', 'delivery_price', 'total_weight', 'origin', 'originType', 'destination', 'destinationType', 'postal_code', 'recepient_name', 'recepient_phone_number', 'awb', 'send_date', 'payment_method', 'payment_method_id', 'payment_status', 'payment_proof', 'paid_at', 'payment_notes' ];
 
     protected $appends = [
         'destination_name'
+    ];
+
+    protected $casts = [
+        'paid_at' => 'datetime'
     ];
 
     public function user()
@@ -43,6 +47,34 @@ class Order extends Model
     public function products()
     {
         return $this->hasManyThrough(Product::class, OrderItem::class, 'order_id', 'id', 'id', 'product_id');
+    }
+
+    public function paymentMethod()
+    {
+        return $this->belongsTo(PaymentMethod::class);
+    }
+
+    public function getPaymentProofUrlAttribute()
+    {
+        return $this->payment_proof ? asset('storage/' . $this->payment_proof) : null;
+    }
+
+    public function isPaymentPending()
+    {
+        return $this->payment_status === 'pending';
+    }
+
+    public function isPaymentPaid()
+    {
+        return $this->payment_status === 'paid';
+    }
+
+    public function markAsPaid()
+    {
+        $this->update([
+            'payment_status' => 'paid',
+            'paid_at' => now()
+        ]);
     }
 
     public function getTotalAttribute()

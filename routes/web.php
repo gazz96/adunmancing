@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ShippingController;
+use App\Http\Controllers\UserAddressController;
 use App\Http\Controllers\WebController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,7 +27,7 @@ Route::get('/testing', function () {
 });
 
 Route::get('/login', [AuthController::class, 'login'])
-    ->name('web.auth.login');
+    ->name('login');
 Route::post('/login', [AuthController::class, 'doLogin'])
     ->name('web.auth.doLogin');
 Route::get('/register', [AuthController::class, 'register'])
@@ -80,13 +81,31 @@ Route::prefix('shipping')
 
 Route::get('/shop', [WebController::class, 'shop'])
     ->name('web.shop');
-    // CART ROUTES
+
+// CART ROUTES (available for both auth and guest users)
+Route::get('/cart', [WebController::class, 'cart'])->name('cart.index');
+Route::post('/add-to-cart', [WebController::class, 'addToCart'])->name('cart.add');
+Route::post('/cart/update', [WebController::class, 'updateCart'])->name('cart.update');
+Route::post('/cart/remove', [WebController::class, 'removeFromCart'])->name('cart.remove');
+Route::get('checkout', [WebController::class, 'checkout'])->name('web.checkout');
+Route::post('checkout', [WebController::class, 'doCheckout'])->name('web.do-checkout');
+
+// Payment routes (auth required)
 Route::middleware('auth')->group(function () {
-    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-    Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
-    Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
-    Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
-    Route::get('checkout', [WebController::class, 'checkout'])->name('web.checkout');
-    Route::post('checkout', [WebController::class, 'doCheckout'])->name('web.do-checkout');
+    Route::get('/payment/{orderId}', [WebController::class, 'payment'])->name('web.payment');
+    Route::post('/payment/{orderId}/upload-proof', [WebController::class, 'uploadPaymentProof'])->name('web.payment.upload-proof');
+});
+
+// User Address routes (auth required)
+Route::middleware('auth')->group(function () {
+    Route::post('/addresses', [UserAddressController::class, 'store'])->name('user.addresses.store');
+    Route::post('/addresses/set-default', [UserAddressController::class, 'setDefault'])->name('user.addresses.set-default');
+});
+
+// Test route for debugging provinces
+Route::get('/test-provinces', function() {
+    $controller = new App\Http\Controllers\ShippingController();
+    $request = new Illuminate\Http\Request();
+    return $controller->getProvinces($request);
 });
 

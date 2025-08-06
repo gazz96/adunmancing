@@ -1,5 +1,5 @@
-@if ($carts->count() > 0)
-    @foreach ($carts as $cart)
+@if (count($carts) > 0)
+    @foreach ($carts as $cartKey => $cart)
         <div class="d-flex align-items-center mb-3">
             <a class="position-relative flex-shrink-0" href="#">
                 @if($cart->product->compare_price)
@@ -20,17 +20,24 @@
                 </div>
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="count-input rounded-2">
-                        <button type="button" class="btn btn-icon btn-sm" data-decrement
-                            aria-label="Decrement quantity">
+                        <button type="button" class="btn btn-icon btn-sm btn-cart-decrement" 
+                                data-key="{{auth()->check() ? $cart->id : $cartKey }}" 
+                                data-product-id="{{ $cart->product_id ?? $cart->product->id }}" 
+                                data-decrement aria-label="Decrement quantity">
                             <i class="ci-minus"></i>
                         </button>
-                        <input type="number" class="form-control form-control-sm" value="{{$cart->quantity}}" readonly>
-                        <button type="button" class="btn btn-icon btn-sm" data-increment
-                            aria-label="Increment quantity">
+                        <input type="number" class="form-control form-control-sm" id="cart-qty-{{auth()->check() ? $cart->id : $cartKey }}" value="{{$cart->quantity}}" readonly>
+                        <button type="button" class="btn btn-icon btn-sm btn-cart-increment" 
+                                data-key="{{auth()->check() ? $cart->id : $cartKey }}" 
+                                data-product-id="{{ $cart->product_id ?? $cart->product->id }}" 
+                                data-increment aria-label="Increment quantity">
                             <i class="ci-plus"></i>
                         </button>
                     </div>
-                    <button type="button" class="btn-close fs-sm btn-remove_from_cart" data-key="{{$cart->id}}" data-bs-toggle="tooltip"
+                    <button type="button" class="btn-close fs-sm btn-remove_from_cart" 
+                            data-key="{{auth()->check() ? $cart->id : $cartKey }}" 
+                            data-product-id="{{ $cart->product_id ?? $cart->product->id }}" 
+                            data-bs-toggle="tooltip"
                         data-bs-custom-class="tooltip-sm" data-bs-title="Remove" aria-label="Remove from cart"></button>
                 </div>
             </div>

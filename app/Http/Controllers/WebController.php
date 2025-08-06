@@ -91,51 +91,258 @@ class WebController extends Controller
         ]);
     }
 
+    public function cart()
+    {
+        $cartItems = $this->getCartItems();
+        
+        return view('frontend.cart.list', [
+            'carts' => $cartItems
+        ]);
+    }
+
     public function addToCart(Request $request)
     {
-        $product = \App\Models\Product::findOrFail($request->input('product_id'));
+        try {
+            $request->validate([
+                'product_id' => 'required|exists:products,id'
+            ]);
 
-        if ($product->status != 1) {
-            return redirect()->back()->withErrors(['Product is not available']);
+            $product = \App\Models\Product::findOrFail($request->input('product_id'));
+
+            if ($product->status != 1) {
+                if ($request->expectsJson() || $request->ajax()) {
+                    return response()->json(['error' => 'Product is not available'], 400);
+                }
+                return redirect()->back()->withErrors(['Product is not available']);
+            }
+
+            if (Auth::check()) {
+                // Add to database cart for authenticated users
+                $cartItem = \App\Models\CartItem::where('user_id', Auth::id())
+                    ->where('product_id', $product->id)
+                    ->first();
+
+                if ($cartItem) {
+                    $cartItem->increment('quantity');
+                } else {
+                    \App\Models\CartItem::create([
+                        'user_id' => Auth::id(),
+                        'product_id' => $product->id,
+                        'quantity' => 1,
+                        'variation' => json_encode([]),
+                        'product_attributes' => null
+                    ]);
+                }
+            } else {
+                // Add to session cart for guest users
+                $cart = session()->get('cart', []);
+                $cartKey = $product->id . '_' . json_encode([]);
+                
+                if (isset($cart[$cartKey])) {
+                    $cart[$cartKey]['quantity']++;
+                } else {
+                    $cart[$cartKey] = [
+                        'product_id' => $product->id,
+                        'name' => $product->name,
+                        'quantity' => 1,
+                        'price' => $product->price,
+                        'image' => $product->featured_image,
+                        'weight' => $product->weight,
+                        'variation' => []
+                    ];
+                }
+
+                session()->put('cart', $cart);
+            }
+
+            // Return JSON response for AJAX requests
+            if ($request->expectsJson() || $request->ajax()) {
+                $cartItems = $this->getCartItems();
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Product added to cart successfully!',
+                    'cart_html' => view('frontend.cart.list', ['carts' => $cartItems])->render(),
+                    'cart_count' => $this->getCartCount()
+                ]);
+            }
+
+            return redirect()->back()->with('success', 'Product added to cart successfully!');
+
+        } catch (\Exception $e) {
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json(['error' => 'Failed to add product to cart'], 500);
+            }
+            return redirect()->back()->with('error', 'Failed to add product to cart');
         }
+    }
 
-        $cart = session()->get('cart', []);
+    public function updateCart(Request $request)
+    {
+        try {
+            $request->validate([
+                'product_id' => 'required|exists:products,id',
+                'quantity' => 'required|integer|min:1'
+            ]);
 
-        if (isset($cart[$product->id])) {
-            $cart[$product->id]['quantity']++;
+            $productId = $request->product_id;
+            $quantity = $request->quantity;
+
+            if (Auth::check()) {
+                // Update database cart
+                $cartItem = \App\Models\CartItem::where('user_id', Auth::id())
+                    ->where('product_id', $productId)
+                    ->first();
+
+                if ($cartItem) {
+                    $cartItem->update(['quantity' => $quantity]);
+                }
+            } else {
+                // Update session cart
+                $cart = session()->get('cart', []);
+                $cartKey = $productId . '_' . json_encode([]);
+
+                if (isset($cart[$cartKey])) {
+                    $cart[$cartKey]['quantity'] = $quantity;
+                    session()->put('cart', $cart);
+                }
+            }
+
+            // Return updated cart list view
+            $cartItems = $this->getCartItems();
+            
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Cart updated successfully!',
+                    'cart_html' => view('frontend.cart.list', ['carts' => $cartItems])->render(),
+                    'cart_count' => $this->getCartCount()
+                ]);
+            }
+
+            return redirect()->back()->with('success', 'Cart updated successfully!');
+
+        } catch (\Exception $e) {
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json(['error' => 'Failed to update cart'], 500);
+            }
+            return redirect()->back()->with('error', 'Failed to update cart');
+        }
+    }
+
+    public function removeFromCart(Request $request)
+    {
+        try {
+            $request->validate([
+                'product_id' => 'required|exists:products,id'
+            ]);
+
+            $productId = $request->product_id;
+
+            if (Auth::check()) {
+                // Remove from database cart
+                \App\Models\CartItem::where('user_id', Auth::id())
+                    ->where('product_id', $productId)
+                    ->delete();
+            } else {
+                // Remove from session cart
+                $cart = session()->get('cart', []);
+                $cartKey = $productId . '_' . json_encode([]);
+
+                if (isset($cart[$cartKey])) {
+                    unset($cart[$cartKey]);
+                    session()->put('cart', $cart);
+                }
+            }
+
+            // Return updated cart list view
+            $cartItems = $this->getCartItems();
+            
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Product removed from cart!',
+                    'cart_html' => view('frontend.cart.list', ['carts' => $cartItems])->render(),
+                    'cart_count' => $this->getCartCount()
+                ]);
+            }
+
+            return redirect()->back()->with('success', 'Product removed from cart!');
+
+        } catch (\Exception $e) {
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json(['error' => 'Failed to remove product from cart'], 500);
+            }
+            return redirect()->back()->with('error', 'Failed to remove product from cart');
+        }
+    }
+
+    private function getCartCount()
+    {
+        if (Auth::check()) {
+            return \App\Models\CartItem::where('user_id', Auth::id())->sum('quantity');
         } else {
-            $cart[$product->id] = [
-                'name' => $product->name,
-                'quantity' => 1,
-                'price' => $product->price,
-                'image' => $product->featured_image,
-                'weight' => $product->weight
-            ];
+            $cart = session('cart', []);
+            return array_sum(array_column($cart, 'quantity'));
         }
-
-        session()->put('cart', $cart);
-
-        return redirect()->back()->with('success', 'Product added to cart successfully!');
     }
 
     public function checkout()
     {
         $couriers = Rajaongkir::new()->getCouriers();
+        $provinces = Rajaongkir::new()->getProvinces();
+        $paymentMethods = \App\Models\PaymentMethod::active()->ordered()->get();
+        
+        // Get user addresses if authenticated, empty collection if guest
+        $addresses = Auth::check() 
+            ? UserAddress::where('user_id', Auth::id())->get() 
+            : collect([]);
+            
         return view('frontend.checkout', [
-            'addresses' => UserAddress::where('user_id', Auth::id())->get(),
-            'couriers' => $couriers
+            'addresses' => $addresses,
+            'couriers' => $couriers,
+            'provinces' => $provinces,
+            'paymentMethods' => $paymentMethods,
+            'carts' => $this->getCartItems()
         ]);
     }
 
     public function doCheckout(Request $request)
     {
-        $request->validate([
+        // Base validation
+        $validationRules = [
             'note' => 'sometimes',
-            'courier' => 'required',
-            'courier_package' => 'required'
-        ]);
+            'courier' => 'sometimes',
+            'courier_package' => 'sometimes',
+            'shipping_package' => 'required|string',
+            'shipping_cost' => 'required|numeric|min:0',
+            'payment_method_id' => 'required|exists:payment_methods,id'
+        ];
+        
+        // Add address validation based on user authentication
+        if (Auth::check()) {
+            $validationRules['address_id'] = 'required|exists:user_addresses,id';
+        } else {
+            // Guest checkout validation - matching user_addresses table structure
+            $validationRules['name'] = 'required|string|max:150';
+            $validationRules['recipient_name'] = 'required|string|max:100';
+            $validationRules['phone_number'] = 'required|string|max:20';
+            $validationRules['address'] = 'required|string';
+            $validationRules['city_name'] = 'required|string|max:100';
+            $validationRules['province_name'] = 'required|string|max:100';
+            $validationRules['postal_code'] = 'required|string|max:10';
+            $validationRules['destination_type'] = 'required|string|max:100';
+        }
+        
+        $request->validate($validationRules);
 
-        $deliveryPrice = explode('|', $request->courier_package)[2];
+        // Parse shipping package data - format: "courier-service"
+        $shippingPackageParts = explode('-', $request->shipping_package);
+        $courier = $shippingPackageParts[0] ?? '';
+        $courierService = $shippingPackageParts[1] ?? '';
+        $deliveryPrice = $request->shipping_cost;
+
+        // Get payment method
+        $paymentMethod = \App\Models\PaymentMethod::findOrFail($request->payment_method_id);
 
 
         DB::beginTransaction();
@@ -168,9 +375,26 @@ class WebController extends Controller
                 $total_weight = 1000;
             }
 
-            $address = UserAddress::where('user_id', Auth::id())
-                ->where('is_default', 1)
-                ->first();
+            // Get address based on user authentication
+            if (Auth::check()) {
+                $address = UserAddress::find($request->address_id);
+                if (!$address) {
+                    return back()->with('error', 'Selected address not found.');
+                }
+            } else {
+                // For guest checkout, create temporary address data
+                $address = (object) [
+                    'name' => $request->name,
+                    'recipient_name' => $request->recipient_name,
+                    'phone_number' => $request->phone_number,
+                    'address' => $request->address,
+                    'city_name' => $request->city_name,
+                    'province_name' => $request->province_name,
+                    'postal_code' => $request->postal_code,
+                    'destination_type' => $request->destination_type,
+                    'regency_id' => null // Will need to be handled separately for guest
+                ];
+            }
 
             $originId  = Option::getByKey('store_regency_id');
             $origin = Regency::find($originId);
@@ -182,12 +406,15 @@ class WebController extends Controller
                 'total_amount' => $total,
                 'status' => 'pending',
                 'note' => $request->note,
-                'courier' => $request->courier,
-                'courier_package' => $request->courier_package,
+                'courier' => $courier,
+                'courier_package' => $courierService,
                 'delivery_price' => $deliveryPrice,
                 'origin' => $originId,
                 'originType' => 'city',
                 'destination' => $address->city_id,
+                'payment_method' => $paymentMethod->type,
+                'payment_method_id' => $paymentMethod->id,
+                'payment_status' => 'pending',
                 'destinationType' => 'city',
                 'total_weight' => $total_weight,
                 'postal_code' => $address->postal_code,
@@ -221,8 +448,13 @@ class WebController extends Controller
 
             DB::commit();
 
-            return redirect()->route('web.my-account', $order->id)
-                ->with('success', 'Checkout berhasil!');
+            // Redirect based on payment method type
+            if ($paymentMethod->type === 'bank_transfer') {
+                return redirect()->route('web.payment', $order->id);
+            } else {
+                return redirect()->route('web.my-account', $order->id)
+                    ->with('success', 'Checkout berhasil!');
+            }
         } catch (\Exception $e) {
             dd($e->getMessage());
             DB::rollBack();
@@ -257,6 +489,35 @@ class WebController extends Controller
                 ];
             })->toArray();
     }
+    
+    private function getCartItems()
+    {
+        if (Auth::check()) {
+            // Get cart from database with product relationships
+            return \App\Models\CartItem::where('user_id', Auth::id())
+                ->with('product')
+                ->get();
+        } else {
+            // Get cart from session and load products
+            $cart = session('cart', []);
+            $cartItems = collect([]);
+            
+            foreach ($cart as $item) {
+                $product = \App\Models\Product::find($item['product_id']);
+                if ($product) {
+                    $cartItems->push((object) [
+                        'product_id' => $item['product_id'],
+                        'quantity' => $item['quantity'],
+                        'variation' => $item['variation'] ?? null,
+                        'product_attributes' => $item['product_attributes'] ?? null,
+                        'product' => $product
+                    ]);
+                }
+            }
+            
+            return $cartItems;
+        }
+    }
 
     public function thankyou()
     {
@@ -267,26 +528,23 @@ class WebController extends Controller
     {
         return view('frontend.my-account.index', [
             'user' => auth()->user(),
-            'orders' => Order::where('user_id', Auth::id())
+            'orders' => Order::with(['paymentMethod', 'items.product'])
+                ->where('user_id', Auth::id())
                 ->when($request->status, function($query, $status){
                     return $query->where('status', $status);
                 })
+                ->orderBy('created_at', 'desc')
                 ->get()
         ]);
     }
 
     public function accountAddresses()
     {
-
-        $cities = Cache::remember('regencies', 86400, function () {
-            $response = \App\Services\Rajaongkir::new()->getRegencies(); 
-            $data = $response->getData();
-            $cities = collect($data->rajaongkir->results ?? []);
-            return $cities;
-        });
+        $provinces = Rajaongkir::new()->getProvinces();
+        
         return view('frontend.my-account.addresses',[
             'addresses' => UserAddress::where('user_id', Auth::id())->get(),
-            'cities' => $cities
+            'provinces' => $provinces
         ]);
     }
 
@@ -342,38 +600,66 @@ class WebController extends Controller
 
     public function savePersonalInfo(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|max:100',
-            'birth_date' => 'required|date',
-            'phone_number' => 'required|max:100'
-        ]);
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:100|min:2',
+                'birth_date' => 'required|date|before:today',
+                'phone_number' => 'required|string|max:20|min:10'
+            ], [
+                'name.required' => 'Nama lengkap wajib diisi',
+                'name.min' => 'Nama lengkap minimal 2 karakter',
+                'name.max' => 'Nama lengkap maksimal 100 karakter',
+                'birth_date.required' => 'Tanggal lahir wajib diisi',
+                'birth_date.date' => 'Format tanggal lahir tidak valid',
+                'birth_date.before' => 'Tanggal lahir harus sebelum hari ini',
+                'phone_number.required' => 'Nomor telepon wajib diisi',
+                'phone_number.min' => 'Nomor telepon minimal 10 karakter',
+                'phone_number.max' => 'Nomor telepon maksimal 20 karakter'
+            ]);
 
-        Auth::user()
-            ->update($validated);
-
-        return back()
-            ->with('success', 'Profile berhasil diperbarui');
+            Auth::user()->update($validated);
+            
+            return back()->with('success', 'Profil berhasil diperbarui');
+            
+        } catch (\Exception $e) {
+            return back()->with('error', 'Terjadi kesalahan saat menyimpan data. Silakan coba lagi.');
+        }
     }
 
     public function updatePassword(Request $request)
     {
-        $validated = $request->validate([
-            'current_password' => 'required',
-            'new_password' => 'required'
-        ]);
+        try {
+            $validated = $request->validate([
+                'current_password' => 'required|string',
+                'new_password' => 'required|string|min:6|confirmed'
+            ], [
+                'current_password.required' => 'Password lama wajib diisi',
+                'new_password.required' => 'Password baru wajib diisi',
+                'new_password.min' => 'Password baru minimal 6 karakter',
+                'new_password.confirmed' => 'Konfirmasi password tidak cocok'
+            ]);
 
-        $user = Auth::user();
+            $user = Auth::user();
 
-        // Cek apakah password lama cocok
-        if (!Hash::check($request->current_password, $user->password)) {
-            return back()->withErrors(['current_password' => 'Password lama salah']);
+            // Cek apakah password lama cocok
+            if (!Hash::check($request->current_password, $user->password)) {
+                return back()->withErrors(['current_password' => 'Password lama tidak cocok']);
+            }
+
+            // Cek apakah password baru sama dengan password lama
+            if (Hash::check($request->new_password, $user->password)) {
+                return back()->withErrors(['new_password' => 'Password baru harus berbeda dengan password lama']);
+            }
+
+            $user->update([
+                'password' => Hash::make($validated['new_password'])
+            ]);
+
+            return back()->with('success', 'Password berhasil diperbarui');
+            
+        } catch (\Exception $e) {
+            return back()->with('error', 'Terjadi kesalahan saat mengubah password. Silakan coba lagi.');
         }
-
-        $user->update([
-            'password' => Hash::make($validated['new_password'])
-        ]);
-
-        return back()->with('success', 'Password berhasil diperbarui');
 
 
     }
@@ -424,6 +710,53 @@ class WebController extends Controller
     public function contact()
     {
         return view('frontend.contact');
+    }
+
+    public function payment($orderId)
+    {
+        $order = Order::with('paymentMethod', 'items.product')->findOrFail($orderId);
+        
+        // Ensure user has access to this order
+        if (!Auth::check() || $order->user_id !== Auth::id()) {
+            return redirect()->route('web.shop')->with('error', 'Order not found.');
+        }
+        
+        return view('frontend.payment', compact('order'));
+    }
+
+    public function uploadPaymentProof(Request $request, $orderId)
+    {
+        $order = Order::findOrFail($orderId);
+        
+        // Ensure user has access to this order
+        if (!Auth::check() || $order->user_id !== Auth::id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+        
+        $request->validate([
+            'payment_proof' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'payment_notes' => 'nullable|string|max:500'
+        ]);
+        
+        try {
+            // Store the uploaded file
+            $file = $request->file('payment_proof');
+            $fileName = 'payment_proof_' . $order->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $filePath = $file->storeAs('payment_proofs', $fileName, 'public');
+            
+            // Update order with payment proof
+            $order->update([
+                'payment_proof' => $filePath,
+                'payment_notes' => $request->payment_notes,
+                'payment_status' => 'verification' // Change status to verification pending
+            ]);
+            
+            return redirect()->route('web.my-account')
+                ->with('success', 'Bukti pembayaran berhasil diupload. Pesanan Anda sedang diverifikasi.');
+                
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal mengupload bukti pembayaran: ' . $e->getMessage());
+        }
     }
 }
 

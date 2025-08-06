@@ -25,10 +25,12 @@ class CartController extends Controller
                 if ($product) {
                     $carts[] = (object)[
                         'key' => $key,
+                        'id' => $item['product_id'],
                         'product' => $product,
                         'variation' => $item['variation'],
                         'quantity' => $item['quantity'],
-                        'product_attributes' => $item['product_attributes']
+                        'product_attributes' => $item['product_attributes'],
+                        'attribute_labels' => $item['atribute_labels'] ?? ''
                     ];
                 }
             }
@@ -93,6 +95,7 @@ class CartController extends Controller
                 $cart[$key]['quantity'] += $quantity;
             } else {
                 $cart[$key] = [
+                    'id' => $productId,
                     'product_id' => $productId,
                     'variation' => $variation,
                     'quantity' => $quantity,
@@ -148,6 +151,7 @@ class CartController extends Controller
         } else {
             $cart = Session::get('cart', []);
             unset($cart[$key]);
+            
             Session::put('cart', $cart);
         }
 

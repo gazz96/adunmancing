@@ -81,16 +81,32 @@
                                         
                                         <div class="col-sm-6">
                                             <div class="position-relative">
-                                                <label class="form-label">City</label>
-                                                <select name="city_id" class="form-select iCityId"
-                                                    data-select='{"searchEnabled": true}' id="iCityId"
-                                                    aria-label="Select city" required>
-                                                    @foreach ($cities as $city)
-                                                        <option value="{{ $city->city_id }}"
-                                                            data-option='{{ json_encode($city) }}'
-                                                            {{ $city->city_id == $address->city_id ? 'selected' : '' }}>
-                                                            {{ $city->province }} - {{ $city->city_name }}</option>
+                                                <label class="form-label">Province</label>
+                                                <select name="province_id" class="form-select address-province-select" 
+                                                    data-address-id="{{ $address->id }}"
+                                                    aria-label="Select province" required>
+                                                    <option value="">Pilih Provinsi</option>
+                                                    @foreach($provinces as $province)
+                                                        <option value="{{ $province['id'] }}" 
+                                                                data-name="{{ $province['name'] }}"
+                                                                {{ $address->province_id == $province['id'] ? 'selected' : '' }}>
+                                                            {{ $province['name'] }}
+                                                        </option>
                                                     @endforeach
+                                                </select>
+                                                <div class="invalid-feedback">Please select your province!</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="position-relative">
+                                                <label class="form-label">City</label>
+                                                <select name="city_id" class="form-select address-city-select" 
+                                                    data-address-id="{{ $address->id }}"
+                                                    aria-label="Select city" required>
+                                                    <option value="">Pilih Kota/Kabupaten</option>
+                                                    @if($address->city_id)
+                                                        <option value="{{ $address->city_id }}" selected>{{ $address->city_name }}</option>
+                                                    @endif
                                                 </select>
                                                 <div class="invalid-feedback">Please select your city!</div>
                                             </div>
@@ -197,12 +213,26 @@
                         </div>
                         <div class="col-sm-6">
                             <div class="position-relative">
-                                <label class="form-label">City</label>
-                                <select name="city_id" class="form-select iCityId" data-select='{"searchEnabled":true}' aria-label="Select city" required>
-                                    @foreach ($cities as $city)
-                                        <option value="{{ $city->city_id }}" data-option='{{ json_encode($city) }}'>
-                                            {{ $city->province }} - {{ $city->city_name }}</option>
+                                <label class="form-label">Province</label>
+                                <select name="province_id" class="form-select new-address-province-select" 
+                                    aria-label="Select province" required>
+                                    <option value="">Pilih Provinsi</option>
+                                    @foreach($provinces as $province)
+                                        <option value="{{ $province['id'] }}" 
+                                                data-name="{{ $province['name'] }}">
+                                            {{ $province['name'] }}
+                                        </option>
                                     @endforeach
+                                </select>
+                                <div class="invalid-feedback">Please select your province!</div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="position-relative">
+                                <label class="form-label">City</label>
+                                <select name="city_id" class="form-select new-address-city-select" 
+                                    aria-label="Select city" required disabled>
+                                    <option value="">Pilih Kota/Kabupaten</option>
                                 </select>
                                 <div class="invalid-feedback">Please select your city!</div>
                             </div>
@@ -246,27 +276,117 @@
 
 
     <script>
-        let cities = []
-        async function initPage() {
-            //const response = await App.Models.Shipping.getRegencies();
-            // cities = response?.rajaongkir?.results ?? []
-            //await renderCityOptions(cities)
-        }
-
-
-        $(document).on('change', '.iCityId', async function(e) {
-            e.preventDefault();
-            let cityIdToFind = $(this).val();
-            const city = $(this).find('option:selected').data('option');
-            console.log('city', city);
-            let form = $(this).closest('form');
-            form.find('[name=city_id]').val(city.city_id);
-            form.find('[name=province_id]').val(city.province_id);
-            form.find('[name=province_name]').val(city.province);
-            form.find('[name=city_name]').val(city.city_name)
-
-        })
-
-        initPage();
+        $(document).ready(function() {
+            // Handle province change for edit address forms
+            $(document).on('change', '.address-province-select', function() {
+                const provinceId = $(this).val();
+                const provinceName = $(this).find('option:selected').data('name');
+                const addressId = $(this).data('address-id');
+                const citySelect = $(`.address-city-select[data-address-id="${addressId}"]`);
+                const form = $(this).closest('form');
+                
+                // Update hidden province name field
+                form.find('[name=province_name]').val(provinceName);
+                
+                if (!provinceId) {
+                    citySelect.prop('disabled', true).html('<option value="">Pilih Kota/Kabupaten</option>');
+                    return;
+                }
+                
+                // Show loading state
+                citySelect.prop('disabled', true).html('<option value="">Loading kota...</option>');
+                
+                // Fetch cities for selected province
+                $.ajax({
+                    url: '{{ route("web.shipping.regencies") }}',
+                    type: 'GET',
+                    data: { province_id: provinceId },
+                    success: function(response) {
+                        citySelect.html('<option value="">Pilih Kota/Kabupaten</option>');
+                        
+                        if ($.isArray(response) && response.length > 0) {
+                            $.each(response, function(index, city) {
+                                const cityId = city.id || city.city_id;
+                                const cityName = city.name || city.city_name;
+                                const cityType = city.type || '';
+                                const displayName = cityType ? cityType + ' ' + cityName : cityName;
+                                
+                                citySelect.append(`<option value="${cityId}" data-name="${cityName}">${displayName}</option>`);
+                            });
+                            citySelect.prop('disabled', false);
+                        } else {
+                            citySelect.html('<option value="">Tidak ada data kota</option>');
+                        }
+                    },
+                    error: function() {
+                        citySelect.html('<option value="">Error loading cities</option>');
+                    }
+                });
+            });
+            
+            // Handle city change for edit address forms
+            $(document).on('change', '.address-city-select', function() {
+                const cityName = $(this).find('option:selected').data('name');
+                const form = $(this).closest('form');
+                
+                // Update hidden city name field
+                form.find('[name=city_name]').val(cityName);
+            });
+            
+            // Handle province change for new address modal
+            $(document).on('change', '.new-address-province-select', function() {
+                const provinceId = $(this).val();
+                const provinceName = $(this).find('option:selected').data('name');
+                const citySelect = $('.new-address-city-select');
+                const form = $(this).closest('form');
+                
+                // Update hidden province name field
+                form.find('[name=province_name]').val(provinceName);
+                
+                if (!provinceId) {
+                    citySelect.prop('disabled', true).html('<option value="">Pilih Kota/Kabupaten</option>');
+                    return;
+                }
+                
+                // Show loading state
+                citySelect.prop('disabled', true).html('<option value="">Loading kota...</option>');
+                
+                // Fetch cities for selected province
+                $.ajax({
+                    url: '{{ route("web.shipping.regencies") }}',
+                    type: 'GET',
+                    data: { province_id: provinceId },
+                    success: function(response) {
+                        citySelect.html('<option value="">Pilih Kota/Kabupaten</option>');
+                        
+                        if ($.isArray(response) && response.length > 0) {
+                            $.each(response, function(index, city) {
+                                const cityId = city.id || city.city_id;
+                                const cityName = city.name || city.city_name;
+                                const cityType = city.type || '';
+                                const displayName = cityType ? cityType + ' ' + cityName : cityName;
+                                
+                                citySelect.append(`<option value="${cityId}" data-name="${cityName}">${displayName}</option>`);
+                            });
+                            citySelect.prop('disabled', false);
+                        } else {
+                            citySelect.html('<option value="">Tidak ada data kota</option>');
+                        }
+                    },
+                    error: function() {
+                        citySelect.html('<option value="">Error loading cities</option>');
+                    }
+                });
+            });
+            
+            // Handle city change for new address modal
+            $(document).on('change', '.new-address-city-select', function() {
+                const cityName = $(this).find('option:selected').data('name');
+                const form = $(this).closest('form');
+                
+                // Update hidden city name field
+                form.find('[name=city_name]').val(cityName);
+            });
+        });
     </script>
 @endsection

@@ -58,10 +58,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
-
             @include('frontend.cart.list')
-
-            
         </div>
         <div class="offcanvas-header flex-column align-items-start">
             
@@ -94,7 +91,7 @@
             @else
                 <li class="animate-underline">
                     <a class="nav-link animate-target fs-xs p-0"
-                        href="{{ route('web.auth.login') }}">Login/Register</a>
+                        href="{{ route('login') }}">Login/Register</a>
                 </li>
             @endif
         </ul>
@@ -360,6 +357,7 @@
                 <!-- Cart button -->
                 <button type="button"
                     class="btn btn-icon fs-lg btn-outline-secondary border-0 rounded-circle animate-scale me-2"
+                    id="btnShoppingCart"
                     data-bs-toggle="offcanvas" data-bs-target="#shoppingCart" aria-controls="shoppingCart"
                     aria-label="Shopping cart">
                     <i class="ci-shopping-cart animate-target"></i>
@@ -633,8 +631,25 @@
                 return await $.ajax({
                     url: "{{route('cart.remove')}}",
                     method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
                     data:{
-                        key: key
+                        product_id: key
+                    }
+                })
+            }
+
+            const updateCartQuantity = async(productId, quantity) => {
+                return await $.ajax({
+                    url: "{{route('cart.update')}}",
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    data: {
+                        product_id: productId,
+                        quantity: quantity
                     }
                 })
             }
@@ -677,29 +692,292 @@
 
             $(document).on('click', '.btn-remove_from_cart', async function(e){
                 e.preventDefault();
-                await removeCart($(this).data('key'));
-                await refreshCart();
+                const productId = $(this).data('product-id') || $(this).data('key');
+                
+                // Show confirmation dialog
+                const result = await Swal.fire({
+                    title: 'Remove Item?',
+                    text: 'Are you sure you want to remove this item from cart?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, remove it!'
+                });
+                
+                if (result.isConfirmed) {
+                    // Show loading on button
+                    const originalContent = $(this).html();
+                    $(this).prop('disabled', true).html('<div class="spinner-border spinner-border-sm" role="status"></div>');
+                    
+                    try {
+                        // Show loading skeleton
+                        showCartLoading();
+                        
+                        await removeCart(productId);
+                        await refreshCart();
 
-                await Swal.fire({
-                    icon: 'error',
-                    title: 'Information',
-                    text: 'Product deleted from cart'
-                })
+                        // Show success toast
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            timerProgressBar: true
+                        });
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Item removed from cart'
+                        });
+                        
+                    } catch (error) {
+                        console.error('Error removing from cart:', error);
+                        await refreshCart(); // Refresh to restore original state
+                        
+                        await Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Failed to remove item from cart'
+                        });
+                        
+                        // Restore button
+                        $(this).prop('disabled', false).html(originalContent);
+                    }
+                }
 
             })
 
+            // Function to show cart loading skeleton
+            const showCartLoading = () => {
+                const cartBody = $('#shoppingCart').find('.offcanvas-body');
+                cartBody.html(`
+                    <div class="cart-loading-skeleton">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="skeleton-image me-3"></div>
+                            <div class="flex-grow-1">
+                                <div class="skeleton-line mb-2"></div>
+                                <div class="skeleton-line-small mb-2"></div>
+                                <div class="d-flex justify-content-between">
+                                    <div class="skeleton-counter"></div>
+                                    <div class="skeleton-remove"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="skeleton-image me-3"></div>
+                            <div class="flex-grow-1">
+                                <div class="skeleton-line mb-2"></div>
+                                <div class="skeleton-line-small mb-2"></div>
+                                <div class="d-flex justify-content-between">
+                                    <div class="skeleton-counter"></div>
+                                    <div class="skeleton-remove"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <style>
+                        .cart-loading-skeleton {
+                            animation: pulse 1.5s ease-in-out infinite;
+                        }
+                        .skeleton-image {
+                            width: 110px;
+                            height: 70px;
+                            background: #f0f0f0;
+                            border-radius: 8px;
+                        }
+                        .skeleton-line {
+                            height: 16px;
+                            background: #f0f0f0;
+                            border-radius: 4px;
+                            width: 70%;
+                        }
+                        .skeleton-line-small {
+                            height: 12px;
+                            background: #f0f0f0;
+                            border-radius: 4px;
+                            width: 50%;
+                        }
+                        .skeleton-counter {
+                            height: 32px;
+                            width: 120px;
+                            background: #f0f0f0;
+                            border-radius: 4px;
+                        }
+                        .skeleton-remove {
+                            height: 24px;
+                            width: 24px;
+                            background: #f0f0f0;
+                            border-radius: 50%;
+                        }
+                        @keyframes pulse {
+                            0%, 100% { opacity: 1; }
+                            50% { opacity: 0.5; }
+                        }
+                    </style>
+                `);
+            };
+
+            // Cart increment button handler
+            $(document).on('click', '.btn-cart-increment', async function(e) {
+                e.preventDefault();
+                const cartKey = $(this).data('key');
+                const productId = $(this).data('product-id');
+                const qtyInput = $(`#cart-qty-${cartKey}`);
+                const currentQty = parseInt(qtyInput.val()) || 0;
+                const newQty = currentQty + 1;
+                
+                // Disable button and show loading state
+                $(this).prop('disabled', true).html('<div class="spinner-border spinner-border-sm" role="status"></div>');
+                
+                try {
+                    // Show loading skeleton
+                    showCartLoading();
+                    
+                    await updateCartQuantity(productId, newQty);
+                    await refreshCart();
+                    
+                    // Show success message briefly
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 1000,
+                        timerProgressBar: true
+                    });
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Quantity updated'
+                    });
+                    
+                } catch (error) {
+                    console.error('Error incrementing cart:', error);
+                    await refreshCart(); // Refresh to restore original state
+                    await Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to update cart'
+                    });
+                }
+            });
+
+            // Cart decrement button handler
+            $(document).on('click', '.btn-cart-decrement', async function(e) {
+                e.preventDefault();
+                const cartKey = $(this).data('key');
+                const productId = $(this).data('product-id');
+                const qtyInput = $(`#cart-qty-${cartKey}`);
+                const currentQty = parseInt(qtyInput.val()) || 0;
+                const newQty = Math.max(1, currentQty - 1); // Minimum quantity is 1
+                
+                // Don't process if already at minimum
+                if (currentQty <= 1) {
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    Toast.fire({
+                        icon: 'warning',
+                        title: 'Minimum quantity is 1'
+                    });
+                    return;
+                }
+                
+                // Disable button and show loading state
+                $(this).prop('disabled', true).html('<div class="spinner-border spinner-border-sm" role="status"></div>');
+                
+                try {
+                    // Show loading skeleton
+                    showCartLoading();
+                    
+                    await updateCartQuantity(productId, newQty);
+                    await refreshCart();
+                    
+                    // Show success message briefly
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 1000,
+                        timerProgressBar: true
+                    });
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Quantity updated'
+                    });
+                    
+                } catch (error) {
+                    console.error('Error decrementing cart:', error);
+                    await refreshCart(); // Refresh to restore original state
+                    await Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to update cart'
+                    });
+                }
+            });
+
+            // $('#btnShoppingCart').on('click', function () {
+            //     console.log('Opening shopping cart');
+            //     var myOffcanvas = new bootstrap.Offcanvas($('#shoppingCart')[0]);
+            //     myOffcanvas.show();
+            // });
+
             $(document).on('click', '.btn-single_add_to_cart', async function(e){
                 e.preventDefault();
-                await addToCart({
-                    product_id: $(this).data('key')
-                })
-                await refreshCart();
+                
+                // Show loading on button
+                const originalContent = $(this).html();
+                $(this).prop('disabled', true).html('<div class="spinner-border spinner-border-sm me-2" role="status"></div>Adding...');
+                
+                try {
+                    await addToCart({
+                        product_id: $(this).data('key')
+                    })
+                    await refreshCart();
 
-                await Swal.fire({
-                    icon: 'success',
-                    title: 'Information',
-                    text: 'Product added to cart'
-                })
+                    // Show success toast
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true
+                    });
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Product added to cart'
+                    });
+
+                }catch (error) {
+                    console.error('Error adding to cart:', error.status);
+                    if(error.status == 401) {
+                        const result = await Swal.fire({
+                            icon: 'error',
+                            title: 'Login Required',
+                            text: 'You must login to add product to cart',
+                            showCancelButton: true,
+                            confirmButtonText: 'Login Now',
+                            cancelButtonText: 'Cancel'
+                        })
+
+                        if(result.isConfirmed) {
+                            window.location.href = "{{ route('login') }}";
+                        }
+                        return;
+                    }else {
+                        const result = await Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Failed to add product to cart'
+                        })
+                        return;
+                    }
+                } finally {
+                    // Restore button state
+                    $(this).prop('disabled', false).html(originalContent);
+                }
             })
     </script>
 
@@ -711,13 +989,9 @@
             let html = `<option value=''>Pilih</option>`;
             $('#iCourierPackage').html('');
 
-            (costs ?? []).map((value, index) => {
-                value.costs.map((cost, index) => {
-                    cost.cost.map((price, index) => {
-                        console.log('price', price);
-                         html += `<option value="${value.code}|${cost.service}|${price.value}|${price.etd}">Harga ${price.value} | ETD ${price.etd}</option>`;
-                    })
-                }) 
+            (costs ?? []).map((cost, index) => {
+                html += `<option value="${cost.code}|${cost.service}|${cost.cost}|${cost.etd}">Harga ${cost.cost} | ETD ${cost.etd}</option>`;
+                
             })
 
             $('#iCourierPackage').html(html)
@@ -731,9 +1005,17 @@
                 courier: value
             });
 
-            console.log('costs', costs);
+            $('#delivery-price').html('');
+            $('#iCourierPackage').html('<option value="">Pilih</option>');
 
-            await renderCosts(costs?.results);
+            let cartPrice = $('#cart-price').html();
+            var parts = value.split('|');
+            var price = App.Helper.sumPrices(parts[2]); // index ke-2 = harga
+            let total = App.Helper.sumPrices(price, cartPrice);
+
+            $('#total-price').html(total);
+
+            await renderCosts(costs.data.data);
         })
 
         $(document).on('change', '#iCourierPackage', async function(e){
@@ -744,8 +1026,6 @@
                 var parts = value.split('|');
                 var price = App.Helper.sumPrices(parts[2]); // index ke-2 = harga
                 let total = App.Helper.sumPrices(price, cartPrice);
-
-                console.log('cartPrice', cartPrice);
 
                 $('#delivery-price').html(price);
                 $('#total-price').html(total);
@@ -758,6 +1038,38 @@
 
 
 
+    </script>
+
+    <script>
+        // Dynamic menu active state for my-account pages
+        document.addEventListener('DOMContentLoaded', function() {
+            // Only run on my-account pages
+            if (window.location.pathname.includes('/my-account')) {
+                const currentPath = window.location.pathname;
+                const menuItems = document.querySelectorAll('[data-menu]');
+                
+                // Remove active class from all menu items
+                menuItems.forEach(item => {
+                    item.classList.remove('active', 'pe-none');
+                });
+                
+                // Set active menu based on current path
+                let activeMenuItem = null;
+                
+                if (currentPath === '/my-account/personal-info') {
+                    activeMenuItem = document.querySelector('[data-menu="personal-info"]');
+                } else if (currentPath === '/my-account/addresses') {
+                    activeMenuItem = document.querySelector('[data-menu="addresses"]');
+                } else if (currentPath === '/my-account' || currentPath === '/my-account/') {
+                    activeMenuItem = document.querySelector('[data-menu="orders"]');
+                }
+                
+                // Add active class to the determined menu item
+                if (activeMenuItem) {
+                    activeMenuItem.classList.add('active', 'pe-none');
+                }
+            }
+        });
     </script>
 
     @yield('footer_scripts')

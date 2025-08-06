@@ -6,6 +6,7 @@ use App\Models\CartItem;
 use App\Models\Menu;
 use App\Models\Option;
 use App\Models\Product;
+use App\Services\Rajaongkir;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
@@ -48,13 +49,17 @@ class AppServiceProvider extends ServiceProvider
             } else {
                 $sessionCart = Session::get('cart', []); 
                 foreach ($sessionCart as $key => $item) {
+                    if(!isset($item['product_id'])) {
+                        continue;
+                    }
                     $product = Product::find($item['product_id']);
                     if ($product) {
-                        $carts[] = (object)[
-                            'key' => $key,
+                        $carts[$key] = (object)[
+                            'id' => $item['product_id'],
                             'product' => $product,
                             'variation' => $item['variation'],
                             'quantity' => $item['quantity'],
+                            'attribute_labels' => $item['atribute_labels'] ?? ''
                         ];
                     }
                 }
@@ -62,7 +67,12 @@ class AppServiceProvider extends ServiceProvider
 
             $carts = collect($carts);
             View::share('carts', $carts);
+
+            $provinces = Rajaongkir::new()->getProvinces();
+            View::share('provinces', $provinces);
         });
+
+       
         
 
 

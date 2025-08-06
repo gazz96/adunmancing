@@ -266,7 +266,7 @@
                         </a>
                         
                         <h3 class="mb-2">
-                            <a class="d-block fs-sm fw-medium text-truncate" href="shop-product-furniture.html">
+                            <a class="d-block fs-sm fw-medium text-truncate" href="{{ $product->permalink }}">
                                 <span class="animate-target">{{$product->name}}</span>
                             </a>
                         </h3>

@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Http;
 
 class ShippingController extends Controller
 {
-    //
+    //https://api.collaborator.komerce.id/
 
     protected $rajaOngkirApiKey = "c598aad3a535dd0da4da14fb4d8b3508";
 
@@ -29,13 +29,15 @@ class ShippingController extends Controller
 
         $data = Cache::remember($cacheKey, $expiresAt, function () use ($provinceId) {
             $response = Http::withHeaders([
-                'key' => $this->rajaOngkirApiKey,
-            ])->get('https://pro.rajaongkir.com/api/province', [
+                'Key' => $this->rajaOngkirApiKey,
+            ])->get('https://rajaongkir.komerce.id/api/v1/destination/province', [
                 'id' => $provinceId,
             ]);
 
             if ($response->successful()) {
-                return $response->json();
+                $result = $response->json();
+                // Return only the provinces data array
+                return $result['data'] ?? [];
             }
 
             // Optional: throw error or return null if API fails
@@ -47,107 +49,133 @@ class ShippingController extends Controller
 
     public function getRegencies(Request $request)
     {
-
-        $curl = curl_init();
-
         $cityId = $request->cityId;
-        $provinceId = $request->provinceId;
+        $provinceId = $request->province_id ?? $request->provinceId;
         $cacheKey = 'rajaongkir_city_' . $cityId . '_' . $provinceId . '_' . now()->format('Y_m_d'); // unique key per day
 
         // Set expiration to midnight
         $expiresAt = Carbon::tomorrow();
 
         $data = Cache::remember($cacheKey, $expiresAt, function () use ($provinceId, $cityId) {
+            $url = 'https://rajaongkir.komerce.id/api/v1/destination/city';
+            
+            // If specific city requested, use ID in URL path
+            if ($cityId) {
+                $url .= '/' . $cityId;
+            } else if ($provinceId) {
+                // If only province, use province ID in URL path
+                $url .= '/' . $provinceId;
+            }
+            
             $response = Http::withHeaders([
-                'key' => $this->rajaOngkirApiKey,
-            ])->get('https://pro.rajaongkir.com/api/city', [
-                'province' => $provinceId,
-                'id' => $cityId
-            ]);
+                'Key' => $this->rajaOngkirApiKey,
+            ])->get($url);
 
             if ($response->successful()) {
-                return $response->json();
+                $result = $response->json();
+                // Return only the cities data array
+                return $result['data'] ?? [];
             }
 
             // Optional: throw error or return null if API fails
             throw new \Exception('Failed to fetch data from RajaOngkir: ' . $response->body());
         });
 
-        $data = collect($data['rajaongkir']['results']);
-
         return response()->json($data);
     }
 
     public function getCost(Request $request)
     {
- 
-        // $response = Http::asForm()->withHeaders([
-        //     'key' => $this->rajaOngkirApiKey, // pastikan ini ada di .env
-        // ])->post('https://pro.rajaongkir.com/api/cost', [
-        //     'origin' => 501,
-        //     'originType' => 'city',
-        //     'destination' => 574,
-        //     'destinationType' => 'subdistrict',
-        //     'weight' => 1700,
-        //     'courier' => 'jne',
-        // ]);
-
-        // $data = $response->json(); // hasil respons JSON
-
-        // return response()->json($data); // atau sesuai kebutuhan
         $request->validate([
-            //'destination' => 'required|numeric',
-            //'weight' => 'required|numeric',
-            'courier' => 'required|string',
+            'courier' => 'required|string', // Optional karena kita akan kirim semua courier
         ]);
 
-        $originId  = Option::getByKey('store_regency_id');
-        $origin = Regency::find($originId);
+        $originId = Option::getByKey('store_regency_id');
+        
+        // Ambil alamat tujuan berdasarkan user yang login
         $destination = UserAddress::where('user_id', Auth::id())
             ->where('is_default', 1)
             ->first();
 
+        if (!$destination) {
+            return response()->json(['error' => 'Alamat tujuan tidak ditemukan'], 400);
+        }
+
+        // Hitung total berat dari cart
         $cartItems = collect(Auth::check()
             ? $this->getCartFromDB(Auth::id())
             : $this->getCartFromSession());
 
         if (count($cartItems) === 0) {
-            return back()->with('error', 'Cart is empty.');
+            return response()->json(['error' => 'Cart kosong'], 400);
         }
 
         $total_weight = 0;
-
-        foreach($cartItems as $cartItem)
-        {
+        foreach($cartItems as $cartItem) {
             $product_weight = (double)Product::find($cartItem['product_id'])->weight ?? 0;
-            $total_weight +=  $product_weight * (double)$cartItem['quantity'];
+            $total_weight += $product_weight * (double)$cartItem['quantity'];
         }
 
+        // Minimum weight 1000 gram
         if($total_weight < 1000) {
             $total_weight = 1000;
         }
-        
-        $data = [
+
+        // Daftar kurir yang didukung
+        //$couriers = 'jne:sicepat:ide:sap:jnt:ninja:tiki:lion:anteraja:pos:ncs:rex:rpx:sentral:star:wahana:dse';
+        $couriers = $request->courier ?? 'jne:sicepat:ide:sap:jnt:ninja:tiki:lion:anteraja:pos:ncs:rex:rpx:sentral:star:wahana:dse'; 
+        // Data yang akan dikirim ke API
+        $requestData = [
             'origin' => $originId,
-            'originType' => 'city',
-            'destination' => $destination->city_id,
-            'destinationType' => 'city',
+            'destination' => $destination->city_id, // Menggunakan city_id dari alamat
             'weight' => $total_weight, // dalam gram
-            'courier' => $request->courier, // jne, tiki, pos, dll
+            'courier' => $couriers,
+            'price' => 'lowest' // Ambil harga terendah
         ];
 
+        // Log untuk debugging
+        \Log::info('RajaOngkir Cost Request:', $requestData);
 
-        //dd($data);
+        try {
+            $response = Http::asForm()->withHeaders([
+                'Key' => $this->rajaOngkirApiKey,
+                'Content-Type' => 'application/x-www-form-urlencoded'
+            ])->post('https://rajaongkir.komerce.id/api/v1/calculate/district/domestic-cost', $requestData);
 
-        $response = Http::withHeaders([
-            'key' => $this->rajaOngkirApiKey,
-        ])->post('https://pro.rajaongkir.com/api/cost', $data);
+            if ($response->failed()) {
+                \Log::error('RajaOngkir API Error:', [
+                    'status' => $response->status(),
+                    'body' => $response->body()
+                ]);
+                return response()->json(['error' => 'Gagal menghubungi RajaOngkir: ' . $response->body()], 500);
+            }
 
-        if ($response->failed()) {
-            return response()->json(['error' => 'Gagal menghubungi RajaOngkir'], 500);
+            $result = $response->json();
+            \Log::info('RajaOngkir Cost Response:', $result);
+
+            // Return response dengan format yang lebih bersih
+            return response()->json([
+                'success' => true,
+                'data' => $result,
+                'request_info' => [
+                    'origin' => $originId,
+                    'destination' => $destination->city_id,
+                    'weight' => $total_weight,
+                    'couriers' => $couriers
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('RajaOngkir Cost Exception:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'error' => 'Terjadi kesalahan saat menghitung ongkos kirim',
+                'message' => $e->getMessage()
+            ], 500);
         }
-
-        return response()->json($response->json()['rajaongkir']);
     }
 
     public function waybill(Request $request)

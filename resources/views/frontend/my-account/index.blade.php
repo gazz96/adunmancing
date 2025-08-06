@@ -246,11 +246,80 @@
             </li>
           </ul>
           <h6>Payment</h6>
-          <ul class="list-unstyled fs-sm m-0">
-        
+          <ul class="list-unstyled fs-sm mb-4">
+            <li class="d-flex justify-content-between mb-1">
+              Payment Method:
+              <span class="text-body-emphasis fw-medium text-end ms-2">
+                @if($order->paymentMethod)
+                  {{ $order->paymentMethod->name }}
+                @else
+                  {{ $order->payment_method ?? 'Not specified' }}
+                @endif
+              </span>
+            </li>
+            <li class="d-flex justify-content-between mb-1">
+              Payment Status:
+              <span class="text-end ms-2">
+                @if($order->payment_status === 'pending')
+                  <span class="badge bg-warning text-dark">Pending</span>
+                @elseif($order->payment_status === 'verification')
+                  <span class="badge bg-info">Under Verification</span>
+                @elseif($order->payment_status === 'paid')
+                  <span class="badge bg-success">Paid</span>
+                @elseif($order->payment_status === 'failed')
+                  <span class="badge bg-danger">Failed</span>
+                @else
+                  <span class="badge bg-secondary">Unknown</span>
+                @endif
+              </span>
+            </li>
+            @if($order->payment_method === 'bank_transfer' && $order->payment_proof_url)
+            <li class="mb-1">
+              <span class="d-block mb-2 fw-medium">Payment Proof:</span>
+              <div class="d-flex align-items-start">
+                <img src="{{ $order->payment_proof_url }}" alt="Payment Proof" 
+                     class="img-thumbnail me-2" style="max-width: 150px; max-height: 150px; cursor: pointer;"
+                     onclick="showPaymentProofModal('{{ $order->payment_proof_url }}', '{{ $order->order_number }}')">
+                <div class="flex-grow-1">
+                  <small class="text-muted d-block">Click image to view full size</small>
+                  @if($order->payment_notes)
+                    <small class="text-muted d-block mt-1">
+                      <strong>Notes:</strong> {{ $order->payment_notes }}
+                    </small>
+                  @endif
+                  @if($order->paid_at)
+                    <small class="text-success d-block mt-1">
+                      <i class="ci-check-circle me-1"></i>Verified on {{ $order->paid_at->format('d M Y H:i') }}
+                    </small>
+                  @endif
+                </div>
+              </div>
+            </li>
+            @elseif($order->payment_method === 'bank_transfer' && $order->payment_status === 'pending')
+            <li class="mb-1">
+              <div class="alert alert-warning py-2 px-3 mb-2">
+                <small>
+                  <i class="ci-info-circle me-1"></i>
+                  Payment proof is required. Please upload your payment proof to complete this order.
+                </small>
+              </div>
+              @if($order->paymentMethod)
+              <div class="bg-light rounded p-2 mb-2">
+                <small class="d-block mb-1"><strong>Bank Transfer Details:</strong></small>
+                <small class="d-block">Bank: {{ $order->paymentMethod->name }}</small>
+                <small class="d-block">Account: {{ $order->paymentMethod->account_number }}</small>
+                <small class="d-block">Name: {{ $order->paymentMethod->account_name }}</small>
+                <small class="d-block">Amount: Rp {{ number_format($order->total) }}</small>
+              </div>
+              <a href="{{ route('web.payment', $order->id) }}" class="btn btn-sm btn-primary">
+                <i class="ci-upload me-1"></i>Upload Payment Proof
+              </a>
+              @endif
+            </li>
+            @endif
             <li class="d-flex justify-content-between">
               Shipping:
-              <span class="text-body-emphasis fw-medium text-end ms-2">{{number_format($order->delivery_price)}}</span>
+              <span class="text-body-emphasis fw-medium text-end ms-2">Rp {{number_format($order->delivery_price)}}</span>
             </li>
           </ul>
         </div>
@@ -269,5 +338,58 @@
     </div>
 
     @endforeach
+
+    <!-- Payment Proof Modal -->
+    <div class="modal fade" id="paymentProofModal" tabindex="-1" aria-labelledby="paymentProofModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="paymentProofModalLabel">Payment Proof</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="paymentProofImage" src="" alt="Payment Proof" class="img-fluid">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to show payment proof modal
+        function showPaymentProofModal(imageUrl, orderNumber) {
+            document.getElementById('paymentProofImage').src = imageUrl;
+            document.getElementById('paymentProofModalLabel').textContent = `Payment Proof - Order #${orderNumber}`;
+            const modal = new bootstrap.Modal(document.getElementById('paymentProofModal'));
+            modal.show();
+        }
+
+        // Set active menu based on current URL
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            const menuItems = document.querySelectorAll('.list-group-item');
+            
+            // Remove active class from all items
+            menuItems.forEach(item => {
+                item.classList.remove('active');
+                item.classList.remove('pe-none');
+            });
+            
+            // Add active class to current menu item
+            menuItems.forEach(item => {
+                const href = item.getAttribute('href');
+                if (href && currentPath === href) {
+                    item.classList.add('active');
+                    item.classList.add('pe-none');
+                } else if (currentPath === '/my-account' && href && href.includes('/my-account') && !href.includes('personal-info') && !href.includes('addresses')) {
+                    // Handle orders page specifically
+                    item.classList.add('active');
+                    item.classList.add('pe-none');
+                }
+            });
+        });
+    </script>
 
 @endsection

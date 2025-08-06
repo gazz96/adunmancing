@@ -60,17 +60,16 @@
                     </a>
                 </header>
 
-                <h1 class="h2 mt-auto">Welcome back</h1>
+                <h1 class="h2 mt-auto">Daftarkan Sekarang</h1>
                 <div class="nav fs-sm mb-4">
-                    have an account?
-                    <a class="nav-link text-decoration-underline p-0 ms-2"
-                        href="{{ route('web.auth.register') }}">logged in</a>
+                    Sudah punya akun ?<a class="nav-link text-decoration-underline p-0 ms-2"
+                        href="{{ route('login') }}">Masuk disini</a>
                 </div>
 
                 <!-- Form -->
                 <form action="{{ route('web.auth.doRegister') }}" method="POST">
                     <div class="position-relative mb-4">
-                        <input type="email" class="form-control form-control-lg" placeholder="Name" name="name" value="{{ old('name') }}" required>
+                        <input type="text" class="form-control form-control-lg" placeholder="Name" name="name" value="{{ old('name') }}" required>
                         <div class="invalid-tooltip bg-transparent py-0">Enter a name address!</div>
                         @error('name')
                             <div class="d-block invalid-feedback bg-transparent py-0">{{ $message }}</div>
@@ -86,7 +85,6 @@
                     <div class="mb-4">
                         <div class="password-toggle">
                             <input name="password" type="password" class="form-control form-control-lg" placeholder="Password" required>
-                            <div class="invalid-tooltip bg-transparent py-0">Password is incorrect!</div>
                             <label class="password-toggle-button fs-lg" aria-label="Show/hide password">
                                 <input type="checkbox" class="btn-check">
                             </label>
@@ -95,8 +93,20 @@
                             <div class="invalid-tooltip bg-transparent py-0">{{ $message }}</div>
                         @enderror
                     </div>
+
+                    <div class="mb-4">
+                        <div class="password-toggle">
+                            <input name="password_confirmation" type="password" class="form-control form-control-lg" placeholder="Password Confirmation" required>
+                            <label class="password-toggle-button fs-lg" aria-label="Show/hide password confirmation">
+                                <input type="checkbox" class="btn-check">
+                            </label>
+                        </div>
+                        @error('password_confirmation')
+                            <div class="invalid-tooltip bg-transparent py-0">{{ $message }}</div>
+                        @enderror
+                    </div>
                    
-                    <button type="submit" class="btn btn-lg btn-primary w-100">Sign In</button>
+                    <button type="submit" class="btn btn-lg btn-primary w-100">Sign up</button>
                 </form>
 
 
