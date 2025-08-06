@@ -954,12 +954,12 @@
                     console.error('Error adding to cart:', error.status);
                     if(error.status == 401) {
                         const result = await Swal.fire({
-                            icon: 'error',
-                            title: 'Login Required',
-                            text: 'You must login to add product to cart',
+                            icon: 'warning',
+                            title: 'Login Diperlukan',
+                            text: 'Anda harus login terlebih dahulu untuk menambahkan produk ke keranjang',
                             showCancelButton: true,
-                            confirmButtonText: 'Login Now',
-                            cancelButtonText: 'Cancel'
+                            confirmButtonText: 'Login Sekarang',
+                            cancelButtonText: 'Batal'
                         })
 
                         if(result.isConfirmed) {

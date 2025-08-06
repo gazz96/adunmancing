@@ -211,13 +211,41 @@
 
                      
 
-                        <!-- Contact -->
-                        <div class="d-flex align-items-center justify-content-between bg-body-tertiary rounded p-3">
-                            <div class="me-3">
-                                <h6 class="fs-sm mb-1">Have a question?</h6>
-                                <p class="fs-sm mb-0">Contact us if you have questions</p>
+                        <!-- Product Details -->
+                        <div class="bg-body-tertiary rounded p-3 mb-3">
+                            <h6 class="fs-sm mb-2">Detail Produk</h6>
+                            <div class="row g-2">
+                                @if($product->weight)
+                                <div class="col-6">
+                                    <div class="d-flex">
+                                        <span class="fs-xs text-muted me-2">Berat:</span>
+                                        <span class="fs-xs fw-medium">{{ $product->weight }}g</span>
+                                    </div>
+                                </div>
+                                @endif
+                                @if($product->dimension)
+                                <div class="col-6">
+                                    <div class="d-flex">
+                                        <span class="fs-xs text-muted me-2">Dimensi:</span>
+                                        <span class="fs-xs fw-medium">{{ $product->dimension }}cm</span>
+                                    </div>
+                                </div>
+                                @endif
+                                <div class="col-6">
+                                    <div class="d-flex">
+                                        <span class="fs-xs text-muted me-2">Status:</span>
+                                        <span class="fs-xs fw-medium text-success">{{ $product->stock_status_label }}</span>
+                                    </div>
+                                </div>
+                                @if($product->manage_stock && $product->stock_quantity)
+                                <div class="col-6">
+                                    <div class="d-flex">
+                                        <span class="fs-xs text-muted me-2">Stok:</span>
+                                        <span class="fs-xs fw-medium">{{ $product->stock_quantity }} unit</span>
+                                    </div>
+                                </div>
+                                @endif
                             </div>
-                            <a class="btn btn-sm btn-outline-dark rounded-pill" href="{{ url('contact') }}">Contact us</a>
                         </div>
                     </div>
                 </div>
@@ -273,92 +301,37 @@
                     </ul>
 
                     <div class="accordion accordion-alt-icon" id="productAccordion">
-                        <div class="accordion-item">
-                            <h3 class="accordion-header" id="headingProductInfo">
-                                <button type="button" class="accordion-button animate-underline fs-xl collapsed"
-                                    data-bs-toggle="collapse" data-bs-target="#productInfo" aria-expanded="false"
-                                    aria-controls="productInfo">
-                                    <span class="animate-target me-2">Product info</span>
-                                </button>
-                            </h3>
-                            <div class="accordion-collapse collapse" id="productInfo"
-                                aria-labelledby="headingProductInfo" data-bs-parent="#productAccordion">
-                                <div class="accordion-body fs-base">Introducing our Scandinavian-inspired chair,
-                                    meticulously designed to infuse your living space with a touch of retro elegance.
-                                    Crafted with the finest materials and attention to detail, this chair embodies the
-                                    timeless charm of Scandinavian design, making it a versatile addition to any home decor.
-                                    With its classic silhouette and understated sophistication, it seamlessly integrates
-                                    into various interior styles, bringing both style and functionality to your room.</div>
-                            </div>
-                        </div>
-                        <div class="accordion-item">
-                            <h3 class="accordion-header" id="headingProductFeatures">
-                                <button type="button" class="accordion-button animate-underline fs-xl collapsed"
-                                    data-bs-toggle="collapse" data-bs-target="#productFeatures" aria-expanded="false"
-                                    aria-controls="productFeatures">
-                                    <span class="animate-target me-2">Features</span>
-                                </button>
-                            </h3>
-                            <div class="accordion-collapse collapse" id="productFeatures"
-                                aria-labelledby="headingProductFeatures" data-bs-parent="#productAccordion">
-                                <div class="accordion-body fs-base">
-                                    <ul class="m-0">
-                                        <li><span class="text-body-emphasis fw-semibold">Timeless design:</span> Inspired
-                                            by Scandinavian aesthetics, this chair boasts a sleek and retro-inspired
-                                            silhouette that adds a touch of elegance to any space.</li>
-                                        <li><span class="text-body-emphasis fw-semibold">Durable construction:</span>
-                                            Crafted with high-quality materials, the chair is built to last, providing
-                                            sturdy and reliable seating for years to come.</li>
-                                        <li><span class="text-body-emphasis fw-semibold">Versatile placement:</span>
-                                            Whether as a focal point in your living room, a cozy reading corner in your
-                                            study, or an inviting seat around the dining table, this chair effortlessly
-                                            adapts to different settings.</li>
-                                        <li><span class="text-body-emphasis fw-semibold">Comfortable seating:</span> The
-                                            chair features a well-padded seat and backrest, ensuring optimal comfort for
-                                            extended periods of relaxation or conversation.</li>
-                                        <li><span class="text-body-emphasis fw-semibold">Easy maintenance:</span> Designed
-                                            for convenience, the chair's upholstery is easy to clean, allowing for
-                                            hassle-free maintenance and care.</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
+                        @if($product->warranty_information)
                         <div class="accordion-item">
                             <h3 class="accordion-header" id="headingProductWarranty">
                                 <button type="button" class="accordion-button animate-underline fs-xl collapsed"
                                     data-bs-toggle="collapse" data-bs-target="#productWarranty" aria-expanded="false"
                                     aria-controls="productWarranty">
-                                    <span class="animate-target me-2">Warranty information</span>
+                                    <span class="animate-target me-2">Informasi Garansi</span>
                                 </button>
                             </h3>
                             <div class="accordion-collapse collapse" id="productWarranty"
                                 aria-labelledby="headingProductWarranty" data-bs-parent="#productAccordion">
-                                <div class="accordion-body fs-base">We stand behind the quality of our products. Our chair
-                                    comes with a 10-year warranty, guaranteeing against defects in materials and workmanship
-                                    under normal use. In the unlikely event that you encounter any issues with your chair,
-                                    contact our customer service team, and we will be happy to assist you with a replacement
-                                    or repair.</div>
+                                <div class="accordion-body fs-base">{{ $product->warranty_information }}</div>
                             </div>
                         </div>
+                        @endif
+                        
+                        @if($product->delivery_shipping)
                         <div class="accordion-item">
                             <h3 class="accordion-header" id="headingProductDelivery">
                                 <button type="button" class="accordion-button animate-underline fs-xl collapsed"
                                     data-bs-toggle="collapse" data-bs-target="#productDelivery" aria-expanded="false"
                                     aria-controls="productDelivery">
-                                    <span class="animate-target me-2">Delivery and shipping</span>
+                                    <span class="animate-target me-2">Pengiriman & Distribusi</span>
                                 </button>
                             </h3>
                             <div class="accordion-collapse collapse" id="productDelivery"
                                 aria-labelledby="headingProductDelivery" data-bs-parent="#productAccordion">
-                                <div class="accordion-body fs-base">We understand the importance of timely delivery and
-                                    strive to provide a seamless shipping experience for our customers. Upon placing your
-                                    order, our team will process it promptly, and you will receive a notification once your
-                                    chair is ready for shipment. We offer various shipping options to accommodate your
-                                    preferences, with estimated delivery times provided at checkout. Rest assured, your
-                                    chair will be carefully packaged to ensure it arrives safely at your doorstep, ready to
-                                    enhance your home with its timeless charm.</div>
+                                <div class="accordion-body fs-base">{{ $product->delivery_shipping }}</div>
                             </div>
                         </div>
+                        @endif
                     </div>
                 </div>
             </section>

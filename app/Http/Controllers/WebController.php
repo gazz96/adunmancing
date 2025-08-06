@@ -106,6 +106,19 @@ class WebController extends Controller
     public function addToCart(Request $request)
     {
         try {
+            // Check if user is authenticated
+            if (!Auth::check()) {
+                if ($request->expectsJson() || $request->ajax()) {
+                    return response()->json([
+                        'error' => 'Anda harus login terlebih dahulu untuk menambahkan produk ke keranjang',
+                        'redirect' => route('login')
+                    ], 401);
+                }
+                return redirect()->route('login')
+                    ->with('error', 'Anda harus login terlebih dahulu untuk menambahkan produk ke keranjang')
+                    ->with('intended', $request->fullUrl());
+            }
+
             $request->validate([
                 'product_id' => 'required|exists:products,id'
             ]);
@@ -114,48 +127,26 @@ class WebController extends Controller
 
             if ($product->status != 1) {
                 if ($request->expectsJson() || $request->ajax()) {
-                    return response()->json(['error' => 'Product is not available'], 400);
+                    return response()->json(['error' => 'Produk tidak tersedia'], 400);
                 }
-                return redirect()->back()->withErrors(['Product is not available']);
+                return redirect()->back()->withErrors(['Produk tidak tersedia']);
             }
 
-            if (Auth::check()) {
-                // Add to database cart for authenticated users
-                $cartItem = \App\Models\CartItem::where('user_id', Auth::id())
-                    ->where('product_id', $product->id)
-                    ->first();
+            // Add to database cart for authenticated users
+            $cartItem = \App\Models\CartItem::where('user_id', Auth::id())
+                ->where('product_id', $product->id)
+                ->first();
 
-                if ($cartItem) {
-                    $cartItem->increment('quantity');
-                } else {
-                    \App\Models\CartItem::create([
-                        'user_id' => Auth::id(),
-                        'product_id' => $product->id,
-                        'quantity' => 1,
-                        'variation' => json_encode([]),
-                        'product_attributes' => null
-                    ]);
-                }
+            if ($cartItem) {
+                $cartItem->increment('quantity');
             } else {
-                // Add to session cart for guest users
-                $cart = session()->get('cart', []);
-                $cartKey = $product->id . '_' . json_encode([]);
-                
-                if (isset($cart[$cartKey])) {
-                    $cart[$cartKey]['quantity']++;
-                } else {
-                    $cart[$cartKey] = [
-                        'product_id' => $product->id,
-                        'name' => $product->name,
-                        'quantity' => 1,
-                        'price' => $product->price,
-                        'image' => $product->featured_image,
-                        'weight' => $product->weight,
-                        'variation' => []
-                    ];
-                }
-
-                session()->put('cart', $cart);
+                \App\Models\CartItem::create([
+                    'user_id' => Auth::id(),
+                    'product_id' => $product->id,
+                    'quantity' => 1,
+                    'variation' => json_encode([]),
+                    'product_attributes' => null
+                ]);
             }
 
             // Return JSON response for AJAX requests
@@ -291,7 +282,11 @@ class WebController extends Controller
 
     public function checkout()
     {
-        $couriers = Rajaongkir::new()->getCouriers();
+        // Get couriers from database instead of hardcoded
+        $couriers = \App\Models\Courier::active()
+            ->pluck('name', 'code')
+            ->toArray();
+            
         $provinces = Rajaongkir::new()->getProvinces();
         $paymentMethods = \App\Models\PaymentMethod::active()->ordered()->get();
         

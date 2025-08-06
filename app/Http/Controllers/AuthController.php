@@ -63,6 +63,9 @@ class AuthController extends Controller
                 'password' => Hash::make($request->password), // Hash the password before storing
             ]);
 
+            // Assign default subscriber role to new customers
+            $user->assignRole('subscriber');
+
             return redirect()->route('frontend.index'); 
 
         } catch (\Exception $e) {

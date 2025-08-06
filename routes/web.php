@@ -74,6 +74,8 @@ Route::prefix('shipping')
             ->name('web.shipping.provinces');
         Route::get('regencies', [ShippingController::class, 'getRegencies'])
             ->name('web.shipping.regencies');
+        Route::get('couriers', [ShippingController::class, 'getCouriers'])
+            ->name('web.shipping.couriers');
         
         Route::post('cost', [ShippingController::class, 'getCost'])
             ->name('web.shipping.cost');

@@ -6,6 +6,7 @@ use App\Models\Option;
 use App\Models\Product;
 use App\Models\Regency;
 use App\Models\UserAddress;
+use App\Models\Courier;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -121,9 +122,9 @@ class ShippingController extends Controller
             $total_weight = 1000;
         }
 
-        // Daftar kurir yang didukung
-        //$couriers = 'jne:sicepat:ide:sap:jnt:ninja:tiki:lion:anteraja:pos:ncs:rex:rpx:sentral:star:wahana:dse';
-        $couriers = $request->courier ?? 'jne:sicepat:ide:sap:jnt:ninja:tiki:lion:anteraja:pos:ncs:rex:rpx:sentral:star:wahana:dse'; 
+        // Get active couriers from database
+        $activeCouriers = Courier::active()->pluck('code')->toArray();
+        $couriers = $request->courier ?? implode(':', $activeCouriers); 
         // Data yang akan dikirim ke API
         $requestData = [
             'origin' => $originId,
@@ -176,6 +177,24 @@ class ShippingController extends Controller
                 'message' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function getCouriers()
+    {
+        $couriers = Courier::active()->get();
+        
+        return response()->json([
+            'success' => true,
+            'data' => $couriers->map(function($courier) {
+                return [
+                    'id' => $courier->id,
+                    'code' => $courier->code,
+                    'name' => $courier->name,
+                    'description' => $courier->description,
+                    'logo_url' => $courier->logo_url,
+                ];
+            })
+        ]);
     }
 
     public function waybill(Request $request)

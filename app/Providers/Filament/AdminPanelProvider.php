@@ -6,6 +6,11 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use App\Http\Middleware\AdminAccess;
+use App\Filament\Widgets\OrderStatsWidget;
+use App\Filament\Widgets\ProductStatsWidget;
+use App\Filament\Widgets\RecentOrdersWidget;
+use App\Filament\Widgets\SalesChartWidget;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -37,8 +42,10 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                OrderStatsWidget::class,
+                ProductStatsWidget::class,
+                SalesChartWidget::class,
+                RecentOrdersWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -53,6 +60,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+                AdminAccess::class,
             ]);
     }
 }

@@ -28,7 +28,9 @@ class ProductSeeder extends Seeder
                 'manage_stock' => true,
                 'stock_quantity' => 50,
                 'allow_backorders' => false,
-                'low_stock_threshold' => 10
+                'low_stock_threshold' => 10,
+                'warranty_information' => 'Produk bergaransi resmi 1 tahun untuk kerusakan produksi pabrik. Garansi tidak berlaku untuk kerusakan akibat pemakaian yang salah atau kecelakaan. Klaim garansi dapat dilakukan dengan menunjukkan bukti pembelian.',
+                'delivery_shipping' => 'Pengiriman ke seluruh Indonesia dengan estimasi 2-5 hari kerja untuk wilayah Jawa-Bali, 3-7 hari kerja wilayah lainnya. Gratis ongkir untuk pembelian di atas Rp 500.000. Barang akan dikemas dengan bubble wrap dan kardus tebal untuk keamanan.'
             ],
             [
                 'name' => 'Adun Fishing Line AFL Standard',
@@ -43,7 +45,9 @@ class ProductSeeder extends Seeder
                 'manage_stock' => true,
                 'stock_quantity' => 75,
                 'allow_backorders' => true,
-                'low_stock_threshold' => 15
+                'low_stock_threshold' => 15,
+                'warranty_information' => 'Produk bergaransi resmi 6 bulan untuk kerusakan produksi pabrik. Cocok untuk pemula dengan kualitas standar yang handal.',
+                'delivery_shipping' => 'Pengiriman cepat 1-3 hari kerja wilayah Jabodetabek, 2-5 hari wilayah lainnya. Kemasan aman dengan bubble wrap.'
             ],
             [
                 'name' => 'Adun Fishing Line AFL Economic',
@@ -58,7 +62,9 @@ class ProductSeeder extends Seeder
                 'manage_stock' => true,
                 'stock_quantity' => 100,
                 'allow_backorders' => true,
-                'low_stock_threshold' => 20
+                'low_stock_threshold' => 20,
+                'warranty_information' => 'Produk bergaransi 3 bulan. Pilihan ekonomis dengan kualitas terjamin untuk memancing air tawar.',
+                'delivery_shipping' => 'Pengiriman reguler 2-4 hari kerja. Khusus wilayah tertentu bisa lebih lama. Kemasan sederhana namun aman.'
             ],
             [
                 'name' => 'Joran Pancing Carbon Fiber Pro',
@@ -73,7 +79,9 @@ class ProductSeeder extends Seeder
                 'manage_stock' => true,
                 'stock_quantity' => 25,
                 'allow_backorders' => false,
-                'low_stock_threshold' => 5
+                'low_stock_threshold' => 5,
+                'warranty_information' => 'Garansi premium 2 tahun untuk material carbon fiber. Perlindungan menyeluruh terhadap cacat produksi dan keretakan.',
+                'delivery_shipping' => 'Pengiriman khusus dengan asuransi dan tracking. Estimasi 1-2 hari kerja Jabodetabek, 2-4 hari wilayah lain. Kemasan premium dengan hard case.'
             ],
             [
                 'name' => 'Reel Pancing Spinning 4000',
@@ -88,7 +96,9 @@ class ProductSeeder extends Seeder
                 'manage_stock' => true,
                 'stock_quantity' => 30,
                 'allow_backorders' => true,
-                'low_stock_threshold' => 8
+                'low_stock_threshold' => 8,
+                'warranty_information' => 'Garansi 1 tahun untuk sistem drag dan ball bearing. Garansi tidak termasuk kerusakan akibat air laut atau pasir.',
+                'delivery_shipping' => 'Pengiriman dengan bubble wrap berlapis. Estimasi 2-4 hari kerja ke seluruh Indonesia. Gratis ongkir untuk pembelian reel di atas 300rb.'
             ],
             [
                 'name' => 'Kail Pancing Set Berbagai Ukuran',
@@ -103,7 +113,9 @@ class ProductSeeder extends Seeder
                 'manage_stock' => true,
                 'stock_quantity' => 200,
                 'allow_backorders' => true,
-                'low_stock_threshold' => 50
+                'low_stock_threshold' => 50,
+                'warranty_information' => 'Garansi 6 bulan untuk ketajaman kail. Penggantian gratis jika kail patah dalam kondisi normal.',
+                'delivery_shipping' => 'Pengiriman cepat 1-3 hari kerja. Kemasan compact dalam box plastik. Cocok untuk pembelian dalam jumlah banyak.'
             ],
             [
                 'name' => 'Umpan Buatan Minnow Lure',
@@ -118,7 +130,9 @@ class ProductSeeder extends Seeder
                 'manage_stock' => true,
                 'stock_quantity' => 80,
                 'allow_backorders' => false,
-                'low_stock_threshold' => 15
+                'low_stock_threshold' => 15,
+                'warranty_information' => 'Garansi 3 bulan untuk sistem suara dan cat. Tidak termasuk kerusakan akibat gigitan ikan besar.',
+                'delivery_shipping' => 'Pengiriman hati-hati dengan foam padding. Estimasi 2-5 hari kerja. Kemasan individual untuk setiap lure.'
             ],
             [
                 'name' => 'Kotak Pancing Multifungsi',
@@ -133,7 +147,9 @@ class ProductSeeder extends Seeder
                 'manage_stock' => true,
                 'stock_quantity' => 40,
                 'allow_backorders' => true,
-                'low_stock_threshold' => 10
+                'low_stock_threshold' => 10,
+                'warranty_information' => 'Garansi 1 tahun untuk kunci dan engsel. Garansi seumur hidup untuk bahan plastik ABS terhadap retak.',
+                'delivery_shipping' => 'Pengiriman dengan kardus tebal dan bubble wrap. Estimasi 3-6 hari kerja karena ukuran besar. Asuransi pengiriman termasuk.'
             ]
         ];
 

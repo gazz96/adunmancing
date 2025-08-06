@@ -119,9 +119,40 @@ class OrderResource extends Resource
                         TextInput::make('delivery_price')->disabled(),
                     ]),
 
+                Section::make('Payment Information')
+                    ->schema([
+                        TextInput::make('payment_method')
+                            ->disabled()
+                            ->label('Payment Method'),
+
+                        Select::make('payment_status')
+                            ->label('Payment Status')
+                            ->options([
+                                'pending' => 'Pending',
+                                'paid' => 'Paid', 
+                                'failed' => 'Failed',
+                            ])
+                            ->default('pending'),
+
+                        Forms\Components\FileUpload::make('payment_proof')
+                            ->label('Payment Proof (Bukti Bayar)')
+                            ->image()
+                            ->directory('payment-proofs')
+                            ->visibility('private')
+                            ->downloadable()
+                            ->openable()
+                            ->hidden(fn($get) => ($get('payment_method') ?? '') !== 'bank_transfer'),
+
+                        DatePicker::make('paid_at')
+                            ->label('Paid At'),
+
+                        Forms\Components\Textarea::make('payment_notes')
+                            ->label('Payment Notes')
+                            ->rows(3),
+                    ]),
+
                 Section::make('Status')
                     ->schema([
-
                         TextInput::make('awb')->label('Nomor Resi'),
                         DatePicker::make('send_date')->label('Send Date'),
                         Select::make('status')
@@ -145,6 +176,26 @@ class OrderResource extends Resource
             ->columns([
                 TextColumn::make('id')->sortable(),
                 TextColumn::make('user.name')->label('Customer')->searchable(),
+                TextColumn::make('payment_method')
+                    ->label('Payment')
+                    ->formatStateUsing(fn ($state) => $state ?? 'Not Set')
+                    ->color(fn ($state) => $state ? 'primary' : 'gray'),
+                    
+                TextColumn::make('payment_status')
+                    ->label('Payment Status')
+                    ->formatStateUsing(fn ($state) => $state ?? 'pending')
+                    ->colors([
+                        'warning' => 'pending',
+                        'success' => 'paid',
+                        'danger' => 'failed',
+                        'gray' => null,
+                    ])
+                    ->badge(),
+                Tables\Columns\ImageColumn::make('payment_proof')
+                    ->label('Bukti Bayar')
+                    ->size(50)
+                    ->visibility('private')
+                    ->visible(fn($record) => $record && $record->payment_method === 'bank_transfer' && $record->payment_proof),
                 TextColumn::make('status')
                     ->colors([
                         'primary' => 'pending',
@@ -153,11 +204,23 @@ class OrderResource extends Resource
                         'danger' => 'cancelled',
                     ])
                     ->badge(),
-                TextColumn::make('total')->money('IDR')->sortable(),
+                TextColumn::make('total_amount')->money('IDR')->sortable()->label('Total'),
                 TextColumn::make('created_at')->dateTime('d M Y H:i')->sortable(),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('payment_method')
+                    ->label('Payment Method')
+                    ->options([
+                        'bank_transfer' => 'Bank Transfer',
+                        'midtrans' => 'Midtrans',
+                    ]),
+                Tables\Filters\SelectFilter::make('payment_status')
+                    ->label('Payment Status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'paid' => 'Paid',
+                        'failed' => 'Failed',
+                    ]),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
