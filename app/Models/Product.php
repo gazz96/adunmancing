@@ -10,14 +10,15 @@ class Product extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'slug', 'description', 'price', 'status', 'compare_price', 'sku', 
+        'name', 'slug', 'description', 'price', 'status', 'is_featured', 'compare_price', 'sku', 
         'featured_image', 'weight', 'dimension', 'manage_stock', 'stock_quantity', 
-        'allow_backorders', 'low_stock_threshold', 'warranty_information', 'delivery_shipping'
+        'allow_backorders', 'low_stock_threshold', 'warranty_information', 'delivery_shipping', 'views'
     ];
 
     protected $casts = [
         'manage_stock' => 'boolean',
         'allow_backorders' => 'boolean',
+        'is_featured' => 'boolean',
     ];
 
     protected $appends = [
@@ -162,5 +163,26 @@ class Product extends Model
 
         $this->increment('stock_quantity', $quantity);
         return true;
+    }
+
+    // Scopes for popular and most viewed products
+    public function scopePopular($query)
+    {
+        return $query->orderBy('views', 'desc');
+    }
+
+    public function scopeMostViewed($query, $limit = 10)
+    {
+        return $query->popular()->limit($limit);
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', 1);
+    }
+
+    public function scopeFeatured($query)
+    {
+        return $query->where('is_featured', true);
     }
 }

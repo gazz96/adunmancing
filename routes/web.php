@@ -104,6 +104,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/addresses/set-default', [UserAddressController::class, 'setDefault'])->name('user.addresses.set-default');
 });
 
+// Coupon routes
+Route::prefix('api/coupons')->group(function () {
+    Route::post('/validate', [App\Http\Controllers\CouponController::class, 'validateCoupon'])->name('api.coupons.validate');
+    Route::get('/available', [App\Http\Controllers\CouponController::class, 'getAvailable'])->name('api.coupons.available');
+    Route::post('/apply', [App\Http\Controllers\CouponController::class, 'apply'])->name('api.coupons.apply');
+    Route::post('/remove', [App\Http\Controllers\CouponController::class, 'remove'])->name('api.coupons.remove');
+});
+
 // Test route for debugging provinces
 Route::get('/test-provinces', function() {
     $controller = new App\Http\Controllers\ShippingController();

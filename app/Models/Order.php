@@ -9,14 +9,16 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'order_number', 'status', 'total_amount', 'note', 'address', 'courier', 'courier_package', 'delivery_price', 'total_weight', 'origin', 'originType', 'destination', 'destinationType', 'postal_code', 'recepient_name', 'recepient_phone_number', 'awb', 'send_date', 'payment_method', 'payment_method_id', 'payment_status', 'payment_proof', 'paid_at', 'payment_notes' ];
+    protected $fillable = ['user_id', 'order_number', 'status', 'total_amount', 'coupon_id', 'coupon_code', 'coupon_discount', 'subtotal', 'note', 'address', 'courier', 'courier_package', 'delivery_price', 'total_weight', 'origin', 'originType', 'destination', 'destinationType', 'postal_code', 'recepient_name', 'recepient_phone_number', 'awb', 'send_date', 'payment_method', 'payment_method_id', 'payment_status', 'payment_proof', 'paid_at', 'payment_notes' ];
 
     protected $appends = [
         'destination_name'
     ];
 
     protected $casts = [
-        'paid_at' => 'datetime'
+        'paid_at' => 'datetime',
+        'coupon_discount' => 'decimal:2',
+        'subtotal' => 'decimal:2',
     ];
 
     public function user()
@@ -29,9 +31,9 @@ class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
-    public function coupons()
+    public function coupon()
     {
-        return $this->hasMany(OrderCoupon::class);
+        return $this->belongsTo(Coupon::class);
     }
 
     public function shipping()
@@ -80,6 +82,52 @@ class Order extends Model
     public function getTotalAttribute()
     {
         return $this->total_amount + $this->delivery_price;
+    }
+
+    // Coupon related methods
+    public function applyCoupon(Coupon $coupon)
+    {
+        if (!$coupon->canBeUsed($this->subtotal)) {
+            return false;
+        }
+
+        $discount = $coupon->calculateDiscount($this->subtotal);
+        
+        $this->update([
+            'coupon_id' => $coupon->id,
+            'coupon_code' => $coupon->code,
+            'coupon_discount' => $discount,
+            'total_amount' => $this->subtotal - $discount
+        ]);
+
+        $coupon->incrementUsage();
+        
+        return true;
+    }
+
+    public function removeCoupon()
+    {
+        $this->update([
+            'coupon_id' => null,
+            'coupon_code' => null,
+            'coupon_discount' => 0,
+            'total_amount' => $this->subtotal
+        ]);
+    }
+
+    public function hasCoupon()
+    {
+        return !is_null($this->coupon_id);
+    }
+
+    public function getCouponDiscountFormatted()
+    {
+        return 'Rp ' . number_format($this->coupon_discount, 0, ',', '.');
+    }
+
+    public function getSubtotalFormatted()
+    {
+        return 'Rp ' . number_format($this->subtotal, 0, ',', '.');
     }
 
     public function city() 

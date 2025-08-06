@@ -38,7 +38,13 @@ class AuthController extends Controller
                 );
         }
 
-        return redirect()->route('frontend.index'); 
+        // Check if there's an intended URL (from add to cart redirect)
+        $intendedUrl = session('intended', route('frontend.index'));
+        
+        // Clear the intended URL from session
+        session()->forget('intended');
+
+        return redirect($intendedUrl)->with('success', 'Login berhasil! Selamat datang kembali.'); 
     }
 
     public function register()

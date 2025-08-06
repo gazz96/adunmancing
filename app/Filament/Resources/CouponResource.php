@@ -6,14 +6,9 @@ use App\Filament\Resources\CouponResource\Pages;
 use App\Filament\Resources\CouponResource\RelationManagers;
 use App\Models\Coupon;
 use Filament\Forms;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -22,51 +17,90 @@ class CouponResource extends Resource
 {
     protected static ?string $model = Coupon::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
-    protected static ?string $navigationGroup = 'Marketing';
+    protected static ?string $navigationIcon = 'heroicon-o-ticket';
+    
+    protected static ?string $navigationGroup = 'Sales & Marketing';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Section::make()
+                Forms\Components\Section::make('Informasi Kupon')
                     ->schema([
-                        TextInput::make('code')
+                        Forms\Components\TextInput::make('code')
+                            ->label('Kode Kupon')
                             ->required()
                             ->unique(ignoreRecord: true)
-                            ->maxLength(50),
+                            ->maxLength(20)
+                            ->placeholder('Contoh: FISHING20'),
+                        Forms\Components\TextInput::make('name')
+                            ->label('Nama Kupon')
+                            ->required()
+                            ->maxLength(255)
+                            ->placeholder('Contoh: Diskon 20% Semua Produk'),
+                        Forms\Components\Textarea::make('description')
+                            ->label('Deskripsi')
+                            ->maxLength(500)
+                            ->placeholder('Deskripsi singkat tentang kupon ini')
+                            ->columnSpanFull(),
+                        Forms\Components\Toggle::make('is_active')
+                            ->label('Aktif')
+                            ->default(true)
+                            ->columnSpanFull(),
+                    ])->columns(2),
 
-                        TextInput::make('discount_amount')
-                            ->numeric()
-                            ->label('Discount Amount (Rp)')
-                            ->default(0),
-
-                        TextInput::make('discount_percent')
-                            ->numeric()
-                            ->label('Discount Percent (%)')
-                            ->default(0),
-
-                        DatePicker::make('valid_from')
-                            ->label('Valid From')
+                Forms\Components\Section::make('Pengaturan Diskon')
+                    ->schema([
+                        Forms\Components\Select::make('discount_type')
+                            ->label('Jenis Diskon')
+                            ->options([
+                                'percentage' => 'Persentase (%)',
+                                'fixed' => 'Nominal Tetap (Rp)'
+                            ])
+                            ->default('percentage')
+                            ->live()
                             ->required(),
-
-                        DatePicker::make('valid_until')
-                            ->label('Valid Until')
-                            ->nullable(),
-
-                        TextInput::make('usage_limit')
+                        Forms\Components\TextInput::make('discount_percent')
+                            ->label('Persentase Diskon (%)')
                             ->numeric()
-                            ->nullable()
-                            ->label('Max Usages'),
-
-                        TextInput::make('usage_count')
+                            ->min(0)
+                            ->max(100)
+                            ->suffix('%')
+                            ->visible(fn ($get) => $get('discount_type') === 'percentage'),
+                        Forms\Components\TextInput::make('discount_amount')
+                            ->label('Nominal Diskon (Rp)')
                             ->numeric()
-                            ->label('Used')
-                            ->disabled()
+                            ->min(0)
+                            ->prefix('Rp')
+                            ->visible(fn ($get) => $get('discount_type') === 'fixed'),
+                        Forms\Components\TextInput::make('minimum_amount')
+                            ->label('Minimal Belanja (Rp)')
+                            ->numeric()
+                            ->min(0)
+                            ->prefix('Rp')
+                            ->placeholder('0 = Tanpa minimal'),
+                    ])->columns(2),
+
+                Forms\Components\Section::make('Periode & Penggunaan')
+                    ->schema([
+                        Forms\Components\DatePicker::make('valid_from')
+                            ->label('Berlaku Dari')
+                            ->displayFormat('d/m/Y'),
+                        Forms\Components\DatePicker::make('valid_until')
+                            ->label('Berlaku Sampai')
+                            ->displayFormat('d/m/Y'),
+                        Forms\Components\TextInput::make('usage_limit')
+                            ->label('Batas Penggunaan')
+                            ->numeric()
+                            ->min(0)
+                            ->placeholder('0 = Tidak terbatas'),
+                        Forms\Components\TextInput::make('usage_count')
+                            ->label('Sudah Digunakan')
+                            ->numeric()
                             ->default(0)
+                            ->disabled()
                             ->dehydrated(false),
-                    ])
+                    ])->columns(2),
             ]);
     }
 
@@ -74,36 +108,51 @@ class CouponResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('code')
+                Tables\Columns\TextColumn::make('code')
+                    ->label('Kode')
                     ->searchable()
-                    ->sortable(),
-
-                TextColumn::make('discount_amount')
-                    ->label('Rp')
+                    ->copyable()
+                    ->badge(),
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Nama Kupon')
+                    ->searchable()
+                    ->limit(30),
+                Tables\Columns\TextColumn::make('discount_display')
+                    ->label('Diskon')
+                    ->getStateUsing(function ($record) {
+                        if ($record->discount_type === 'percentage') {
+                            return $record->discount_percent . '%';
+                        } else {
+                            return 'Rp ' . number_format($record->discount_amount, 0, ',', '.');
+                        }
+                    }),
+                Tables\Columns\TextColumn::make('minimum_amount')
+                    ->label('Min. Belanja')
                     ->money('IDR')
-                    ->sortable(),
-
-                TextColumn::make('discount_percent')
-                    ->label('%')
-                    ->sortable(),
-
-                TextColumn::make('valid_from')
-                    ->label('Start')
-                    ->date()
-                    ->sortable(),
-
-                TextColumn::make('valid_until')
-                    ->label('End')
-                    ->date()
-                    ->sortable(),
-
-                TextColumn::make('usage_count')
-                    ->label('Used')
-                    ->sortable(),
-
-                TextColumn::make('usage_limit')
-                    ->label('Limit')
-                    ->sortable(),
+                    ->placeholder('Tidak ada minimal'),
+                Tables\Columns\TextColumn::make('valid_from')
+                    ->label('Berlaku Dari')
+                    ->date('d/m/Y')
+                    ->placeholder('Tidak terbatas'),
+                Tables\Columns\TextColumn::make('valid_until')
+                    ->label('Berlaku Sampai')
+                    ->date('d/m/Y')
+                    ->placeholder('Tidak terbatas'),
+                Tables\Columns\TextColumn::make('usage_status')
+                    ->label('Penggunaan')
+                    ->getStateUsing(function ($record) {
+                        if ($record->usage_limit) {
+                            return $record->usage_count . '/' . $record->usage_limit;
+                        }
+                        return $record->usage_count . '/∞';
+                    }),
+                Tables\Columns\ToggleColumn::make('is_active')
+                    ->label('Aktif'),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Dibuat')
+                    ->dateTime('d/m/Y H:i')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //

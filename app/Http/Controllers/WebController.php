@@ -38,10 +38,28 @@ class WebController extends Controller
                 ->ordered()
                 ->get(),
 
-            'newProducts' => \App\Models\Product::orderBy('created_at', 'DESC')
+            'newProducts' => \App\Models\Product::active()
+                ->orderBy('created_at', 'DESC')
                 ->take(5)
                 ->get(),
-            'makanProducts' => \App\Models\Product::orderBy('created_at', 'DESC')
+
+            'featuredProducts' => \App\Models\Product::active()
+                ->featured()
+                ->orderBy('created_at', 'DESC')
+                ->take(8)
+                ->get(),
+
+            'featuredProductsByCategory' => \App\Models\Category::with(['products' => function($query) {
+                    $query->active()->featured()->take(4);
+                }])
+                ->whereHas('products', function($query) {
+                    $query->active()->featured();
+                })
+                ->take(4)
+                ->get(),
+
+            'makanProducts' => \App\Models\Product::active()
+                ->orderBy('created_at', 'DESC')
                 ->whereHas('categories', function($query){
                     return $query->where('categories.id', 1);
                 })
@@ -81,8 +99,31 @@ class WebController extends Controller
         $product->views = $product->views + 1;
         $product->save();
 
+        // Get popular products (excluding current product)
+        $popularProducts = Product::active()
+            ->where('id', '!=', $product->id)
+            ->popular()
+            ->take(4)
+            ->get();
+
+        // Get recent blog posts  
+        $blogPosts = Blog::whereIsPublished(1)
+            ->orderBy('created_at', 'desc')
+            ->take(3)
+            ->get();
+
+        // Get most viewed products (excluding current product)
+        $viewedProducts = Product::active()
+            ->where('id', '!=', $product->id)
+            ->popular()
+            ->take(4)
+            ->get();
+
         return view('frontend.product-detail', [
             'product' => $product,
+            'popularProducts' => $popularProducts,
+            'blogPosts' => $blogPosts,
+            'viewedProducts' => $viewedProducts,
             // 'relatedProducts' => $product->categories->first()
             //     ? $product->categories->first()->products()
             //         ->where('id', '!=', $product->id)

@@ -97,6 +97,10 @@ class ProductResource extends Resource
                         ->label('Aktif')
                         ->default(true),
 
+                    Toggle::make('is_featured')
+                        ->label('Produk Unggulan')
+                        ->default(false),
+
                     FileUpload::make('featured_image')
                         ->label('Gambar Unggulan')
                         ->image()
@@ -215,6 +219,10 @@ class ProductResource extends Resource
             Tables\Columns\TextColumn::make('price')->money('IDR', true),
             Tables\Columns\ToggleColumn::make('status')
                 ->label('Aktif')
+                ->sortable()
+                ->toggleable(),
+            Tables\Columns\ToggleColumn::make('is_featured')
+                ->label('Unggulan')
                 ->sortable()
                 ->toggleable(),
             Tables\Columns\TextColumn::make('categories.name')->label('Kategori')->badge()->limit(2),

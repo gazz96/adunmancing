@@ -8,8 +8,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover">
 
     <!-- SEO Meta Tags -->
-    <title>{{ $option->getByKey('site_name') }} | Furniture Store</title>
-    <meta name="description" content="{{ $option->getByKey('site_description') }}">
+    <title>{{ setting('site_name', 'Adun Mancing') }} | Furniture Store</title>
+    <meta name="description" content="{{ setting('site_description', 'Toko Peralatan Mancing Terlengkap') }}">
     <meta name="keywords"
         content="online shop, e-commerce, online store, market, multipurpose, product landing, cart, checkout, ui kit, light and dark mode, bootstrap, html5, css3, javascript, gallery, slider, mobile, pwa">
     <meta name="author" content="Bagas Topati">
@@ -75,7 +75,7 @@
             <span class="text-secondary-emphasis fs-xs me-1">Contact us <span
                     class="d-none d-sm-inline">24/7</span></span>
             <a class="nav-link animate-target fs-xs fw-semibold p-0"
-                href="tel:{{ $option->getByKey('contact') }}">{{ $option->getByKey('contact') }}</a>
+                href="tel:{{ setting('contact_phone', '+62 812-3456-7890') }}">{{ setting('contact_phone', '+62 812-3456-7890') }}</a>
         </div>
         {{-- <a class="text-secondary-emphasis fs-xs text-decoration-none d-none d-md-inline" href="#!">🔥 The Biggest
             Sale Ever 50% Off</a> --}}
@@ -114,12 +114,12 @@
             <a class="navbar-brand position-relative z-1 ms-4 ms-sm-5 ms-lg-4 me-2 me-sm-0 me-lg-3"
                 href="{{ url('/') }}">
                 
-                @if($logo = $option->getByKey('site_logo'))
+                @if($logo = setting('site_logo'))
                 
-               <img src="{{ url('storage/' . $logo) }}" alt="{{$option->getByKey('site_name')}}" width="40">
+               <img src="{{ $logo }}" alt="{{ setting('site_name', 'Adun Mancing') }}" width="40" height="40" style="object-fit: contain;">
 
                 @else 
-                     {{ $option->getByKey('site_name') }}
+                     {{ setting('site_name', 'Adun Mancing') }}
                 @endif
             
             </a>
@@ -398,9 +398,9 @@
           <!-- Promo text + Social account links -->
           <div class="col-lg-3 text-center text-lg-start pb-sm-2 pb-md-0 mb-4 mb-md-5 mb-lg-0">
             <h4 class="pb-2 mb-1">
-              <a class="text-dark-emphasis text-decoration-none" href="index.html">{{$option->getByKey('site_name')}}</a>
+              <a class="text-dark-emphasis text-decoration-none" href="{{ url('/') }}">{{ setting('site_name', 'Adun Mancing') }}</a>
             </h4>
-            <p class="fs-sm text-body mx-auto" style="max-width: 480px">{{$option->getByKey('site_description')}}</p>
+            <p class="fs-sm text-body mx-auto" style="max-width: 480px">{{ setting('site_description', 'Toko Peralatan Mancing Terlengkap') }}</p>
             <div class="d-flex justify-content-center justify-content-lg-start gap-2 pt-2 pt-md-3">
               <a class="btn btn-icon fs-base btn-outline-secondary border-0" href="#!" data-bs-toggle="tooltip" data-bs-template='<div class="tooltip fs-xs mb-n2" role="tooltip"><div class="tooltip-inner bg-transparent text-white p-0"></div></div>' title="Instagram" aria-label="Follow us on Instagram">
                 <i class="ci-instagram"></i>
@@ -542,7 +542,7 @@
 
       <!-- Copyright -->
       <p class="container fs-xs text-body text-center text-lg-start pb-md-3 mb-0">
-       {!! $option->getByKey('site_copyright') !!}
+       {!! setting('site_copyright', '&copy; ' . date('Y') . ' Adun Mancing. All rights reserved.') !!}
       </p>
     </footer>
 
@@ -655,12 +655,37 @@
             }
 
             const addToCart = async (data) => {
-                let form = $('#form-add_to_cart');
-                return await $.ajax({
-                    url: "{{ route('cart.add') }}",
-                    method: 'POST',
-                    data: data
-                })
+                try {
+                    let form = $('#form-add_to_cart');
+                    return await $.ajax({
+                        url: "{{ route('cart.add') }}",
+                        method: 'POST',
+                        data: data
+                    });
+                } catch (xhr) {
+                    if (xhr.status === 401) {
+                        // User not authenticated, show login required message and redirect
+                        const response = xhr.responseJSON;
+                        
+                        await Swal.fire({
+                            icon: 'warning',
+                            title: 'Login Diperlukan',
+                            text: response.error || 'Anda harus login terlebih dahulu untuk menambahkan produk ke keranjang',
+                            confirmButtonText: 'Login Sekarang',
+                            showCancelButton: true,
+                            cancelButtonText: 'Batal'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = response.redirect || "{{ route('login') }}";
+                            }
+                        });
+                        
+                        throw xhr; // Re-throw to prevent further processing
+                    } else {
+                        // Other errors
+                        throw xhr;
+                    }
+                }
             }
 
             const refreshCart = async () => {
@@ -680,14 +705,19 @@
             // Add to cart form submission
             $('#form-add_to_cart').on('submit', async function(e) {
                 e.preventDefault();
-                await addToCart($(this).serialize());
-                await refreshCart();
+                try {
+                    await addToCart($(this).serialize());
+                    await refreshCart();
 
-                await Swal.fire({
-                    icon: 'success',
-                    title: 'Information',
-                    text: 'Product added to cart'
-                })
+                    await Swal.fire({
+                        icon: 'success',
+                        title: 'Information',
+                        text: 'Product added to cart'
+                    });
+                } catch (error) {
+                    // Error sudah ditangani di addToCart function
+                    console.error('Add to cart failed:', error);
+                }
             });
 
             $(document).on('click', '.btn-remove_from_cart', async function(e){
@@ -950,30 +980,9 @@
                         title: 'Product added to cart'
                     });
 
-                }catch (error) {
-                    console.error('Error adding to cart:', error.status);
-                    if(error.status == 401) {
-                        const result = await Swal.fire({
-                            icon: 'warning',
-                            title: 'Login Diperlukan',
-                            text: 'Anda harus login terlebih dahulu untuk menambahkan produk ke keranjang',
-                            showCancelButton: true,
-                            confirmButtonText: 'Login Sekarang',
-                            cancelButtonText: 'Batal'
-                        })
-
-                        if(result.isConfirmed) {
-                            window.location.href = "{{ route('login') }}";
-                        }
-                        return;
-                    }else {
-                        const result = await Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'Failed to add product to cart'
-                        })
-                        return;
-                    }
+                } catch (error) {
+                    // Error sudah ditangani di addToCart function
+                    console.error('Add to cart failed:', error);
                 } finally {
                     // Restore button state
                     $(this).prop('disabled', false).html(originalContent);

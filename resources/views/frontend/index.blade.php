@@ -339,7 +339,9 @@
                             <div class="card border-0 bg-white h-100 hover-effect-lift text-center p-3">
                                 <div class="mb-3">
                                     <div class="bg-primary bg-opacity-10 rounded-circle mx-auto d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-                                        <img src="{{ $category->image_url_with_placeholder }}" class="rounded-circle" style="width: 60px; height: 60px; object-fit: cover;" alt="{{ $category->name }}">
+                                        <div class="rounded-circle overflow-hidden" style="width: 60px; height: 60px; flex-shrink: 0;">
+                                            <img src="{{ $category->image_url_with_placeholder }}" style="width: 100%; height: 100%; object-fit: cover;" alt="{{ $category->name }}">
+                                        </div>
                                     </div>
                                 </div>
                                 <h5 class="card-title h6 mb-2">{{ $category->name }}</h5>
@@ -410,9 +412,9 @@
             <!-- Products Content -->
             <div class="tab-content">
                 <div class="tab-pane fade show active" id="all-products">
-                    @if($makanProducts && $makanProducts->count() > 0)
+                    @if($featuredProducts && $featuredProducts->count() > 0)
                     <div class="row g-4">
-                        @foreach($makanProducts->take(8) as $product)
+                        @foreach($featuredProducts->take(8) as $product)
                         <div class="col-sm-6 col-lg-4 col-xl-3">
                             <div class="card product-card border-0 bg-transparent">
                                 <div class="position-relative">
@@ -476,45 +478,129 @@
                     </div>
                     @endif
                 </div>
+
+                <!-- Category-specific product tabs -->
+                @if($featuredProductsByCategory && $featuredProductsByCategory->count() > 0)
+                    @foreach($featuredProductsByCategory as $category)
+                    <div class="tab-pane fade" id="category-{{ $category->id }}">
+                        @if($category->products && $category->products->count() > 0)
+                        <div class="row g-4">
+                            @foreach($category->products as $product)
+                            <div class="col-sm-6 col-lg-4 col-xl-3">
+                                <div class="card product-card border-0 bg-transparent">
+                                    <div class="position-relative">
+                                        <a href="{{ $product->permalink }}" class="ratio ratio-4x3 d-block">
+                                            @if($product->compare_price)
+                                            <div class="position-absolute top-0 start-0 z-2 mt-2 ms-2">
+                                                <span class="badge bg-danger">-{{ $product->percentage_discount_by_compare_price }}%</span>
+                                            </div>
+                                            @endif
+                                            <img src="{{ $product->featured_image_url }}" class="card-img-top object-fit-cover rounded-3" alt="{{ $product->name }}">
+                                        </a>
+                                        <div class="position-absolute top-0 end-0 z-2 mt-2 me-2">
+                                            <button type="button" class="btn btn-icon btn-sm btn-light rounded-circle" title="Add to wishlist">
+                                                <i class="ci-heart fs-sm"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body px-0 pb-0 pt-3">
+                                        <h5 class="card-title fs-sm fw-medium mb-2">
+                                            <a href="{{ $product->permalink }}" class="text-decoration-none text-dark">{{ $product->name }}</a>
+                                        </h5>
+                                        <div class="d-flex align-items-center gap-2 mb-2">
+                                            <div class="text-warning">
+                                                @for($i = 1; $i <= 5; $i++)
+                                                <i class="ci-star-filled fs-xs"></i>
+                                                @endfor
+                                            </div>
+                                            <span class="fs-xs text-muted">(4.8)</span>
+                                        </div>
+                                        <div class="h6 mb-2">
+                                            {{ $product->price_label }}
+                                            @if($product->compare_price)
+                                            <span class="text-muted text-decoration-line-through fs-sm ms-1">{{ $product->compare_price_label }}</span>
+                                            @endif
+                                        </div>
+                                        <div class="d-grid">
+                                            @if($product->attributes->count())
+                                            <a href="{{ $product->permalink }}" class="btn btn-outline-primary btn-sm rounded-pill">Lihat Detail</a>
+                                            @else
+                                            <button type="button" class="btn btn-primary btn-sm rounded-pill btn-single_add_to_cart" data-key="{{ $product->id }}">
+                                                <i class="ci-shopping-cart fs-sm me-1"></i>Add to Cart
+                                            </button>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        @else
+                        <!-- Placeholder when no featured products in this category -->
+                        <div class="text-center py-5">
+                            <div class="mb-4">
+                                <i class="ci-package" style="font-size: 4rem; color: #dee2e6;"></i>
+                            </div>
+                            <h4 class="mb-3">Belum Ada Produk Unggulan</h4>
+                            <p class="text-muted mb-4">Produk unggulan untuk kategori {{ $category->name }} akan segera hadir</p>
+                            <a href="{{ route('web.shop', ['category_id' => $category->id]) }}" class="btn btn-primary rounded-pill">
+                                Lihat Semua Produk {{ $category->name }}
+                            </a>
+                        </div>
+                        @endif
+                    </div>
+                    @endforeach
+                @endif
             </div>
         </section>
 
-        <!-- 6. Coupons and Discounts -->
-        <section class="bg-primary py-5 my-2 my-sm-3 my-lg-4">
+        <!-- 6. Special Offers -->
+        <section class="py-5 my-2 my-sm-3 my-lg-4" style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%);">
             <div class="container">
                 <div class="row align-items-center">
+                    <!-- Left Content -->
                     <div class="col-lg-6 mb-4 mb-lg-0">
                         <div class="text-white">
-                            <h2 class="h1 text-white mb-3">Promo & Diskon Spesial</h2>
-                            <p class="fs-5 mb-4">Dapatkan penawaran terbaik untuk semua peralatan memancing berkualitas tinggi</p>
+                            <h2 class="h1 text-white mb-3">Promo Spesial</h2>
+                            <p class="fs-5 mb-4">Dapatkan diskon menarik untuk semua produk peralatan memancing berkualitas</p>
+                            
+                            <!-- Main Offer -->
+                            <div class="d-flex align-items-center mb-4">
+                                <div class="me-4">
+                                    <div class="display-3 fw-bold" style="color: #fbbf24;">20%</div>
+                                    <small class="text-white-50">DISKON</small>
+                                </div>
+                                <div>
+                                    <h5 class="text-white mb-1">Semua Produk Pancing</h5>
+                                    <p class="text-white-50 mb-0">Berlaku untuk pembelian minimal Rp 200.000</p>
+                                </div>
+                            </div>
+
                             <div class="d-flex flex-wrap gap-3">
-                                <div class="bg-white bg-opacity-20 rounded-pill px-4 py-2">
-                                    <span class="text-white fw-bold">DISKON 20%</span>
-                                </div>
-                                <div class="bg-white bg-opacity-20 rounded-pill px-4 py-2">
-                                    <span class="text-white fw-bold">GRATIS ONGKIR</span>
-                                </div>
-                                <div class="bg-white bg-opacity-20 rounded-pill px-4 py-2">
-                                    <span class="text-white fw-bold">CASHBACK 50K</span>
+                                <a href="{{ route('web.shop') }}" class="btn btn-warning btn-lg rounded-pill">
+                                    Belanja Sekarang
+                                </a>
+                                <div class="d-flex align-items-center text-white">
+                                    <i class="ci-delivery me-2"></i>
+                                    <span>Gratis Ongkir</span>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Right Content - Coupon Codes -->
                     <div class="col-lg-6">
-                        <div class="bg-white bg-opacity-10 rounded-4 p-4">
-                            <h5 class="text-white mb-3">Kupon Promo</h5>
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <div class="bg-white rounded-3 p-3 text-center">
-                                        <div class="h4 text-primary mb-1">FISHING20</div>
-                                        <small class="text-muted">Diskon 20% untuk semua produk</small>
-                                    </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="bg-white rounded-3 p-4 text-center">
+                                    <div class="h4 text-primary mb-1">FISHING20</div>
+                                    <small class="text-muted">Diskon 20% semua produk</small>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="bg-white rounded-3 p-3 text-center">
-                                        <div class="h4 text-success mb-1">NEWBIE50</div>
-                                        <small class="text-muted">Potongan 50K untuk pemula</small>
-                                    </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="bg-white rounded-3 p-4 text-center">
+                                    <div class="h4 text-success mb-1">NEWBIE50</div>
+                                    <small class="text-muted">Cashback 50K member baru</small>
                                 </div>
                             </div>
                         </div>
@@ -534,7 +620,7 @@
                         <div class="row g-4 mb-4">
                             <div class="col-sm-6">
                                 <div class="d-flex align-items-center">
-                                    <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                                    <div class="d-flex align-items-center bg-primary bg-opacity-10 rounded-circle p-2 me-3">
                                         <i class="ci-check text-primary"></i>
                                     </div>
                                     <div>
@@ -545,7 +631,7 @@
                             </div>
                             <div class="col-sm-6">
                                 <div class="d-flex align-items-center">
-                                    <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
+                                    <div class="d-flex align-items-center bg-success bg-opacity-10 rounded-circle p-2 me-3">
                                         <i class="ci-delivery text-success"></i>
                                     </div>
                                     <div>
@@ -556,7 +642,7 @@
                             </div>
                             <div class="col-sm-6">
                                 <div class="d-flex align-items-center">
-                                    <div class="bg-info bg-opacity-10 rounded-circle p-2 me-3">
+                                    <div class="d-flex align-items-center bg-info bg-opacity-10 rounded-circle p-2 me-3">
                                         <i class="ci-headphones text-info"></i>
                                     </div>
                                     <div>
@@ -567,8 +653,8 @@
                             </div>
                             <div class="col-sm-6">
                                 <div class="d-flex align-items-center">
-                                    <div class="bg-warning bg-opacity-10 rounded-circle p-2 me-3">
-                                        <i class="ci-security-check text-warning"></i>
+                                    <div class="d-flex align-items-center bg-warning bg-opacity-10 rounded-circle p-2 me-3">
+                                        <i class="ci-check-shield text-warning"></i>
                                     </div>
                                     <div>
                                         <h6 class="mb-1">Garansi Resmi</h6>

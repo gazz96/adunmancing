@@ -258,26 +258,36 @@
                     <div class="navbar flex-nowrap align-items-center bg-body pt-4 pb-2">
                         <div class="d-flex align-items-center min-w-0 ms-lg-2 me-3">
                             <div class="ratio ratio-1x1 flex-shrink-0" style="width: 50px">
-                                <img src="assets/img/shop/furniture/product/thumb.png" alt="Image">
+                                <img src="{{ $product->featured_image_url }}" alt="{{ $product->name }}">
                             </div>
-                            <h4 class="h6 fw-medium d-none d-lg-block ps-3 mb-0">Chair with wooden legs 60x100 cm</h4>
+                            <h4 class="h6 fw-medium d-none d-lg-block ps-3 mb-0">{{ $product->name }}</h4>
                             <div class="w-100 min-w-0 d-lg-none ps-2">
-                                <h4 class="fs-sm fw-medium text-truncate mb-1">Chair with wooden legs 60x100 cm</h4>
-                                <div class="h6 mb-0">$357.00 <del class="fs-xs fw-normal text-body-tertiary">$416.00</del>
+                                <h4 class="fs-sm fw-medium text-truncate mb-1">{{ $product->name }}</h4>
+                                <div class="h6 mb-0">
+                                    Rp {{ $product->price_label }}
+                                    @if($product->compare_price)
+                                        <del class="fs-xs fw-normal text-body-tertiary">Rp {{ $product->compare_price_label }}</del>
+                                    @endif
                                 </div>
                             </div>
                         </div>
-                        <div class="h4 d-none d-lg-block mb-0 ms-auto me-4">$357.00 <del
-                                class="fs-sm fw-normal text-body-tertiary">$416.00</del></div>
+                        <div class="h4 d-none d-lg-block mb-0 ms-auto me-4">
+                            Rp {{ $product->price_label }}
+                            @if($product->compare_price)
+                                <del class="fs-sm fw-normal text-body-tertiary">Rp {{ $product->compare_price_label }}</del>
+                            @endif
+                        </div>
                         <div class="d-flex gap-2">
                             <button type="button" class="btn btn-icon btn-secondary rounded-circle animate-pulse"
                                 aria-label="Add to Wishlist">
                                 <i class="ci-heart fs-base animate-target"></i>
                             </button>
                             <button type="button"
-                                class="btn btn-dark rounded-pill ms-auto d-none d-md-inline-flex px-4">Add to cart</button>
+                                class="btn btn-dark rounded-pill ms-auto d-none d-md-inline-flex px-4 sticky-add-to-cart"
+                                data-product-id="{{ $product->id }}">Add to cart</button>
                             <button type="button"
-                                class="btn btn-icon btn-dark rounded-circle animate-slide-end ms-auto d-md-none"
+                                class="btn btn-icon btn-dark rounded-circle animate-slide-end ms-auto d-md-none sticky-add-to-cart"
+                                data-product-id="{{ $product->id }}"
                                 aria-label="Add to Cart">
                                 <i class="ci-shopping-cart fs-base animate-target"></i>
                             </button>
@@ -291,14 +301,14 @@
             <section class="row pb-5 mb-2 mb-sm-3 mb-lg-4 mb-xl-5">
                 <div class="col-md-7 col-xl-8 mb-xxl-3">
                     <div>{!! $product->description !!}</div>
-                    <ul class="list-unstyled pb-md-2 pb-lg-3">
+                    {{-- <ul class="list-unstyled pb-md-2 pb-lg-3">
                         <li class="mt-1"><span class="h6 mb-0">Backrest height:</span> 46 cm</li>
                         <li class="mt-1"><span class="h6 mb-0">Width:</span> 64 cm</li>
                         <li class="mt-1"><span class="h6 mb-0">Depth:</span> 78 cm</li>
                         <li class="mt-1"><span class="h6 mb-0">Height under furniture:</span> 22 cm</li>
                         <li class="mt-1"><span class="h6 mb-0">Seat width:</span> 56 cm</li>
                         <li class="mt-1"><span class="h6 mb-0">Armrest height:</span> 63 cm</li>
-                    </ul>
+                    </ul> --}}
 
                     <div class="accordion accordion-alt-icon" id="productAccordion">
                         @if($product->warranty_information)
@@ -374,29 +384,35 @@
               }
             }'>
                         <div class="swiper-wrapper">
-
+                            @forelse($popularProducts as $popularProduct)
                             <!-- Item -->
                             <div class="swiper-slide">
                                 <div class="animate-underline">
                                     <a class="hover-effect-opacity ratio ratio-1x1 d-block mb-3"
-                                        href="shop-product-furniture.html">
-                                        <img src="assets/img/shop/furniture/04.png"
-                                            class="hover-effect-target opacity-100" alt="Product">
-                                        <img src="assets/img/shop/furniture/04-hover.jpg"
-                                            class="position-absolute top-0 start-0 hover-effect-target opacity-0 rounded-4"
-                                            alt="Room">
+                                        href="{{ $popularProduct->permalink }}">
+                                        @if($popularProduct->compare_price && $popularProduct->percentage_discount_by_compare_price > 0)
+                                            <div class="position-absolute top-0 start-0 z-2 mt-2 mt-sm-3 ms-2 ms-sm-3">
+                                                <span class="badge text-bg-danger">-{{$popularProduct->percentage_discount_by_compare_price}}%</span>
+                                            </div>
+                                        @endif
+                                        <img src="{{ $popularProduct->featured_image_url }}" class="hover-effect-target opacity-100" alt="{{ $popularProduct->name }}">
                                     </a>
                                     
                                     <h3 class="mb-2">
-                                        <a class="d-block fs-sm fw-medium text-truncate"
-                                            href="shop-product-furniture.html">
-                                            <span class="animate-target">Bed frame light gray 140x200 cm</span>
+                                        <a class="d-block fs-sm fw-medium text-truncate" href="{{ $popularProduct->permalink }}">
+                                            <span class="animate-target">{{ $popularProduct->name }}</span>
                                         </a>
                                     </h3>
-                                    <div class="h6">$760.00</div>
+                                    <div class="h6">
+                                        Rp {{ $popularProduct->price_label }}
+                                        @if($popularProduct->compare_price)
+                                            <del class="fs-sm fw-normal text-body-tertiary">Rp {{ $popularProduct->compare_price_label }}</del>
+                                        @endif
+                                    </div>
                                     <div class="d-flex gap-2">
-                                        <button type="button" class="btn btn-dark w-100 rounded-pill px-3">Add to
-                                            cart</button>
+                                        <button type="button" class="btn btn-dark w-100 rounded-pill px-3 add-to-cart-btn" data-product-id="{{ $popularProduct->id }}">
+                                            Add to cart
+                                        </button>
                                         <button type="button"
                                             class="btn btn-icon btn-secondary rounded-circle animate-pulse"
                                             aria-label="Add to wishlist">
@@ -405,222 +421,13 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Item -->
+                            @empty
                             <div class="swiper-slide">
-                                <div class="animate-underline">
-                                    <a class="hover-effect-opacity ratio ratio-1x1 d-block mb-3"
-                                        href="shop-product-furniture.html">
-                                        <img src="assets/img/shop/furniture/05.png"
-                                            class="hover-effect-target opacity-100" alt="Product">
-                                        <img src="assets/img/shop/furniture/05-hover.jpg"
-                                            class="position-absolute top-0 start-0 hover-effect-target opacity-0 rounded-4"
-                                            alt="Room">
-                                    </a>
-                                    <div class="d-flex gap-2 mb-3">
-                                        <input type="radio" class="btn-check" name="colors-5" id="color-5-1" checked>
-                                        <label for="color-5-1" class="btn btn-color fs-base" style="color: #3a94b5">
-                                            <span class="visually-hidden">Blue</span>
-                                        </label>
-                                        <input type="radio" class="btn-check" name="colors-5" id="color-5-2">
-                                        <label for="color-5-2" class="btn btn-color fs-base" style="color: #777d7E">
-                                            <span class="visually-hidden">Gray</span>
-                                        </label>
-                                    </div>
-                                    <h3 class="mb-2">
-                                        <a class="d-block fs-sm fw-medium text-truncate"
-                                            href="shop-product-furniture.html">
-                                            <span class="animate-target">Blue armchair with iron legs</span>
-                                        </a>
-                                    </h3>
-                                    <div class="h6">$220.00</div>
-                                    <div class="d-flex gap-2">
-                                        <button type="button" class="btn btn-dark w-100 rounded-pill px-3">Add to
-                                            cart</button>
-                                        <button type="button"
-                                            class="btn btn-icon btn-secondary rounded-circle animate-pulse"
-                                            aria-label="Add to wishlist">
-                                            <i class="ci-heart fs-base animate-target"></i>
-                                        </button>
-                                    </div>
+                                <div class="text-center py-4">
+                                    <p class="text-muted">Tidak ada produk populer saat ini.</p>
                                 </div>
                             </div>
-
-                            <!-- Item -->
-                            <div class="swiper-slide">
-                                <div class="animate-underline">
-                                    <a class="hover-effect-opacity ratio ratio-1x1 d-block mb-3"
-                                        href="shop-product-furniture.html">
-                                        <div class="position-absolute top-0 start-0 z-2 mt-2 mt-sm-3 ms-2 ms-sm-3">
-                                            <span class="badge text-bg-danger">-13%</span>
-                                        </div>
-                                        <img src="assets/img/shop/furniture/06.png"
-                                            class="hover-effect-target opacity-100" alt="Product">
-                                        <img src="assets/img/shop/furniture/06-hover.jpg"
-                                            class="position-absolute top-0 start-0 hover-effect-target opacity-0 rounded-4"
-                                            alt="Room">
-                                    </a>
-                                    <div class="d-flex gap-2 mb-3">
-                                        <input type="radio" class="btn-check" name="colors-6" id="color-6-1" checked>
-                                        <label for="color-6-1" class="btn btn-color fs-base" style="color: #bdaB9e">
-                                            <span class="visually-hidden">Beige</span>
-                                        </label>
-                                        <input type="radio" class="btn-check" name="colors-6" id="color-6-2">
-                                        <label for="color-6-2" class="btn btn-color fs-base" style="color: #d65c46">
-                                            <span class="visually-hidden">Terracotta</span>
-                                        </label>
-                                        <input type="radio" class="btn-check" name="colors-6" id="color-6-3">
-                                        <label for="color-6-3" class="btn btn-color fs-base" style="color: #e0e5eb">
-                                            <span class="visually-hidden">White</span>
-                                        </label>
-                                    </div>
-                                    <h3 class="mb-2">
-                                        <a class="d-block fs-sm fw-medium text-truncate"
-                                            href="shop-product-furniture.html">
-                                            <span class="animate-target">Loft-style lamp 120x80 cm</span>
-                                        </a>
-                                    </h3>
-                                    <div class="h6">$140.00 <del
-                                            class="fs-sm fw-normal text-body-tertiary">$160.00</del></div>
-                                    <div class="d-flex gap-2">
-                                        <button type="button" class="btn btn-dark w-100 rounded-pill px-3">Add to
-                                            cart</button>
-                                        <button type="button"
-                                            class="btn btn-icon btn-secondary rounded-circle animate-pulse"
-                                            aria-label="Add to wishlist">
-                                            <i class="ci-heart fs-base animate-target"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Item -->
-                            <div class="swiper-slide">
-                                <div class="animate-underline">
-                                    <a class="hover-effect-opacity ratio ratio-1x1 d-block mb-3"
-                                        href="shop-product-furniture.html">
-                                        <img src="assets/img/shop/furniture/08.png"
-                                            class="hover-effect-target opacity-100" alt="Product">
-                                        <img src="assets/img/shop/furniture/08-hover.jpg"
-                                            class="position-absolute top-0 start-0 hover-effect-target opacity-0 rounded-4"
-                                            alt="Room">
-                                    </a>
-                                    <div class="d-flex gap-2 mb-3">
-                                        <input type="radio" class="btn-check" name="colors-8" id="color-8-1" checked>
-                                        <label for="color-8-1" class="btn btn-color fs-base" style="color: #305853">
-                                            <span class="visually-hidden">Green</span>
-                                        </label>
-                                        <input type="radio" class="btn-check" name="colors-8" id="color-8-2">
-                                        <label for="color-8-2" class="btn btn-color fs-base" style="color: #34598f">
-                                            <span class="visually-hidden">Blue</span>
-                                        </label>
-                                    </div>
-                                    <h3 class="mb-2">
-                                        <a class="d-block fs-sm fw-medium text-truncate"
-                                            href="shop-product-furniture.html">
-                                            <span class="animate-target">Armchair with wooden legs 60x100 cm</span>
-                                        </a>
-                                    </h3>
-                                    <div class="h6">$320.50</div>
-                                    <div class="d-flex gap-2">
-                                        <button type="button" class="btn btn-dark w-100 rounded-pill px-3">Add to
-                                            cart</button>
-                                        <button type="button"
-                                            class="btn btn-icon btn-secondary rounded-circle animate-pulse"
-                                            aria-label="Add to wishlist">
-                                            <i class="ci-heart fs-base animate-target"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Item -->
-                            <div class="swiper-slide">
-                                <div class="animate-underline">
-                                    <a class="hover-effect-opacity ratio ratio-1x1 d-block mb-3"
-                                        href="shop-product-furniture.html">
-                                        <img src="assets/img/shop/furniture/02.png"
-                                            class="hover-effect-target opacity-100" alt="Product">
-                                        <img src="assets/img/shop/furniture/02-hover.jpg"
-                                            class="position-absolute top-0 start-0 hover-effect-target opacity-0 rounded-4"
-                                            alt="Room">
-                                    </a>
-                                    <div class="d-flex gap-2 mb-3">
-                                        <input type="radio" class="btn-check" name="colors-2" id="color-2-1" checked>
-                                        <label for="color-2-1" class="btn btn-color fs-base" style="color: #6a6f7b">
-                                            <span class="visually-hidden">Gray</span>
-                                        </label>
-                                        <input type="radio" class="btn-check" name="colors-2" id="color-2-2">
-                                        <label for="color-2-2" class="btn btn-color fs-base" style="color: #373b42">
-                                            <span class="visually-hidden">Dark gray</span>
-                                        </label>
-                                        <input type="radio" class="btn-check" name="colors-2" id="color-2-3">
-                                        <label for="color-2-3" class="btn btn-color fs-base" style="color: #216aae">
-                                            <span class="visually-hidden">Blue</span>
-                                        </label>
-                                        <input type="radio" class="btn-check" name="colors-2" id="color-2-4">
-                                        <label for="color-2-4" class="btn btn-color fs-base" style="color: #187c1c">
-                                            <span class="visually-hidden">Green</span>
-                                        </label>
-                                    </div>
-                                    <h3 class="mb-2">
-                                        <a class="d-block fs-sm fw-medium text-truncate"
-                                            href="shop-product-furniture.html">
-                                            <span class="animate-target">Decorative flowerpot with a plant</span>
-                                        </a>
-                                    </h3>
-                                    <div class="h6">$107.50</div>
-                                    <div class="d-flex gap-2">
-                                        <button type="button" class="btn btn-dark w-100 rounded-pill px-3">Add to
-                                            cart</button>
-                                        <button type="button"
-                                            class="btn btn-icon btn-secondary rounded-circle animate-pulse"
-                                            aria-label="Add to wishlist">
-                                            <i class="ci-heart fs-base animate-target"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Item -->
-                            <div class="swiper-slide">
-                                <div class="animate-underline">
-                                    <a class="hover-effect-opacity ratio ratio-1x1 d-block mb-3"
-                                        href="shop-product-furniture.html">
-                                        <img src="assets/img/shop/furniture/07.png"
-                                            class="hover-effect-target opacity-100" alt="Product">
-                                        <img src="assets/img/shop/furniture/07-hover.jpg"
-                                            class="position-absolute top-0 start-0 hover-effect-target opacity-0 rounded-4"
-                                            alt="Room">
-                                    </a>
-                                    <div class="d-flex gap-2 mb-3">
-                                        <input type="radio" class="btn-check" name="colors-7" id="color-7-1" checked>
-                                        <label for="color-7-1" class="btn btn-color fs-base" style="color: #71706c">
-                                            <span class="visually-hidden">Dark gray</span>
-                                        </label>
-                                        <input type="radio" class="btn-check" name="colors-7" id="color-7-2">
-                                        <label for="color-7-2" class="btn btn-color fs-base" style="color: #c1c3b8">
-                                            <span class="visually-hidden">Light gray</span>
-                                        </label>
-                                    </div>
-                                    <h3 class="mb-2">
-                                        <a class="d-block fs-sm fw-medium text-truncate"
-                                            href="shop-product-furniture.html">
-                                            <span class="animate-target">Chair with a cushion for the legs</span>
-                                        </a>
-                                    </h3>
-                                    <div class="h6">$435.00</div>
-                                    <div class="d-flex gap-2">
-                                        <button type="button" class="btn btn-dark w-100 rounded-pill px-3">Add to
-                                            cart</button>
-                                        <button type="button"
-                                            class="btn btn-icon btn-secondary rounded-circle animate-pulse"
-                                            aria-label="Add to wishlist">
-                                            <i class="ci-heart fs-base animate-target"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                            @endforelse
                         </div>
                     </div>
                 </div>
@@ -645,75 +452,41 @@
             <section class="pb-5 mb-2 mb-sm-3 mb-lg-4 mb-xl-5">
                 <h2 class="h3 pb-2 pb-sm-3">From the blog</h2>
                 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 mb-xxl-3">
-
+                    @forelse($blogPosts as $blogPost)
                     <!-- Article -->
                     <article class="col">
-                        <a class="ratio d-flex hover-effect-scale rounded-4 overflow-hidden" href="#!"
-                            style="--cz-aspect-ratio: calc(260 / 306 * 100%)">
-                            <img src="assets/img/blog/grid/v2/10.jpg" class="hover-effect-target" alt="Image">
+                        <a class="ratio d-flex hover-effect-scale rounded-4 overflow-hidden" 
+                           href="{{ route('web.blog-post', $blogPost->slug) }}"
+                           style="--cz-aspect-ratio: calc(260 / 306 * 100%)">
+                            <img src="{{ $blogPost->featured_image_url ?? 'assets/img/blog/grid/v2/10.jpg' }}" 
+                                 class="hover-effect-target" alt="{{ $blogPost->title }}">
                         </a>
                         <div class="pt-4">
+                            @if($blogPost->categories->first())
                             <div class="nav pb-2 mb-1">
-                                <a class="nav-link text-body fs-xs text-uppercase p-0" href="#!">Furniture</a>
+                                <span class="nav-link text-body fs-xs text-uppercase p-0">{{ $blogPost->categories->first()->name ?? 'Blog' }}</span>
                             </div>
+                            @endif
                             <h3 class="h6 mb-3">
-                                <a class="hover-effect-underline" href="#!">Furnishing your space: a guide to
-                                    choosing the perfect furniture pieces</a>
+                                <a class="hover-effect-underline" 
+                                   href="{{ route('web.blog-post', $blogPost->slug) }}">
+                                    {{ Str::limit($blogPost->title, 60) }}
+                                </a>
                             </h3>
                             <div class="nav align-items-center gap-2 fs-xs">
-                                <a class="nav-link text-body-secondary fs-xs fw-normal p-0" href="#!">Oliver
-                                    Harris</a>
+                                <span class="nav-link text-body-secondary fs-xs fw-normal p-0">{{ $blogPost->author ?? 'Admin' }}</span>
                                 <hr class="vr my-1 mx-1">
-                                <span class="text-body-secondary">September 5, 2024</span>
+                                <span class="text-body-secondary">{{ $blogPost->created_at->format('F j, Y') }}</span>
                             </div>
                         </div>
                     </article>
-
-                    <!-- Article -->
-                    <article class="col">
-                        <a class="ratio d-flex hover-effect-scale rounded-4 overflow-hidden" href="#!"
-                            style="--cz-aspect-ratio: calc(260 / 306 * 100%)">
-                            <img src="assets/img/blog/grid/v2/11.jpg" class="hover-effect-target" alt="Image">
-                        </a>
-                        <div class="pt-4">
-                            <div class="nav pb-2 mb-1">
-                                <a class="nav-link text-body fs-xs text-uppercase p-0" href="#!">Interior design</a>
-                            </div>
-                            <h3 class="h6 mb-3">
-                                <a class="hover-effect-underline" href="#!">Transform your living space with these
-                                    chic interior design tips</a>
-                            </h3>
-                            <div class="nav align-items-center gap-2 fs-xs">
-                                <a class="nav-link text-body-secondary fs-xs fw-normal p-0" href="#!">Ethan
-                                    Miller</a>
-                                <hr class="vr my-1 mx-1">
-                                <span class="text-body-secondary">August 23, 2024</span>
-                            </div>
+                    @empty
+                    <div class="col-12">
+                        <div class="text-center py-4">
+                            <p class="text-muted">Tidak ada artikel blog saat ini.</p>
                         </div>
-                    </article>
-
-                    <!-- Article -->
-                    <article class="col">
-                        <a class="ratio d-flex hover-effect-scale rounded-4 overflow-hidden" href="#!"
-                            style="--cz-aspect-ratio: calc(260 / 306 * 100%)">
-                            <img src="assets/img/blog/grid/v2/13.jpg" class="hover-effect-target" alt="Image">
-                        </a>
-                        <div class="pt-4">
-                            <div class="nav pb-2 mb-1">
-                                <a class="nav-link text-body fs-xs text-uppercase p-0" href="#!">Home decoration</a>
-                            </div>
-                            <h3 class="h6 mb-3">
-                                <a class="hover-effect-underline" href="#!">Elevate your space with trendy home
-                                    decoration ideas</a>
-                            </h3>
-                            <div class="nav align-items-center gap-2 fs-xs">
-                                <a class="nav-link text-body-secondary fs-xs fw-normal p-0" href="#!">Olivia
-                                    Anderson</a>
-                                <hr class="vr my-1 mx-1">
-                                <span class="text-body-secondary">August 9, 2024</span>
-                            </div>
-                        </div>
-                    </article>
+                    </div>
+                    @endforelse
                 </div>
             </section>
 
@@ -1025,39 +798,37 @@
               }
             }'>
                         <div class="swiper-wrapper">
-
+                            @forelse($viewedProducts as $viewedProduct)
                             <!-- Item -->
                             <div class="swiper-slide">
                                 <div class="animate-underline">
                                     <a class="hover-effect-opacity ratio ratio-1x1 d-block mb-3"
-                                        href="shop-product-furniture.html">
-                                        <img src="assets/img/shop/furniture/16.png"
-                                            class="hover-effect-target opacity-100" alt="Product">
-                                        <img src="assets/img/shop/furniture/16-hover.jpg"
-                                            class="position-absolute top-0 start-0 hover-effect-target opacity-0 rounded-4"
-                                            alt="Room">
+                                        href="{{ $viewedProduct->permalink }}">
+                                        @if($viewedProduct->compare_price && $viewedProduct->percentage_discount_by_compare_price > 0)
+                                            <div class="position-absolute top-0 start-0 z-2 mt-2 mt-sm-3 ms-2 ms-sm-3">
+                                                <span class="badge text-bg-danger">-{{$viewedProduct->percentage_discount_by_compare_price}}%</span>
+                                            </div>
+                                        @endif
+                                        <img src="{{ $viewedProduct->featured_image_url }}" 
+                                             class="hover-effect-target opacity-100" alt="{{ $viewedProduct->name }}">
                                     </a>
-                                    <div class="d-flex gap-2 mb-3">
-                                        <input type="radio" class="btn-check" name="colors-16" id="color-16-1"
-                                            checked>
-                                        <label for="color-16-1" class="btn btn-color fs-base" style="color: #b2b8c0">
-                                            <span class="visually-hidden">Light gray</span>
-                                        </label>
-                                        <input type="radio" class="btn-check" name="colors-16" id="color-16-2">
-                                        <label for="color-16-2" class="btn btn-color fs-base" style="color: #6a6662">
-                                            <span class="visually-hidden">Dark gray</span>
-                                        </label>
-                                    </div>
+                                    
                                     <h3 class="mb-2">
-                                        <a class="d-block fs-sm fw-medium text-truncate"
-                                            href="shop-product-furniture.html">
-                                            <span class="animate-target">Soft armchair with wooden legs</span>
+                                        <a class="d-block fs-sm fw-medium text-truncate" href="{{ $viewedProduct->permalink }}">
+                                            <span class="animate-target">{{ $viewedProduct->name }}</span>
                                         </a>
                                     </h3>
-                                    <div class="h6">$215.00</div>
+                                    <div class="h6">
+                                        Rp {{ $viewedProduct->price_label }}
+                                        @if($viewedProduct->compare_price)
+                                            <del class="fs-sm fw-normal text-body-tertiary">Rp {{ $viewedProduct->compare_price_label }}</del>
+                                        @endif
+                                    </div>
                                     <div class="d-flex gap-2">
-                                        <button type="button" class="btn btn-dark w-100 rounded-pill px-3">Add to
-                                            cart</button>
+                                        <button type="button" class="btn btn-dark w-100 rounded-pill px-3 add-to-cart-btn" 
+                                                data-product-id="{{ $viewedProduct->id }}">
+                                            Add to cart
+                                        </button>
                                         <button type="button"
                                             class="btn btn-icon btn-secondary rounded-circle animate-pulse"
                                             aria-label="Add to wishlist">
@@ -1066,136 +837,13 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Item -->
+                            @empty
                             <div class="swiper-slide">
-                                <div class="animate-underline">
-                                    <a class="hover-effect-opacity ratio ratio-1x1 d-block mb-3"
-                                        href="shop-product-furniture.html">
-                                        <img src="assets/img/shop/furniture/10.png"
-                                            class="hover-effect-target opacity-100" alt="Product">
-                                        <img src="assets/img/shop/furniture/10-hover.jpg"
-                                            class="position-absolute top-0 start-0 hover-effect-target opacity-0 rounded-4"
-                                            alt="Room">
-                                    </a>
-                                    <div class="d-flex gap-2 mb-3">
-                                        <input type="radio" class="btn-check" name="colors-10" id="color-10-1"
-                                            checked>
-                                        <label for="color-10-1" class="btn btn-color fs-base" style="color: #677382">
-                                            <span class="visually-hidden">Navy blue</span>
-                                        </label>
-                                        <input type="radio" class="btn-check" name="colors-10" id="color-10-2">
-                                        <label for="color-10-2" class="btn btn-color fs-base" style="color: #919384">
-                                            <span class="visually-hidden">Gray</span>
-                                        </label>
-                                        <input type="radio" class="btn-check" name="colors-10" id="color-10-3">
-                                        <label for="color-10-3" class="btn btn-color fs-base" style="color: #b2b8c0">
-                                            <span class="visually-hidden">Light gray</span>
-                                        </label>
-                                    </div>
-                                    <h3 class="mb-2">
-                                        <a class="d-block fs-sm fw-medium text-truncate"
-                                            href="shop-product-furniture.html">
-                                            <span class="animate-target">Navy blue low sofa for relaxation</span>
-                                        </a>
-                                    </h3>
-                                    <div class="h6">$1,250.00</div>
-                                    <div class="d-flex gap-2">
-                                        <button type="button" class="btn btn-dark w-100 rounded-pill px-3">Add to
-                                            cart</button>
-                                        <button type="button"
-                                            class="btn btn-icon btn-secondary rounded-circle animate-pulse"
-                                            aria-label="Add to wishlist">
-                                            <i class="ci-heart fs-base animate-target"></i>
-                                        </button>
-                                    </div>
+                                <div class="text-center py-4">
+                                    <p class="text-muted">Tidak ada produk yang pernah dilihat.</p>
                                 </div>
                             </div>
-
-                            <!-- Item -->
-                            <div class="swiper-slide">
-                                <div class="animate-underline">
-                                    <a class="hover-effect-opacity ratio ratio-1x1 d-block mb-3"
-                                        href="shop-product-furniture.html">
-                                        <img src="assets/img/shop/furniture/11.png"
-                                            class="hover-effect-target opacity-100" alt="Product">
-                                        <img src="assets/img/shop/furniture/11-hover.jpg"
-                                            class="position-absolute top-0 start-0 hover-effect-target opacity-0 rounded-4"
-                                            alt="Room">
-                                    </a>
-                                    <div class="d-flex gap-2 mb-3">
-                                        <input type="radio" class="btn-check" name="colors-11" id="color-11-1"
-                                            checked>
-                                        <label for="color-11-1" class="btn btn-color fs-base" style="color: #677382">
-                                            <span class="visually-hidden">Green</span>
-                                        </label>
-                                        <input type="radio" class="btn-check" name="colors-11" id="color-11-2">
-                                        <label for="color-11-2" class="btn btn-color fs-base" style="color: #548294">
-                                            <span class="visually-hidden">Blue</span>
-                                        </label>
-                                    </div>
-                                    <h3 class="mb-2">
-                                        <a class="d-block fs-sm fw-medium text-truncate"
-                                            href="shop-product-furniture.html">
-                                            <span class="animate-target">Armchair with wooden legs 70x120 cm</span>
-                                        </a>
-                                    </h3>
-                                    <div class="h6">$269.99</div>
-                                    <div class="d-flex gap-2">
-                                        <button type="button" class="btn btn-dark w-100 rounded-pill px-3">Add to
-                                            cart</button>
-                                        <button type="button"
-                                            class="btn btn-icon btn-secondary rounded-circle animate-pulse"
-                                            aria-label="Add to wishlist">
-                                            <i class="ci-heart fs-base animate-target"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Item -->
-                            <div class="swiper-slide">
-                                <div class="animate-underline">
-                                    <a class="hover-effect-opacity ratio ratio-1x1 d-block mb-3"
-                                        href="shop-product-furniture.html">
-                                        <img src="assets/img/shop/furniture/03.png"
-                                            class="hover-effect-target opacity-100" alt="Product">
-                                        <img src="assets/img/shop/furniture/03-hover.jpg"
-                                            class="position-absolute top-0 start-0 hover-effect-target opacity-0 rounded-4"
-                                            alt="Room">
-                                    </a>
-                                    <div class="d-flex gap-2 mb-3">
-                                        <input type="radio" class="btn-check" name="colors-3" id="color-3-1" checked>
-                                        <label for="color-3-1" class="btn btn-color fs-base" style="color: #a36540">
-                                            <span class="visually-hidden">Brown</span>
-                                        </label>
-                                        <input type="radio" class="btn-check" name="colors-3" id="color-3-2">
-                                        <label for="color-3-2" class="btn btn-color fs-base" style="color: #f8d7b5">
-                                            <span class="visually-hidden">Beige</span>
-                                        </label>
-                                        <input type="radio" class="btn-check" name="colors-3" id="color-3-3">
-                                        <label for="color-3-3" class="btn btn-color fs-base" style="color: #e0e5eb">
-                                            <span class="visually-hidden">White</span>
-                                        </label>
-                                    </div>
-                                    <h3 class="mb-2">
-                                        <a class="d-block fs-sm fw-medium text-truncate"
-                                            href="shop-product-furniture.html">
-                                            <span class="animate-target">Home fragrance with the aroma of spices</span>
-                                        </a>
-                                    </h3>
-                                    <div class="h6">$24.00</div>
-                                    <div class="d-flex gap-2">
-                                        <button type="button" class="btn btn-dark w-100 rounded-pill px-3">Add to
-                                            cart</button>
-                                        <button type="button"
-                                            class="btn btn-icon btn-secondary rounded-circle animate-pulse"
-                                            aria-label="Add to wishlist">
-                                            <i class="ci-heart fs-base animate-target"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                            @endforelse
                         </div>
                     </div>
                 </div>
