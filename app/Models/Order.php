@@ -92,6 +92,17 @@ class Order extends Model
         static::creating(function ($order) {
             $order->order_number = self::generateOrderNumber();
         });
+
+        // Reduce stock when order is paid
+        static::updated(function ($order) {
+            if ($order->wasChanged('payment_status') && $order->payment_status === 'paid') {
+                $order->reduceProductStock();
+            }
+            
+            if ($order->wasChanged('status') && $order->status === 'cancelled') {
+                $order->restoreProductStock();
+            }
+        });
     }
 
     public function getDestinationNameAttribute()
@@ -136,6 +147,52 @@ class Order extends Model
         }
 
         return '';
+    }
+
+    // Stock Management Methods
+    public function reduceProductStock()
+    {
+        foreach ($this->items as $item) {
+            $product = $item->product;
+            if ($product && $product->manage_stock) {
+                $product->reduceStock($item->quantity);
+            }
+        }
+    }
+
+    public function restoreProductStock()
+    {
+        foreach ($this->items as $item) {
+            $product = $item->product;
+            if ($product && $product->manage_stock) {
+                $product->restoreStock($item->quantity);
+            }
+        }
+    }
+
+    public function canFulfillOrder()
+    {
+        foreach ($this->items as $item) {
+            $product = $item->product;
+            if ($product && !$product->canPurchase($item->quantity)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public function getOutOfStockItems()
+    {
+        $outOfStockItems = [];
+        
+        foreach ($this->items as $item) {
+            $product = $item->product;
+            if ($product && !$product->canPurchase($item->quantity)) {
+                $outOfStockItems[] = $item;
+            }
+        }
+        
+        return collect($outOfStockItems);
     }
 
 }

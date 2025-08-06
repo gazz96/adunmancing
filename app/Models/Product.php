@@ -9,7 +9,16 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'slug', 'description', 'price', 'status', 'compare_price', 'sku', 'status', 'featured_image', 'weight', 'dimension'];
+    protected $fillable = [
+        'name', 'slug', 'description', 'price', 'status', 'compare_price', 'sku', 
+        'featured_image', 'weight', 'dimension', 'manage_stock', 'stock_quantity', 
+        'allow_backorders', 'low_stock_threshold'
+    ];
+
+    protected $casts = [
+        'manage_stock' => 'boolean',
+        'allow_backorders' => 'boolean',
+    ];
 
     protected $appends = [
         'featured_image_url'
@@ -47,7 +56,17 @@ class Product extends Model
 
     public function getFeaturedImageUrlAttribute()
     {
-        return $this->featured_image ? asset('storage/' . $this->featured_image) : null;
+        if (!$this->featured_image) {
+            return null;
+        }
+        
+        // Check if it's an external URL (starts with http:// or https://)
+        if (filter_var($this->featured_image, FILTER_VALIDATE_URL)) {
+            return $this->featured_image;
+        }
+        
+        // Otherwise, it's a local file
+        return asset('storage/' . $this->featured_image);
     }
 
     public function getPercentageDiscountByComparePriceAttribute()
@@ -61,5 +80,87 @@ class Product extends Model
     public function getPermalinkAttribute()
     {
         return route('frontend.product-detail', $this->slug);
+    }
+
+    // Stock Management Methods
+    public function isInStock()
+    {
+        if (!$this->manage_stock) {
+            return true; // If stock management is disabled, always in stock
+        }
+
+        return $this->stock_quantity > 0 || $this->allow_backorders;
+    }
+
+    public function getStockStatus()
+    {
+        if (!$this->manage_stock) {
+            return 'in_stock';
+        }
+
+        if ($this->stock_quantity <= 0) {
+            return $this->allow_backorders ? 'on_backorder' : 'out_of_stock';
+        }
+
+        if ($this->low_stock_threshold && $this->stock_quantity <= $this->low_stock_threshold) {
+            return 'low_stock';
+        }
+
+        return 'in_stock';
+    }
+
+    public function getStockStatusLabelAttribute()
+    {
+        $status = $this->getStockStatus();
+        
+        return match($status) {
+            'in_stock' => 'Tersedia',
+            'low_stock' => 'Stok Terbatas',
+            'on_backorder' => 'Pre-order',
+            'out_of_stock' => 'Habis',
+            default => 'Tersedia'
+        };
+    }
+
+    public function canPurchase($quantity = 1)
+    {
+        if (!$this->manage_stock) {
+            return true;
+        }
+
+        if ($this->stock_quantity >= $quantity) {
+            return true;
+        }
+
+        return $this->allow_backorders;
+    }
+
+    public function reduceStock($quantity)
+    {
+        if (!$this->manage_stock) {
+            return true;
+        }
+
+        if ($this->stock_quantity >= $quantity) {
+            $this->decrement('stock_quantity', $quantity);
+            return true;
+        }
+
+        if ($this->allow_backorders) {
+            $this->decrement('stock_quantity', $quantity);
+            return true;
+        }
+
+        return false;
+    }
+
+    public function restoreStock($quantity)
+    {
+        if (!$this->manage_stock) {
+            return true;
+        }
+
+        $this->increment('stock_quantity', $quantity);
+        return true;
     }
 }
