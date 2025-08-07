@@ -164,9 +164,9 @@
                         <div class="position-sticky top-0" style="padding-top: 115px">
                             <div class="d-flex align-items-center justify-content-between border-bottom pb-4 mb-4">
                                 <h2 class="h5 mb-0 me-3">Order summary</h2>
-                                <div class="nav">
+                                {{-- <div class="nav">
                                     <a class="nav-link text-decoration-underline p-0" href="checkout-v2-cart.html">Edit</a>
-                                </div>
+                                </div> --}}
                             </div>
                             <ul class="list-unstyled fs-sm gap-3 mb-0">
                                 <li class="d-flex justify-content-between">

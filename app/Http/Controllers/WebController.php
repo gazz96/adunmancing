@@ -442,7 +442,8 @@ class WebController extends Controller
             $order = Order::create([
                 'user_id' => $userId,
                 'address' => $address->address,
-                'total_amount' => $total,
+                'subtotal' => $total,
+                'total_amount' => $total + $deliveryPrice,
                 'status' => 'pending',
                 'note' => $request->note,
                 'courier' => $courier,
