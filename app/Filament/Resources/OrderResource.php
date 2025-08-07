@@ -41,11 +41,12 @@ class OrderResource extends Resource
                             ->searchable()
                             ->required(),
 
-                        // Select::make('coupon_id')
-                        //     ->label('Coupon')
-                        //     ->relationship('coupon', 'code')
-                        //     ->searchable()
-                        //     ->nullable(),
+                        Select::make('coupon_id')
+                            ->label('Kupon')
+                            ->relationship('coupon', 'code')
+                            ->searchable()
+                            ->nullable()
+                            ->getOptionLabelFromRecordUsing(fn($record) => "{$record->code} - {$record->name}"),
 
                         Repeater::make('items')
                             ->label('Order Items')
@@ -97,15 +98,34 @@ class OrderResource extends Resource
                             ->columns(4)
                             ->itemLabel('Add Item'),
 
+                        TextInput::make('subtotal')
+                            ->disabled()
+                            ->dehydrated()
+                            ->numeric()
+                            ->label('Subtotal')
+                            ->afterStateHydrated(function($state, callable $set, callable $get) {
+                                $total = collect($get('items'))->sum('subtotal');
+                                $set('subtotal', $total);
+                            }),
+                        
+                        TextInput::make('coupon_code')
+                            ->label('Kode Kupon')
+                            ->disabled()
+                            ->placeholder('Tidak ada kupon'),
+                            
+                        TextInput::make('coupon_discount')
+                            ->label('Diskon Kupon')
+                            ->disabled()
+                            ->numeric()
+                            ->prefix('Rp')
+                            ->placeholder('0'),
+                            
                         TextInput::make('total_amount')
                             ->disabled()
                             ->dehydrated()
                             ->numeric()
-                            ->label('Total')
-                            ->afterStateHydrated(function($state, callable $set, callable $get) {
-                                $total = collect($get('items'))->sum('subtotal');
-                                $set('total_amount', $total);
-                            }),
+                            ->label('Total Akhir')
+                            ->prefix('Rp'),
                     ]),
 
                 Section::make('Shipping Information')
@@ -204,6 +224,23 @@ class OrderResource extends Resource
                         'danger' => 'cancelled',
                     ])
                     ->badge(),
+                TextColumn::make('coupon_code')
+                    ->label('Kupon')
+                    ->badge()
+                    ->color('success')
+                    ->placeholder('Tidak ada kupon')
+                    ->toggleable(),
+                TextColumn::make('coupon_discount')
+                    ->label('Diskon')
+                    ->money('IDR')
+                    ->placeholder('Rp 0')
+                    ->visible(fn($record) => $record && $record->coupon_discount > 0)
+                    ->toggleable(),
+                TextColumn::make('subtotal')
+                    ->label('Subtotal')
+                    ->money('IDR')
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('total_amount')->money('IDR')->sortable()->label('Total'),
                 TextColumn::make('created_at')->dateTime('d M Y H:i')->sortable(),
             ])

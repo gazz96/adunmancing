@@ -567,7 +567,7 @@ class WebController extends Controller
     {
         return view('frontend.my-account.index', [
             'user' => auth()->user(),
-            'orders' => Order::with(['paymentMethod', 'items.product'])
+            'orders' => Order::with(['paymentMethod', 'items.product', 'coupon'])
                 ->where('user_id', Auth::id())
                 ->when($request->status, function($query, $status){
                     return $query->where('status', $status);

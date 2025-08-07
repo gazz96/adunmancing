@@ -113,6 +113,9 @@
                                                 <span class="bg-info rounded-circle p-1 me-2"></span>
                                                 {{ $order->status }}
                                             </li>
+                                            @if($order->hasCoupon())
+                                                <li class="text-success">Coupon: {{ $order->coupon_code }} (-{{ $order->getCouponDiscountFormatted() }})</li>
+                                            @endif
                                             <li class="fw-medium text-body-emphasis">{{ number_format($order->total)}}</li>
                                         </ul>
                                     </td>
@@ -127,6 +130,9 @@
                                         </span>
                                     </td>
                                     <td class="fw-medium py-3 d-none d-md-table-cell">
+                                        @if($order->hasCoupon())
+                                            <div class="text-success small mb-1">{{ $order->coupon_code }} (-{{ $order->getCouponDiscountFormatted() }})</div>
+                                        @endif
                                         {{ number_format($order->total)}}
                                         <span class="total d-none">{{ number_format($order->total)}}</span>
                                     </td>
@@ -318,6 +324,29 @@
             </li>
             @endif
             <li class="d-flex justify-content-between">
+              Shipping:
+              <span class="text-body-emphasis fw-medium text-end ms-2">Rp {{number_format($order->delivery_price)}}</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="border-top pt-4">
+          <h6>Order Summary</h6>
+          <ul class="list-unstyled fs-sm mb-4">
+            @if($order->subtotal && $order->subtotal > 0)
+            <li class="d-flex justify-content-between mb-1">
+              Subtotal:
+              <span class="text-body-emphasis fw-medium text-end ms-2">{{ $order->getSubtotalFormatted() }}</span>
+            </li>
+            @endif
+            @if($order->hasCoupon())
+            <li class="d-flex justify-content-between mb-1">
+              Coupon Discount ({{ $order->coupon_code }}):
+              <span class="text-success fw-medium text-end ms-2">-{{ $order->getCouponDiscountFormatted() }}</span>
+            </li>
+            @endif
+            <li class="d-flex justify-content-between mb-1">
               Shipping:
               <span class="text-body-emphasis fw-medium text-end ms-2">Rp {{number_format($order->delivery_price)}}</span>
             </li>
