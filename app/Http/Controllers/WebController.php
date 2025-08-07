@@ -74,6 +74,13 @@ class WebController extends Controller
             'productCategories' => \App\Models\Category::orderBy('name')
                 ->get(),
             'products' => \App\Models\Product::orderBy('created_at', 'desc')
+                ->when($request->search, function ($query, $search) {
+                    return $query->where(function ($query) use ($search) {
+                        $query->where('name', 'LIKE', '%' . $search . '%')
+                              ->orWhere('description', 'LIKE', '%' . $search . '%')
+                              ->orWhere('short_description', 'LIKE', '%' . $search . '%');
+                    });
+                })
                 ->when($request->category_id, function ($query, $category_id) {
                     return $query->whereHas('categories', function ($query) use ($category_id) {
                         if (is_array($category_id)) {
@@ -119,19 +126,44 @@ class WebController extends Controller
             ->take(4)
             ->get();
 
+        // Get product reviews with user data
+        $reviews = \App\Models\ProductReview::where('product_id', $product->id)
+            ->approved()
+            ->with('user')
+            ->recent()
+            ->take(10)
+            ->get();
+
+        // Get review stats
+        $averageRating = \App\Models\ProductReview::getAverageRating($product->id);
+        $totalReviews = $reviews->count();
+        $ratingDistribution = \App\Models\ProductReview::getRatingDistribution($product->id);
+
+        // Check if current user can review (if logged in)
+        $canUserReview = false;
+        $userReviewReason = null;
+        if (auth()->check()) {
+            $userId = auth()->id();
+            if (\App\Models\ProductReview::hasUserReviewedProduct($userId, $product->id)) {
+                $userReviewReason = 'already_reviewed';
+            } else {
+                $canUserReview = true;
+            }
+        } else {
+            $userReviewReason = 'not_logged_in';
+        }
+
         return view('frontend.product-detail', [
             'product' => $product,
             'popularProducts' => $popularProducts,
             'blogPosts' => $blogPosts,
             'viewedProducts' => $viewedProducts,
-            // 'relatedProducts' => $product->categories->first()
-            //     ? $product->categories->first()->products()
-            //         ->where('id', '!=', $product->id)
-            //         ->whereStatus(1)
-            //         ->orderBy('created_at', 'desc')
-            //         ->limit(6)
-            //         ->get()
-            //     : [],
+            'reviews' => $reviews,
+            'averageRating' => $averageRating,
+            'totalReviews' => $totalReviews,
+            'ratingDistribution' => $ratingDistribution,
+            'canUserReview' => $canUserReview,
+            'userReviewReason' => $userReviewReason,
         ]);
     }
 
@@ -147,6 +179,8 @@ class WebController extends Controller
     public function addToCart(Request $request)
     {
         try {
+            \Log::info('Add to cart request:', $request->all());
+            
             // Check if user is authenticated
             if (!Auth::check()) {
                 if ($request->expectsJson() || $request->ajax()) {
@@ -173,21 +207,45 @@ class WebController extends Controller
                 return redirect()->back()->withErrors(['Produk tidak tersedia']);
             }
 
-            // Add to database cart for authenticated users
-            $cartItem = \App\Models\CartItem::where('user_id', Auth::id())
-                ->where('product_id', $product->id)
-                ->first();
+            // Prepare product attributes
+            $productAttributes = null;
+            if ($request->has('attributes') && is_array($request->attributes)) {
+                $productAttributes = json_encode($request->attributes);
+            }
+
+            \Log::info('Processing add to cart:', [
+                'product_id' => $product->id,
+                'user_id' => Auth::id(),
+                'attributes' => $request->attributes,
+                'product_attributes' => $productAttributes,
+                'attributes_type' => gettype($request->attributes),
+                'has_attributes' => $request->has('attributes')
+            ]);
+
+            // Create a unique identifier for this product variant combination
+            $cartIdentifier = [
+                'user_id' => Auth::id(),
+                'product_id' => $product->id,
+                'product_attributes' => $productAttributes
+            ];
+
+            // Check if exact same variant exists in cart
+            \Log::info('Looking for existing cart item with identifier:', $cartIdentifier);
+            $cartItem = \App\Models\CartItem::where($cartIdentifier)->first();
+            \Log::info('Found existing cart item:', $cartItem ? $cartItem->toArray() : 'none');
 
             if ($cartItem) {
                 $cartItem->increment('quantity');
+                \Log::info('Incremented existing cart item to quantity:', ['quantity' => $cartItem->fresh()->quantity]);
             } else {
-                \App\Models\CartItem::create([
+                $newCartItem = \App\Models\CartItem::create([
                     'user_id' => Auth::id(),
                     'product_id' => $product->id,
                     'quantity' => 1,
                     'variation' => json_encode([]),
-                    'product_attributes' => null
+                    'product_attributes' => $productAttributes
                 ]);
+                \Log::info('Created new cart item:', $newCartItem->toArray());
             }
 
             // Return JSON response for AJAX requests
@@ -197,7 +255,7 @@ class WebController extends Controller
                     'success' => true,
                     'message' => 'Product added to cart successfully!',
                     'cart_html' => view('frontend.cart.list', ['carts' => $cartItems])->render(),
-                    'cart_count' => $this->getCartCount()
+                    'cart_count' => $this->getCartCountValue()
                 ]);
             }
 
@@ -214,30 +272,68 @@ class WebController extends Controller
     public function updateCart(Request $request)
     {
         try {
+            \Log::info('Update cart request:', $request->all());
+            
             $request->validate([
                 'product_id' => 'required|exists:products,id',
-                'quantity' => 'required|integer|min:1'
+                'quantity' => 'required|integer|min:0', // Allow 0 to remove item
+                'attributes' => 'sometimes|array'
             ]);
 
             $productId = $request->product_id;
             $quantity = $request->quantity;
+            $attributes = $request->attributes ? json_encode($request->attributes) : null;
+
+            // \Log::info('Processing update cart:', [
+            //     'product_id' => $productId,
+            //     'quantity' => $quantity, 
+            //     'attributes' => $attributes,
+            //     'is_auth' => Auth::check()
+            // ]);
 
             if (Auth::check()) {
-                // Update database cart
-                $cartItem = \App\Models\CartItem::where('user_id', Auth::id())
-                    ->where('product_id', $productId)
-                    ->first();
+                // For authenticated users, find cart item by product_id and attributes
+                $cartItemQuery = \App\Models\CartItem::where('user_id', Auth::id())
+                    ->where('product_id', $productId);
+                    
+                // If attributes are provided, match them exactly
+                if ($attributes && $attributes !== '') {
+                    $cartItemQuery->where('product_attributes', $attributes);
+                } else {
+                    // Match both NULL and empty string values
+                    $cartItemQuery->where(function($query) {
+                        $query->whereNull('product_attributes')
+                              ->orWhere('product_attributes', '');
+                    });
+                }
+                
+                $cartItem = $cartItemQuery->first();
+                \Log::info('Found cart item:', $cartItem ? $cartItem->toArray() : 'none');
 
                 if ($cartItem) {
-                    $cartItem->update(['quantity' => $quantity]);
+                    if ($quantity <= 0) {
+                        // Remove item if quantity is 0 or less
+                        $cartItem->delete();
+                        \Log::info('Cart item deleted');
+                    } else {
+                        $cartItem->update(['quantity' => $quantity]);
+                        \Log::info('Cart item updated to quantity:', ['quantity' => $quantity]);
+                    }
+                } else {
+                    \Log::warning('No cart item found to update');
                 }
             } else {
                 // Update session cart
                 $cart = session()->get('cart', []);
-                $cartKey = $productId . '_' . json_encode([]);
+                $cartKey = $productId . '_' . ($attributes ?: json_encode([]));
 
                 if (isset($cart[$cartKey])) {
-                    $cart[$cartKey]['quantity'] = $quantity;
+                    if ($quantity <= 0) {
+                        // Remove item if quantity is 0 or less
+                        unset($cart[$cartKey]);
+                    } else {
+                        $cart[$cartKey]['quantity'] = $quantity;
+                    }
                     session()->put('cart', $cart);
                 }
             }
@@ -248,17 +344,19 @@ class WebController extends Controller
             if ($request->expectsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Cart updated successfully!',
+                    'message' => $quantity <= 0 ? 'Product removed from cart!' : 'Cart updated successfully!',
                     'cart_html' => view('frontend.cart.list', ['carts' => $cartItems])->render(),
-                    'cart_count' => $this->getCartCount()
+                    'cart_count' => $this->getCartCountValue()
                 ]);
             }
 
-            return redirect()->back()->with('success', 'Cart updated successfully!');
+            return redirect()->back()->with('success', $quantity <= 0 ? 'Product removed from cart!' : 'Cart updated successfully!');
 
         } catch (\Exception $e) {
+            \Log::error('Update cart failed:', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            
             if ($request->expectsJson() || $request->ajax()) {
-                return response()->json(['error' => 'Failed to update cart'], 500);
+                return response()->json(['error' => 'Failed to update cart: ' . $e->getMessage()], 500);
             }
             return redirect()->back()->with('error', 'Failed to update cart');
         }
@@ -267,25 +365,67 @@ class WebController extends Controller
     public function removeFromCart(Request $request)
     {
         try {
+            \Log::info('Remove from cart request:', $request->all());
+            
             $request->validate([
-                'product_id' => 'required|exists:products,id'
+                'product_id' => 'required|exists:products,id',
+                'attributes' => 'sometimes|array'
             ]);
 
             $productId = $request->product_id;
+            $attributes = $request->attributes ? json_encode($request->attributes) : null;
+
+            \Log::info('Processing remove from cart:', [
+                'product_id' => $productId,
+                'attributes' => $attributes,
+                'is_auth' => Auth::check()
+            ]);
 
             if (Auth::check()) {
-                // Remove from database cart
-                \App\Models\CartItem::where('user_id', Auth::id())
-                    ->where('product_id', $productId)
-                    ->delete();
+                // Remove from database cart - match by product_id and attributes
+                $cartItemQuery = \App\Models\CartItem::where('user_id', Auth::id())
+                    ->where('product_id', $productId);
+                    
+                // If attributes are provided, match them exactly
+                if ($attributes && $attributes !== '') {
+                    $cartItemQuery->where('product_attributes', $attributes);
+                    \Log::info('Matching with attributes:', ['attributes' => $attributes]);
+                } else {
+                    // Match both NULL and empty string values
+                    $cartItemQuery->where(function($query) {
+                        $query->whereNull('product_attributes')
+                              ->orWhere('product_attributes', '');
+                    });
+                    \Log::info('Matching items with null or empty attributes');
+                }
+                
+                // Log the query before deletion
+                $itemsToDelete = $cartItemQuery->get();
+                \Log::info('Items found for deletion:', [
+                    'count' => $itemsToDelete->count(),
+                    'items' => $itemsToDelete->map(function($item) {
+                        return [
+                            'id' => $item->id,
+                            'product_id' => $item->product_id,
+                            'product_attributes' => $item->product_attributes,
+                            'quantity' => $item->quantity
+                        ];
+                    })->toArray()
+                ]);
+                
+                $deletedCount = $cartItemQuery->delete();
+                \Log::info('Deleted cart items count:', ['count' => $deletedCount]);
             } else {
                 // Remove from session cart
                 $cart = session()->get('cart', []);
-                $cartKey = $productId . '_' . json_encode([]);
+                $cartKey = $productId . '_' . ($attributes ?: json_encode([]));
 
                 if (isset($cart[$cartKey])) {
                     unset($cart[$cartKey]);
                     session()->put('cart', $cart);
+                    \Log::info('Removed from session cart with key:', ['cart_key' => $cartKey]);
+                } else {
+                    \Log::warning('Cart item not found in session with key:', ['cart_key' => $cartKey]);
                 }
             }
 
@@ -297,21 +437,38 @@ class WebController extends Controller
                     'success' => true,
                     'message' => 'Product removed from cart!',
                     'cart_html' => view('frontend.cart.list', ['carts' => $cartItems])->render(),
-                    'cart_count' => $this->getCartCount()
+                    'cart_count' => $this->getCartCountValue()
                 ]);
             }
 
             return redirect()->back()->with('success', 'Product removed from cart!');
 
         } catch (\Exception $e) {
+            \Log::error('Remove from cart failed:', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            
             if ($request->expectsJson() || $request->ajax()) {
-                return response()->json(['error' => 'Failed to remove product from cart'], 500);
+                return response()->json(['error' => 'Failed to remove product from cart: ' . $e->getMessage()], 500);
             }
             return redirect()->back()->with('error', 'Failed to remove product from cart');
         }
     }
 
-    private function getCartCount()
+    public function getCartCount()
+    {
+        $count = 0;
+        if (Auth::check()) {
+            $count = \App\Models\CartItem::where('user_id', Auth::id())->sum('quantity');
+        } else {
+            $cart = session('cart', []);
+            $count = array_sum(array_column($cart, 'quantity'));
+        }
+        
+        return response()->json([
+            'count' => $count
+        ]);
+    }
+
+    private function getCartCountValue()
     {
         if (Auth::check()) {
             return \App\Models\CartItem::where('user_id', Auth::id())->sum('quantity');
@@ -749,7 +906,11 @@ class WebController extends Controller
 
     public function contact()
     {
-        return view('frontend.contact');
+        $faqs = \App\Models\Faq::active()->ordered()->get();
+        
+        return view('frontend.contact', [
+            'faqs' => $faqs
+        ]);
     }
 
     public function payment($orderId)

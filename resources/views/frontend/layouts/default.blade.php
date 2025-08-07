@@ -356,11 +356,15 @@
 
                 <!-- Cart button -->
                 <button type="button"
-                    class="btn btn-icon fs-lg btn-outline-secondary border-0 rounded-circle animate-scale me-2"
+                    class="btn btn-icon fs-lg btn-outline-secondary border-0 rounded-circle animate-scale me-2 position-relative"
                     id="btnShoppingCart"
                     data-bs-toggle="offcanvas" data-bs-target="#shoppingCart" aria-controls="shoppingCart"
                     aria-label="Shopping cart">
                     <i class="ci-shopping-cart animate-target"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-badge" 
+                          id="cartBadge" style="display: none;">
+                        0
+                    </span>
                 </button>
 
                 <!-- Search -->
@@ -639,19 +643,60 @@
                     }
                 })
             }
+            
+            const removeFromCart = async(productId, attributes) => {
+                const data = {
+                    product_id: productId
+                };
+                
+                // Parse attributes if provided
+                if (attributes && attributes !== '') {
+                    try {
+                        data.attributes = JSON.parse(attributes);
+                        console.log('Parsed attributes for removal:', data.attributes);
+                    } catch (e) {
+                        console.warn('Failed to parse attributes for removal:', attributes, e);
+                    }
+                }
+                
+                console.log('Removing from cart with data:', data);
+                
+                return await $.ajax({
+                    url: "{{route('cart.remove')}}",
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    data: data
+                });
+            }
 
-            const updateCartQuantity = async(productId, quantity) => {
+            const updateCartQuantity = async(productId, quantity, attributes) => {
+                const data = {
+                    product_id: productId,
+                    quantity: quantity
+                };
+                
+                // Parse attributes if provided
+                if (attributes && attributes !== '') {
+                    try {
+                        data.attributes = JSON.parse(attributes);
+                        console.log('Parsed attributes:', data.attributes);
+                    } catch (e) {
+                        console.warn('Failed to parse attributes:', attributes, e);
+                    }
+                }
+                
+                console.log('Updating cart with data:', data);
+                
                 return await $.ajax({
                     url: "{{route('cart.update')}}",
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
-                    data: {
-                        product_id: productId,
-                        quantity: quantity
-                    }
-                })
+                    data: data
+                });
             }
 
             const addToCart = async (data) => {
@@ -690,12 +735,16 @@
 
             const refreshCart = async () => {
                 try {
+                    console.log('Refreshing cart...');
                     const response = await $.ajax({
                         url: "{{ route('cart.index') }}"
                     });
                     
+                    console.log('Cart response received:', response.length, 'characters');
+                    
                     let shoppingCartBody = $('#shoppingCart').find('.offcanvas-body')// Update cart UI with the new data
                     shoppingCartBody.html(response);
+                    console.log('Cart UI updated');
                     
                 } catch (error) {
                     console.error('Error fetching cart:', error);
@@ -708,11 +757,18 @@
                 try {
                     await addToCart($(this).serialize());
                     await refreshCart();
+                    updateCartBadge(); // Update cart badge count
 
-                    await Swal.fire({
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true
+                    });
+                    Toast.fire({
                         icon: 'success',
-                        title: 'Information',
-                        text: 'Product added to cart'
+                        title: 'Product added to cart'
                     });
                 } catch (error) {
                     // Error sudah ditangani di addToCart function
@@ -720,59 +776,98 @@
                 }
             });
 
+            // Handle sticky add to cart buttons  
+            $(document).on('click', '.sticky-add-to-cart', async function(e) {
+                e.preventDefault();
+                
+                // Get form data from the main form
+                const formData = $('#form-add_to_cart').serialize();
+                const originalContent = $(this).html();
+                
+                // Show loading state
+                $(this).prop('disabled', true).html('<div class="spinner-border spinner-border-sm me-2" role="status"></div>Adding...');
+                
+                try {
+                    await addToCart(formData);
+                    await refreshCart();
+                    updateCartBadge();
+                    
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true
+                    });
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Product added to cart'
+                    });
+                } catch (error) {
+                    console.error('Add to cart failed:', error);
+                } finally {
+                    // Restore button state
+                    $(this).prop('disabled', false).html(originalContent);
+                }
+            });
+
             $(document).on('click', '.btn-remove_from_cart', async function(e){
                 e.preventDefault();
                 const productId = $(this).data('product-id') || $(this).data('key');
+                const attributes = $(this).data('attributes');
                 
-                // Show confirmation dialog
-                const result = await Swal.fire({
-                    title: 'Remove Item?',
-                    text: 'Are you sure you want to remove this item from cart?',
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Yes, remove it!'
+                console.log('Remove button clicked:', {
+                    productId: productId,
+                    attributes: attributes,
+                    attributesType: typeof attributes,
+                    element: $(this)[0]
                 });
                 
-                if (result.isConfirmed) {
-                    // Show loading on button
-                    const originalContent = $(this).html();
-                    $(this).prop('disabled', true).html('<div class="spinner-border spinner-border-sm" role="status"></div>');
+                // Show loading on button
+                const originalContent = $(this).html();
+                $(this).prop('disabled', true).html('<div class="spinner-border spinner-border-sm" role="status"></div>');
+                
+                try {
+                    // Show loading skeleton
+                    showCartLoading();
                     
-                    try {
-                        // Show loading skeleton
-                        showCartLoading();
-                        
-                        await removeCart(productId);
-                        await refreshCart();
+                    const removeResult = await removeFromCart(productId, attributes);
+                    console.log('Remove result:', removeResult);
+                    
+                    await refreshCart();
+                    updateCartBadge(); // Update cart badge count
 
-                        // Show success toast
-                        const Toast = Swal.mixin({
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 2000,
-                            timerProgressBar: true
-                        });
-                        Toast.fire({
-                            icon: 'success',
-                            title: 'Item removed from cart'
-                        });
-                        
-                    } catch (error) {
-                        console.error('Error removing from cart:', error);
-                        await refreshCart(); // Refresh to restore original state
-                        
-                        await Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'Failed to remove item from cart'
-                        });
-                        
-                        // Restore button
-                        $(this).prop('disabled', false).html(originalContent);
-                    }
+                    // Show success toast
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 1500,
+                        timerProgressBar: true
+                    });
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Item removed from cart'
+                    });
+                    
+                } catch (error) {
+                    console.error('Error removing from cart:', error);
+                    await refreshCart(); // Refresh to restore original state
+                    
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true
+                    });
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Failed to remove item from cart'
+                    });
+                    
+                    // Restore button
+                    $(this).prop('disabled', false).html(originalContent);
                 }
 
             })
@@ -852,19 +947,24 @@
                 e.preventDefault();
                 const cartKey = $(this).data('key');
                 const productId = $(this).data('product-id');
+                const attributes = $(this).data('attributes');
                 const qtyInput = $(`#cart-qty-${cartKey}`);
                 const currentQty = parseInt(qtyInput.val()) || 0;
                 const newQty = currentQty + 1;
                 
+                console.log('Increment cart:', { cartKey, productId, attributes, currentQty, newQty });
+                
                 // Disable button and show loading state
-                $(this).prop('disabled', true).html('<div class="spinner-border spinner-border-sm" role="status"></div>');
+                const $button = $(this);
+                const originalHtml = $button.html();
+                $button.prop('disabled', true).html('<div class="spinner-border spinner-border-sm" role="status"></div>');
                 
                 try {
-                    // Show loading skeleton
-                    showCartLoading();
+                    const result = await updateCartQuantity(productId, newQty, attributes);
+                    console.log('Update result:', result);
                     
-                    await updateCartQuantity(productId, newQty);
                     await refreshCart();
+                    updateCartBadge(); // Update cart badge count
                     
                     // Show success message briefly
                     const Toast = Swal.mixin({
@@ -880,13 +980,18 @@
                     });
                     
                 } catch (error) {
-                    console.error('Error incrementing cart:', error);
-                    await refreshCart(); // Refresh to restore original state
+                    console.error('Error incrementing cart:', error, error.responseText);
+                    
+                    // Restore button
+                    $button.prop('disabled', false).html(originalHtml);
+                    
                     await Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: 'Failed to update cart'
+                        text: error.responseJSON?.message || 'Failed to update cart'
                     });
+                    
+                    await refreshCart(); // Refresh to restore original state
                 }
             });
 
@@ -895,56 +1000,70 @@
                 e.preventDefault();
                 const cartKey = $(this).data('key');
                 const productId = $(this).data('product-id');
+                const attributes = $(this).data('attributes');
                 const qtyInput = $(`#cart-qty-${cartKey}`);
                 const currentQty = parseInt(qtyInput.val()) || 0;
-                const newQty = Math.max(1, currentQty - 1); // Minimum quantity is 1
+                const newQty = currentQty - 1;
                 
-                // Don't process if already at minimum
-                if (currentQty <= 1) {
-                    const Toast = Swal.mixin({
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
-                    Toast.fire({
-                        icon: 'warning',
-                        title: 'Minimum quantity is 1'
-                    });
-                    return;
-                }
+                console.log('Decrement cart:', { cartKey, productId, attributes, currentQty, newQty });
                 
                 // Disable button and show loading state
-                $(this).prop('disabled', true).html('<div class="spinner-border spinner-border-sm" role="status"></div>');
+                const $button = $(this);
+                const originalHtml = $button.html();
+                $button.prop('disabled', true).html('<div class="spinner-border spinner-border-sm" role="status"></div>');
                 
                 try {
-                    // Show loading skeleton
-                    showCartLoading();
+                    let result;
+                    if (newQty <= 0) {
+                        // Remove product from cart when quantity becomes 0
+                        result = await removeFromCart(productId, attributes);
+                        console.log('Remove result:', result);
+                        
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 1500,
+                            timerProgressBar: true
+                        });
+                        Toast.fire({
+                            icon: 'info',
+                            title: 'Product removed from cart'
+                        });
+                    } else {
+                        // Update quantity
+                        result = await updateCartQuantity(productId, newQty, attributes);
+                        console.log('Update result:', result);
+                        
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 1000,
+                            timerProgressBar: true
+                        });
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Quantity updated'
+                        });
+                    }
                     
-                    await updateCartQuantity(productId, newQty);
                     await refreshCart();
-                    
-                    // Show success message briefly
-                    const Toast = Swal.mixin({
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 1000,
-                        timerProgressBar: true
-                    });
-                    Toast.fire({
-                        icon: 'success',
-                        title: 'Quantity updated'
-                    });
+                    updateCartBadge(); // Update cart badge count
                     
                 } catch (error) {
-                    console.error('Error decrementing cart:', error);
-                    await refreshCart(); // Refresh to restore original state
+                    console.error('Error decrementing cart:', error, error.responseText);
+                    
+                    // Restore button
+                    $button.prop('disabled', false).html(originalHtml);
+                    
                     await Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: 'Failed to update cart'
+                        text: error.responseJSON?.message || 'Failed to update cart'
                     });
+                    
+                    await refreshCart(); // Refresh to restore original state
                 }
             });
 
@@ -966,6 +1085,7 @@
                         product_id: $(this).data('key')
                     })
                     await refreshCart();
+                    updateCartBadge(); // Update cart badge count
 
                     // Show success toast
                     const Toast = Swal.mixin({
@@ -1079,6 +1199,41 @@
                 }
             }
         });
+    </script>
+
+    <!-- Global Cart Badge Script -->
+    <script>
+    function updateCartBadge() {
+        fetch('{{ route("cart.count") }}', {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const badge = document.getElementById('cartBadge');
+            if (badge) {
+                if (data.count > 0) {
+                    badge.textContent = data.count;
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error updating cart badge:', error);
+        });
+    }
+
+    // Update cart badge on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        updateCartBadge();
+    });
+
+    // Function to be called from other scripts
+    window.updateCartBadge = updateCartBadge;
     </script>
 
     @yield('footer_scripts')
