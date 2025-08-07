@@ -27,6 +27,13 @@ class Product extends Model
 
     public function attributes()
     {
+        return $this->belongsToMany(Attribute::class, 'product_attributes')
+                    ->withPivot('attribute_values')
+                    ->withTimestamps();
+    }
+
+    public function productAttributes()
+    {
         return $this->hasMany(ProductAttribute::class);
     }
 
@@ -184,5 +191,37 @@ class Product extends Model
     public function scopeFeatured($query)
     {
         return $query->where('is_featured', true);
+    }
+
+    // Get product variations based on attributes
+    public function getVariationsAttribute()
+    {
+        $variations = [];
+        $productAttributes = $this->productAttributes()->with(['attribute.values'])->get();
+        
+        foreach ($productAttributes as $productAttribute) {
+            $attribute = $productAttribute->attribute;
+            $selectedValueIds = $productAttribute->attribute_values ?? [];
+            
+            $selectedValues = $attribute->values()
+                ->whereIn('id', $selectedValueIds)
+                ->active()
+                ->ordered()
+                ->get();
+            
+            if ($selectedValues->isNotEmpty()) {
+                $variations[$attribute->slug] = [
+                    'attribute' => $attribute,
+                    'selected_values' => $selectedValues
+                ];
+            }
+        }
+        
+        return $variations;
+    }
+
+    public function hasVariations()
+    {
+        return $this->productAttributes()->count() > 0;
     }
 }

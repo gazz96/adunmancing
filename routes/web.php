@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\ProductReviewController;
 use App\Http\Controllers\ShippingController;
 use App\Http\Controllers\UserAddressController;
 use App\Http\Controllers\WebController;
@@ -24,6 +25,57 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/testing', function () {
     return 'Testing route is working!';
+});
+
+// Debug route for cart functionality
+Route::get('/debug-cart', function () {
+    if (!auth()->check()) {
+        return 'Please login first';
+    }
+    
+    $cartItems = \App\Models\CartItem::where('user_id', auth()->id())->with('product')->get();
+    
+    return [
+        'user_id' => auth()->id(),
+        'cart_items' => $cartItems->map(function($item) {
+            return [
+                'id' => $item->id,
+                'product_id' => $item->product_id,
+                'product_name' => $item->product->name ?? 'N/A',
+                'quantity' => $item->quantity,
+                'product_attributes' => $item->product_attributes,
+                'attribute_labels' => $item->attribute_labels
+            ];
+        })
+    ];
+});
+
+// Test delete endpoint
+Route::post('/test-delete-cart/{productId}', function ($productId) {
+    if (!auth()->check()) {
+        return response()->json(['error' => 'Not authenticated'], 401);
+    }
+    
+    $userId = auth()->id();
+    $attributes = null;
+    
+    $cartItemQuery = \App\Models\CartItem::where('user_id', $userId)
+        ->where('product_id', $productId);
+        
+    $cartItemQuery->where(function($query) {
+        $query->whereNull('product_attributes')
+              ->orWhere('product_attributes', '');
+    });
+    
+    $itemsToDelete = $cartItemQuery->get();
+    $deletedCount = $cartItemQuery->delete();
+    
+    return [
+        'success' => true,
+        'items_found' => $itemsToDelete->count(),
+        'deleted_count' => $deletedCount,
+        'remaining_items' => \App\Models\CartItem::where('user_id', $userId)->count()
+    ];
 });
 
 Route::get('/login', [AuthController::class, 'login'])
@@ -86,6 +138,7 @@ Route::get('/shop', [WebController::class, 'shop'])
 
 // CART ROUTES (available for both auth and guest users)
 Route::get('/cart', [WebController::class, 'cart'])->name('cart.index');
+Route::get('/cart/count', [WebController::class, 'getCartCount'])->name('cart.count');
 Route::post('/add-to-cart', [WebController::class, 'addToCart'])->name('cart.add');
 Route::post('/cart/update', [WebController::class, 'updateCart'])->name('cart.update');
 Route::post('/cart/remove', [WebController::class, 'removeFromCart'])->name('cart.remove');
@@ -97,6 +150,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/payment/{orderId}', [WebController::class, 'payment'])->name('web.payment');
     Route::post('/payment/{orderId}/upload-proof', [WebController::class, 'uploadPaymentProof'])->name('web.payment.upload-proof');
 });
+
+// Review routes
+Route::post('/reviews', [ProductReviewController::class, 'store'])->name('reviews.store');
+Route::get('/reviews/can-review', [ProductReviewController::class, 'canUserReview'])->name('reviews.can-review');
+
+// Wishlist routes
+Route::post('/wishlist/toggle', [App\Http\Controllers\WishlistController::class, 'toggle'])->name('wishlist.toggle');
+Route::get('/wishlist', [App\Http\Controllers\WishlistController::class, 'index'])->name('wishlist.index');
+Route::post('/wishlist/remove', [App\Http\Controllers\WishlistController::class, 'remove'])->name('wishlist.remove');
 
 // User Address routes (auth required)
 Route::middleware('auth')->group(function () {

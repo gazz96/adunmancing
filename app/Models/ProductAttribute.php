@@ -10,12 +10,13 @@ class ProductAttribute extends Model
     use HasFactory;
 
     protected $fillable = [
-        'attribute_id',
         'product_id',
-        'attribute_name',
-        'attribute_value',
-        'show_in_product',
-        'use_as_variation'
+        'attribute_id',
+        'attribute_values'
+    ];
+
+    protected $casts = [
+        'attribute_values' => 'array'
     ];
 
     public function attribute()

@@ -142,7 +142,7 @@ class CartController extends Controller
     public function remove(Request $request)
     {
         $key = $request->input('key');
-
+        dd($key);
         if (Auth::check()) {
             $item = CartItem::find($key); // ID
             if ($item && $item->user_id == Auth::id()) {

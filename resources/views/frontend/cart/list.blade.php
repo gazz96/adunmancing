@@ -9,12 +9,14 @@
                     width="110" alt="iPad Pro">
             </a>
             <div class="w-100 min-w-0 ps-2 ps-sm-3">
-                <div>
-                    {{$cart->attribute_labels}}
-                </div>
                 <h5 class="d-flex animate-underline mb-2">
-                    <a class="d-block fs-sm fw-medium text-truncate animate-target" href="#">{{$cart->product->name}}</a>
+                    <a class="d-block fs-sm fw-medium text-truncate animate-target" href="{{ $cart->product->permalink }}">{{$cart->product->name}}</a>
                 </h5>
+                @if($cart->attribute_labels)
+                    <div class="text-muted fs-sm mb-2">
+                        <small>{{ $cart->attribute_labels }}</small>
+                    </div>
+                @endif
                 <div class="h6 pb-1 mb-2">{{ $cart->product->price_label }} <del
                         class="text-body-tertiary fs-xs fw-normal">{{ $cart->product->compare_price_label }}</del>
                 </div>
@@ -22,21 +24,24 @@
                     <div class="count-input rounded-2">
                         <button type="button" class="btn btn-icon btn-sm btn-cart-decrement" 
                                 data-key="{{auth()->check() ? $cart->id : $cartKey }}" 
-                                data-product-id="{{ $cart->product_id ?? $cart->product->id }}" 
+                                data-product-id="{{ $cart->product_id ?? $cart->product->id }}"
+                                data-attributes="{{ htmlspecialchars($cart->product_attributes ?? '', ENT_QUOTES) }}"
                                 data-decrement aria-label="Decrement quantity">
                             <i class="ci-minus"></i>
                         </button>
                         <input type="number" class="form-control form-control-sm" id="cart-qty-{{auth()->check() ? $cart->id : $cartKey }}" value="{{$cart->quantity}}" readonly>
                         <button type="button" class="btn btn-icon btn-sm btn-cart-increment" 
                                 data-key="{{auth()->check() ? $cart->id : $cartKey }}" 
-                                data-product-id="{{ $cart->product_id ?? $cart->product->id }}" 
+                                data-product-id="{{ $cart->product_id ?? $cart->product->id }}"
+                                data-attributes="{{ htmlspecialchars($cart->product_attributes ?? '', ENT_QUOTES) }}"
                                 data-increment aria-label="Increment quantity">
                             <i class="ci-plus"></i>
                         </button>
                     </div>
                     <button type="button" class="btn-close fs-sm btn-remove_from_cart" 
                             data-key="{{auth()->check() ? $cart->id : $cartKey }}" 
-                            data-product-id="{{ $cart->product_id ?? $cart->product->id }}" 
+                            data-product-id="{{ $cart->product_id ?? $cart->product->id }}"
+                            data-attributes="{{ htmlspecialchars($cart->product_attributes ?? '', ENT_QUOTES) }}"
                             data-bs-toggle="tooltip"
                         data-bs-custom-class="tooltip-sm" data-bs-title="Remove" aria-label="Remove from cart"></button>
                 </div>

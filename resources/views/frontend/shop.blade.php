@@ -21,8 +21,19 @@
             <!-- Filters -->
             <form action="">
                 <div class="sticky-top bg-body mb-3 mb-sm-4" style="margin-top: -4.5rem">
-                    <div class="row align-items-center pt-5">
-                        <div class="col-5 col-sm-8 col-md-9 d-flex gap-2 pb-3 mt-4">
+                    <!-- Search input -->
+                    <div class="row pt-4">
+                        <div class="col-12">
+                            <div class="position-relative">
+                                <input type="text" name="search" value="{{ request('search') }}" 
+                                       class="form-control form-control-lg rounded-pill ps-5" 
+                                       placeholder="Cari produk...">
+                                <i class="ci-search position-absolute start-0 top-50 translate-middle-y ms-3 fs-lg"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row align-items-center pt-3">
+                        <div class="col-5 col-sm-8 col-md-9 d-flex gap-2 pb-3 mt-2">
                             <div class="d-none d-sm-block w-100 me-1">
                                 <select class="form-select rounded-pill"
                                     data-select='{"classNames": {"containerInner": ["form-select", "filter-select", "rounded-pill"]}}'
@@ -226,6 +237,13 @@
 
                 <!-- Selected filters -->
                 <div class="d-flex flex-wrap align-items-center gap-2 text-nowrap mt-n3 mb-3 mb-lg-4">
+                    @if(request('search'))
+                        <button type="button" class="btn btn-sm btn-secondary rounded-pill me-1">
+                            <i class="ci-close fs-sm me-1 ms-n1"></i>
+                            Pencarian: "{{ request('search') }}"
+                        </button>
+                    @endif
+                    
                     @if(request('category_id'))
                         @foreach(request('category_id') as $categoryId)
                         <button type="button" class="btn btn-sm btn-secondary rounded-pill me-1">
@@ -235,7 +253,7 @@
                         @endforeach
                     @endif
 
-                    @if(request('category_id'))
+                    @if(request('category_id') || request('search'))
                     <div class="nav ps-1">
                         <a class="nav-link fs-xs text-decoration-underline px-0" href="{{ route('web.shop') }}">Clear all</a>
                     </div>
@@ -247,8 +265,9 @@
             <!-- Product grid -->
             <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 gy-5" id="productGrid">
 
-                <!-- Item -->
-                @foreach($products as $product)
+                @if($products->count() > 0)
+                    <!-- Item -->
+                    @foreach($products as $product)
                 <div class="col">
                     <div class="animate-underline mb-sm-2">
                         {{-- hover-effect-opacity  --}}
@@ -288,12 +307,39 @@
                         </div>
                     </div>
                 </div>
-                @endforeach
+                    @endforeach
+                @else
+                    <!-- No results found -->
+                    <div class="col-12">
+                        <div class="text-center py-5">
+                            <div class="mb-4">
+                                <i class="ci-search-off display-1 text-body-secondary"></i>
+                            </div>
+                            <h4 class="mb-2">Tidak ada produk ditemukan</h4>
+                            <p class="text-body-secondary mb-4">
+                                @if(request('search'))
+                                    Maaf, tidak ada produk yang sesuai dengan pencarian "{{ request('search') }}".
+                                @else
+                                    Maaf, tidak ada produk yang tersedia untuk kategori yang dipilih.
+                                @endif
+                            </p>
+                            <a href="{{ route('web.shop') }}" class="btn btn-primary">
+                                <i class="ci-arrow-left fs-sm me-1 ms-n1"></i>
+                                Kembali ke semua produk
+                            </a>
+                        </div>
+                    </div>
+                @endif
 
             </div>
 
 
             <!-- Pagination -->
+            @if($products->hasPages())
+                <div class="d-flex justify-content-center mt-5">
+                    {{ $products->links() }}
+                </div>
+            @endif
 
         </div>
     </main>

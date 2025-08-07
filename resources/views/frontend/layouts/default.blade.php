@@ -752,12 +752,94 @@
             };
 
             // Add to cart form submission
-            $('#form-add_to_cart').on('submit', async function(e) {
-                e.preventDefault();
+            // Validate product attributes before add to cart
+            const validateProductAttributes = () => {
+                const form = document.getElementById('form-add_to_cart');
+                if (!form) return true;
+
+                // Clear previous error states
+                form.querySelectorAll('.attribute-error').forEach(el => {
+                    el.classList.remove('attribute-error', 'border-danger');
+                });
+
+                // Check for required attributes
+                const requiredAttributes = form.querySelectorAll('[required]');
+                const missingAttributes = [];
+                const missingContainers = [];
+
+                requiredAttributes.forEach(input => {
+                    let isSelected = false;
+                    
+                    if (input.type === 'radio') {
+                        // For radio buttons, check if any option in the group is selected
+                        const radioGroup = form.querySelectorAll(`[name="${input.name}"]`);
+                        radioGroup.forEach(radio => {
+                            if (radio.checked) {
+                                isSelected = true;
+                            }
+                        });
+                    } else if (input.tagName === 'SELECT') {
+                        // For select dropdowns
+                        isSelected = input.value !== '';
+                    }
+
+                    if (!isSelected) {
+                        // Get attribute name from label
+                        const container = input.closest('.mb-4');
+                        const label = container?.querySelector('.form-label');
+                        const attributeName = label ? label.textContent.replace('*', '').trim() : 'Atribut';
+                        
+                        if (!missingAttributes.includes(attributeName)) {
+                            missingAttributes.push(attributeName);
+                            
+                            // Add visual indicator
+                            if (container) {
+                                container.classList.add('attribute-error');
+                                if (input.tagName === 'SELECT') {
+                                    input.classList.add('border-danger');
+                                } else {
+                                    // For radio buttons, highlight the container
+                                    const radioContainer = container.querySelector('.d-flex');
+                                    if (radioContainer) {
+                                        radioContainer.classList.add('border', 'border-danger', 'rounded', 'p-2');
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+                if (missingAttributes.length > 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Pilih Atribut Produk',
+                        text: `Harap pilih: ${missingAttributes.join(', ')}`,
+                        confirmButtonText: 'OK'
+                    });
+                    
+                    // Scroll to first missing attribute
+                    const firstError = form.querySelector('.attribute-error');
+                    if (firstError) {
+                        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                    
+                    return false;
+                }
+
+                return true;
+            };
+
+            // Common function to handle add to cart
+            const handleAddToCart = async (formData, buttonElement = null) => {
+                // Validate attributes first
+                if (!validateProductAttributes()) {
+                    return false;
+                }
+
                 try {
-                    await addToCart($(this).serialize());
+                    await addToCart(formData);
                     await refreshCart();
-                    updateCartBadge(); // Update cart badge count
+                    updateCartBadge();
 
                     const Toast = Swal.mixin({
                         toast: true,
@@ -770,10 +852,16 @@
                         icon: 'success',
                         title: 'Product added to cart'
                     });
+                    return true;
                 } catch (error) {
-                    // Error sudah ditangani di addToCart function
                     console.error('Add to cart failed:', error);
+                    return false;
                 }
+            };
+
+            $('#form-add_to_cart').on('submit', async function(e) {
+                e.preventDefault();
+                await handleAddToCart($(this).serialize());
             });
 
             // Handle sticky add to cart buttons  
@@ -787,27 +875,26 @@
                 // Show loading state
                 $(this).prop('disabled', true).html('<div class="spinner-border spinner-border-sm me-2" role="status"></div>Adding...');
                 
-                try {
-                    await addToCart(formData);
-                    await refreshCart();
-                    updateCartBadge();
+                const success = await handleAddToCart(formData, $(this));
+                
+                // Restore button state
+                $(this).prop('disabled', false).html(originalContent);
+            });
+
+            // Clear error states when user selects attributes
+            $(document).on('change', '.attribute-option', function() {
+                const container = $(this).closest('.mb-4');
+                if (container.hasClass('attribute-error')) {
+                    container.removeClass('attribute-error');
                     
-                    const Toast = Swal.mixin({
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 2000,
-                        timerProgressBar: true
-                    });
-                    Toast.fire({
-                        icon: 'success',
-                        title: 'Product added to cart'
-                    });
-                } catch (error) {
-                    console.error('Add to cart failed:', error);
-                } finally {
-                    // Restore button state
-                    $(this).prop('disabled', false).html(originalContent);
+                    // Remove error styling
+                    if ($(this).is('select')) {
+                        $(this).removeClass('border-danger');
+                    } else {
+                        // For radio buttons, remove border from container
+                        const radioContainer = container.find('.d-flex');
+                        radioContainer.removeClass('border border-danger rounded p-2');
+                    }
                 }
             });
 
@@ -966,6 +1053,9 @@
                     await refreshCart();
                     updateCartBadge(); // Update cart badge count
                     
+                    // Restore button after successful operation
+                    $button.prop('disabled', false).html(originalHtml);
+                    
                     // Show success message briefly
                     const Toast = Swal.mixin({
                         toast: true,
@@ -1003,6 +1093,12 @@
                 const attributes = $(this).data('attributes');
                 const qtyInput = $(`#cart-qty-${cartKey}`);
                 const currentQty = parseInt(qtyInput.val()) || 0;
+                
+                // Don't allow decrementing below 0
+                if (currentQty <= 0) {
+                    return;
+                }
+                
                 const newQty = currentQty - 1;
                 
                 console.log('Decrement cart:', { cartKey, productId, attributes, currentQty, newQty });
@@ -1027,7 +1123,7 @@
                             timerProgressBar: true
                         });
                         Toast.fire({
-                            icon: 'info',
+                            icon: 'success',
                             title: 'Product removed from cart'
                         });
                     } else {
@@ -1050,6 +1146,9 @@
                     
                     await refreshCart();
                     updateCartBadge(); // Update cart badge count
+                    
+                    // Restore button after successful operation
+                    $button.prop('disabled', false).html(originalHtml);
                     
                 } catch (error) {
                     console.error('Error decrementing cart:', error, error.responseText);
@@ -1235,6 +1334,34 @@
     // Function to be called from other scripts
     window.updateCartBadge = updateCartBadge;
     </script>
+
+    <!-- Attribute validation CSS -->
+    <style>
+        /* Attribute validation error styling */
+        .attribute-error .form-label {
+            color: #dc3545 !important;
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        .attribute-error .form-label:after {
+            content: ' - Harap pilih!';
+            font-size: 0.875rem;
+            font-weight: normal;
+            color: #dc3545;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* Improve required field indicators */
+        .form-label .text-danger {
+            font-size: 1.2em;
+            margin-left: 3px;
+        }
+    </style>
 
     @yield('footer_scripts')
 </body>

@@ -125,31 +125,52 @@ class ProductResource extends Resource
                 Section::make('Berat & Dimensi')
                     ->schema([
                         TextInput::make('weight')
-                            ->label('Weight (dalam gram)'),
+                            ->label('Berat (dalam gram)')
+                            ->required()
+                            ->numeric()
+                            ->minValue(1)
+                            ->helperText('Berat produk diperlukan untuk menghitung ongkos kirim'),
                         TextInput::make('dimension') 
+                            ->label('Dimensi (panjang x lebar x tinggi cm)')
                     ])
                     ->columns(2),
 
                
-                Repeater::make('attributes')
-                    ->label('Atribut Produk')
-                    ->relationship('attributes')
+                Section::make('Atribut & Variasi Produk')
                     ->schema([
-                        Select::make('attribute_id')
-                            ->label('Atribut')
-                            ->options(\App\Models\Attribute::all()->pluck('name', 'id'))
-                            ->searchable()
-                            ->required(),
+                        Repeater::make('product_attributes')
+                            ->label('Atribut Produk')
+                            ->schema([
+                                Select::make('attribute_id')
+                                    ->label('Atribut')
+                                    ->options(\App\Models\Attribute::active()->pluck('name', 'id'))
+                                    ->searchable()
+                                    ->required()
+                                    ->reactive()
+                                    ->afterStateUpdated(function ($state, callable $set) {
+                                        $set('attribute_values', []); // Reset values when attribute changes
+                                    }),
 
-                        Toggle::make('show_in_product')
-                            ->label('Tampilkan di Halaman Produk'),
-                        Toggle::make('use_as_variation')
-                            ->label('Gunakan sebagai Variasi'),
-                    ])
-                    ->columns(1)
-                    ->defaultItems(0)
-                    ->collapsible()
-                    ->columnSpanFull(),
+                                Select::make('attribute_values')
+                                    ->label('Values')
+                                    ->multiple()
+                                    ->searchable()
+                                    ->options(function (callable $get) {
+                                        $attributeId = $get('attribute_id');
+                                        if (!$attributeId) {
+                                            return [];
+                                        }
+                                        return \App\Models\AttributeValue::where('attribute_id', $attributeId)
+                                            ->active()
+                                            ->pluck('value', 'id');
+                                    })
+                                    ->required(),
+                            ])
+                            ->columns(2)
+                            ->defaultItems(0)
+                            ->collapsible()
+                            ->columnSpanFull(),
+                    ]),
 
                 // Section::make('Variasi Produk')
                 //     ->schema([

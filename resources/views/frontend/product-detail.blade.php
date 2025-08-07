@@ -20,101 +20,43 @@
 
                 <!-- Gallery -->
                 <div class="col-md-7 col-xl-8 pb-4 pb-md-0 mb-2 mb-sm-3 mb-md-0">
-                    <div class="row row-cols-2 g-3 g-sm-4 g-md-3 g-lg-4">
-                        @if($product->featured_image)
-                        <div class="col">
-                            
-                            <a class="hover-effect-scale hover-effect-opacity position-relative d-flex rounded-4 overflow-hidden"
-                                href="{{ $product->featured_image_url }}" data-glightbox
-                                data-gallery="product-gallery">
-                                <i
-                                    class="ci-zoom-in hover-effect-target fs-3 text-white position-absolute top-50 start-50 translate-middle opacity-0 z-2"></i>
-                                <div class="ratio ratio-1x1 hover-effect-target">
-                                    <img src="{{ $product->featured_image_url}}" alt="{{ $product->name}}">
-                                </div>
-                            </a>
-                        </div>
-                        @endif
-                        @foreach($product->images as $image)
-                        <div class="col">
-                            
-                            <a class="hover-effect-scale hover-effect-opacity position-relative d-flex rounded-4 overflow-hidden"
-                                href="{{ $image->image_url }}" data-glightbox
-                                data-gallery="product-gallery">
-                                <i
-                                    class="ci-zoom-in hover-effect-target fs-3 text-white position-absolute top-50 start-50 translate-middle opacity-0 z-2"></i>
-                                <div class="ratio ratio-1x1 hover-effect-target">
-                                    <img src="{{ $image->image_url}}" alt="Image">
-                                </div>
-                            </a>
-                        </div>
-                        @endforeach
-                       
-                        {{-- <div class="col-12">
-                            <div class="collapse d-md-block" id="morePictures">
-                                <div class="row row-cols-2 g-3 g-sm-4 g-md-3 g-lg-4 pb-3 pb-sm-4 pb-md-0">
-                                    <div class="col">
-                                        <a class="hover-effect-scale hover-effect-opacity position-relative d-flex rounded-4 overflow-hidden"
-                                            href="assets/img/shop/furniture/product/03.jpg" data-glightbox
-                                            data-gallery="product-gallery">
-                                            <span
-                                                class="hover-effect-target position-absolute top-0 start-0 w-100 h-100 bg-black bg-opacity-25 opacity-0 z-1"></span>
-                                            <i
-                                                class="ci-zoom-in hover-effect-target fs-3 text-white position-absolute top-50 start-50 translate-middle opacity-0 z-2"></i>
-                                            <div class="ratio ratio-1x1 hover-effect-target">
-                                                <img src="assets/img/shop/furniture/product/03.jpg" alt="Image">
-                                            </div>
-                                        </a>
+                    @if($product->featured_image || $product->images->count() > 0)
+                        <div class="row row-cols-2 g-3 g-sm-4 g-md-3 g-lg-4">
+                            @if($product->featured_image)
+                            <div class="col">
+                                <a class="hover-effect-scale hover-effect-opacity position-relative d-flex rounded-4 overflow-hidden"
+                                    href="{{ $product->featured_image_url }}" data-glightbox
+                                    data-gallery="product-gallery">
+                                    <i class="ci-zoom-in hover-effect-target fs-3 text-white position-absolute top-50 start-50 translate-middle opacity-0 z-2"></i>
+                                    <div class="ratio ratio-1x1 hover-effect-target">
+                                        <img src="{{ $product->featured_image_url}}" alt="{{ $product->name}}" class="w-100 h-100 object-fit-cover">
                                     </div>
-                                    <div class="col">
-                                        <a class="hover-effect-scale hover-effect-opacity position-relative d-flex rounded-4 overflow-hidden"
-                                            href="assets/img/shop/furniture/product/04.jpg" data-glightbox
-                                            data-gallery="product-gallery">
-                                            <span
-                                                class="hover-effect-target position-absolute top-0 start-0 w-100 h-100 bg-black bg-opacity-25 opacity-0 z-1"></span>
-                                            <i
-                                                class="ci-zoom-in hover-effect-target fs-3 text-white position-absolute top-50 start-50 translate-middle opacity-0 z-2"></i>
-                                            <div class="ratio ratio-1x1 hover-effect-target">
-                                                <img src="assets/img/shop/furniture/product/04.jpg" alt="Image">
-                                            </div>
-                                        </a>
-                                    </div>
-                                    <div class="col">
-                                        <a class="hover-effect-scale hover-effect-opacity position-relative d-flex rounded-4 overflow-hidden"
-                                            href="assets/img/shop/furniture/product/05.jpg" data-glightbox
-                                            data-gallery="product-gallery">
-                                            <span
-                                                class="hover-effect-target position-absolute top-0 start-0 w-100 h-100 bg-black bg-opacity-25 opacity-0 z-1"></span>
-                                            <i
-                                                class="ci-zoom-in hover-effect-target fs-3 text-white position-absolute top-50 start-50 translate-middle opacity-0 z-2"></i>
-                                            <div class="ratio ratio-1x1 hover-effect-target">
-                                                <img src="assets/img/shop/furniture/product/05.jpg" alt="Image">
-                                            </div>
-                                        </a>
-                                    </div>
-                                    <div class="col">
-                                        <a class="hover-effect-scale hover-effect-opacity position-relative d-flex rounded-4 overflow-hidden"
-                                            href="assets/img/shop/furniture/product/06.jpg" data-glightbox
-                                            data-gallery="product-gallery">
-                                            <span
-                                                class="hover-effect-target position-absolute top-0 start-0 w-100 h-100 bg-black bg-opacity-25 opacity-0 z-1"></span>
-                                            <i
-                                                class="ci-zoom-in hover-effect-target fs-3 text-white position-absolute top-50 start-50 translate-middle opacity-0 z-2"></i>
-                                            <div class="ratio ratio-1x1 hover-effect-target">
-                                                <img src="assets/img/shop/furniture/product/06.jpg" alt="Image">
-                                            </div>
-                                        </a>
-                                    </div>
-                                </div>
+                                </a>
                             </div>
-                            <button type="button" class="btn btn-lg btn-outline-secondary w-100 collapsed d-md-none"
-                                data-bs-toggle="collapse" data-bs-target="#morePictures"
-                                data-label-collapsed="Show more pictures" data-label-expanded="Show less pictures"
-                                aria-expanded="false" aria-controls="morePictures" aria-label="Show / hide pictures">
-                                <i class="collapse-toggle-icon ci-chevron-down fs-lg ms-2 me-n2"></i>
-                            </button>
-                        </div> --}}
-                    </div>
+                            @endif
+                            @foreach($product->images as $image)
+                            <div class="col">
+                                <a class="hover-effect-scale hover-effect-opacity position-relative d-flex rounded-4 overflow-hidden"
+                                    href="{{ $image->image_url }}" data-glightbox
+                                    data-gallery="product-gallery">
+                                    <i class="ci-zoom-in hover-effect-target fs-3 text-white position-absolute top-50 start-50 translate-middle opacity-0 z-2"></i>
+                                    <div class="ratio ratio-1x1 hover-effect-target">
+                                        <img src="{{ $image->image_url}}" alt="Product Image" class="w-100 h-100 object-fit-cover">
+                                    </div>
+                                </a>
+                            </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <!-- No images placeholder -->
+                        <div class="d-flex align-items-center justify-content-center bg-light rounded-4" style="min-height: 400px;">
+                            <div class="text-center">
+                                <i class="ci-image fs-1 text-muted mb-3"></i>
+                                <h5 class="text-muted">Tidak ada gambar produk</h5>
+                                <p class="text-muted mb-0">Gambar produk belum tersedia</p>
+                            </div>
+                        </div>
+                    @endif
                 </div>
 
 
@@ -125,86 +67,101 @@
                         <div class="d-none d-md-block" style="padding-top: 90px"></div>
                         <div class="fs-xs text-body-secondary mb-3">P{{$product->id}}</div>
                         <h1 class="fs-xl fw-medium">{{ $product->name }}</h1>
-                        <div class="h4 fw-bold mb-4">{{ $product->price_label}} <del class="fs-sm fw-normal text-body-tertiary">{{$product->compare_price_label}}</del>
+                        <div class="h4 fw-bold mb-4">
+                            Rp {{ $product->price_label }}
+                            @if($product->compare_price)
+                                <del class="fs-sm fw-normal text-body-tertiary ms-2">Rp {{ $product->compare_price_label }}</del>
+                            @endif
                         </div>
-                        {{-- <ul class="list-unstyled fs-sm text-body-emphasis mb-4">
-                            <li>
-                                <span class="me-1">Pay 4 interest-free payments of <span class="fw-semibold">$89.00</span>
-                                    with</span>
-                                <a class="d-inline-block" href="#!" aria-label="Afterpay">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="80" viewBox="0 0 360 129.6">
-                                        <path
-                                            d="M297.4 127.4H62.7C28 127.4 0 99.4 0 64.8h0C0 30.2 28 2.1 62.7 2.1h234.7c34.6 0 62.6 28 62.6 62.6h0c0 34.7-28 62.7-62.6 62.7z"
-                                            fill="#b2fce4" />
-                                        <path
-                                            d="M306.8 49.8l-7.9-4.5-8-4.6c-5.3-3-11.9.8-11.9 6.9v1c0 .6.3 1.1.8 1.4l3.7 2.1c1 .6 2.3-.2 2.3-1.3v-2.4c0-1.2 1.3-2 2.3-1.4l7.3 4.2 7.3 4.2c1.1.6 1.1 2.1 0 2.7l-7.3 4.2-7.3 4.2c-1 .6-2.3-.2-2.3-1.4v-1.2c0-6.1-6.6-9.9-11.9-6.9l-8 4.6-7.9 4.5c-5.3 3-5.3 10.7 0 13.8l7.9 4.5 8 4.6c5.3 3 11.9-.8 11.9-6.9v-1c0-.6-.3-1.1-.8-1.4l-3.7-2.1c-1-.6-2.3.2-2.3 1.3v2.4c0 1.2-1.3 2-2.3 1.4l-7.3-4.2-7.3-4.2c-1.1-.6-1.1-2.1 0-2.7l7.3-4.2 7.3-4.2c1-.6 2.3.2 2.3 1.4v1.2c0 6.1 6.6 9.9 11.9 6.9l8-4.6 7.9-4.5c5.4-3.1 5.4-10.7 0-13.8zm-51.6 1.5l-18.5 38.1H229l6.9-14.2-10.8-23.9h7.9l7 16 7.6-16h7.6zM70.8 64.9c0-4.5-3.3-7.7-7.4-7.7S56 60.4 56 64.9c0 4.4 3.3 7.7 7.4 7.7s7.4-3.2 7.4-7.7m.1 13.5v-3.5c-2 2.4-5 3.9-8.5 3.9-7.4 0-13-5.9-13-14 0-8 5.8-14 13.2-14 3.5 0 6.4 1.5 8.4 3.9v-3.4h6.7v27h-6.8zm38.9-6c-2.3 0-3-.9-3-3.1v-12h4.3v-5.9h-4.3v-6.6H100v6.6h-8.8v-2.7c0-2.3.9-3.1 3.2-3.1H96v-5.2h-3.3c-5.6 0-8.3 1.8-8.3 7.5v3.6h-3.8v5.9h3.8v21.1h6.8V57.2h8.8v13.3c0 5.5 2.1 7.9 7.6 7.9h3.5v-6h-1.3zm24.5-10c-.5-3.5-3.4-5.6-6.7-5.6-3.4 0-6.1 2.1-6.8 5.6h13.5zm-13.6 4.2c.5 4 3.4 6.3 7 6.3 2.9 0 5.1-1.4 6.4-3.5h7c-1.6 5.7-6.8 9.4-13.5 9.4-8.2 0-13.9-5.7-13.9-13.9s6.1-14.1 14.1-14.1c8.1 0 13.9 5.9 13.9 14.1 0 .6-.1 1.2-.2 1.7h-20.8zm64.2-1.7c0-4.4-3.3-7.7-7.4-7.7s-7.4 3.2-7.4 7.7c0 4.4 3.3 7.7 7.4 7.7s7.4-3.4 7.4-7.7m-21.4 24.5V51.3h6.7v3.5c2-2.5 5-4 8.5-4 7.3 0 13 6 13 14s-5.8 14-13.2 14c-3.4 0-6.2-1.4-8.2-3.6v14.2h-6.8zm52.2-24.5c0-4.5-3.3-7.7-7.4-7.7s-7.4 3.2-7.4 7.7c0 4.4 3.3 7.7 7.4 7.7s7.4-3.2 7.4-7.7m.1 13.5v-3.5c-2 2.4-5 3.9-8.5 3.9-7.4 0-13-5.9-13-14 0-8 5.8-14 13.2-14 3.5 0 6.4 1.5 8.4 3.9v-3.4h6.7v27h-6.8zM151.5 54s1.7-3.1 5.8-3.1c1.8 0 2.9.6 2.9.6v6.9s-2.5-1.5-4.8-1.2-3.8 2.4-3.7 5.2v16h-6.9v-27h6.7V54z" />
-                                    </svg>
-                                </a>
-                            </li>
-                            <li>
-                                <span class="me-1">We provide a <span class="fw-semibold">3-year warranty</span></span>
-                                <svg class="text-body-emphasis" xmlns="http://www.w3.org/2000/svg" width="24"
-                                    height="24" fill="currentColor">
-                                    <path fill-rule="evenodd"
-                                        d="M22.287 10.967l-1.7-2c-.215-.254-.346-.568-.373-.9L20 5.46c-.029-.379-.193-.734-.462-1.002s-.625-.43-1.004-.458l-2.607-.213c-.332-.027-.646-.158-.9-.373l-2-1.7c-.288-.247-.654-.383-1.033-.383s-.746.136-1.033.383l-2 1.7c-.254.215-.568.346-.9.373L5.467 4c-.38.028-.737.191-1.006.461s-.433.626-.46 1.006l-.213 2.607c-.027.332-.158.646-.373.9l-1.7 2c-.247.288-.383.654-.383 1.033s.136.746.383 1.033l1.7 2c.215.254.346.568.373.9L4 18.547c.031.377.196.731.465.998s.624.428 1.002.456l2.607.213c.332.027.646.158.9.373l2 1.7c.288.247.654.383 1.033.383s.746-.136 1.033-.383l2-1.7c.254-.215.568-.346.9-.373L18.534 20c.38-.028.737-.191 1.006-.46s.433-.626.46-1.006l.213-2.607c.027-.332.158-.646.373-.9l1.7-2c.245-.287.38-.652.38-1.03s-.135-.743-.38-1.03zm-11.08 4.153l-2.96-2.96 1.127-1.127 1.833 1.827 3.42-3.42 1.127 1.127-4.547 4.553z" />
-                                </svg>
-                            </li>
-                        </ul> --}}
 
-                        <!-- Color options -->
-                        {{-- <div class="mb-4">
-                            <label class="form-label fw-semibold pb-1 mb-2">Color: <span class="text-body fw-normal"
-                                    id="colorOption">Viridian</span></label>
-                            <div class="d-flex flex-wrap gap-2" data-binded-label="#colorOption">
-                                <input type="radio" class="btn-check" name="colors" id="viridian" checked>
-                                <label for="viridian" class="btn btn-image p-0" data-label="Viridian">
-                                    <img src="assets/img/shop/furniture/product/colors/color01.png" width="56"
-                                        alt="Viridian color">
-                                    <span class="visually-hidden">Viridian</span>
-                                </label>
-                                <input type="radio" class="btn-check" name="colors" id="green">
-                                <label for="green" class="btn btn-image p-0" data-label="Green">
-                                    <img src="assets/img/shop/furniture/product/colors/color02.png" width="56"
-                                        alt="Green color">
-                                    <span class="visually-hidden">Green</span>
-                                </label>
-                                <input type="radio" class="btn-check" name="colors" id="blue">
-                                <label for="blue" class="btn btn-image p-0" data-label="Blue">
-                                    <img src="assets/img/shop/furniture/product/colors/color03.png" width="56"
-                                        alt="Blue color">
-                                    <span class="visually-hidden">Blue</span>
-                                </label>
-                            </div>
-                        </div> --}}
+                        <!-- Product Variations -->
                         <form action="{{ route('cart.add') }}" method="POST" id="form-add_to_cart">
+                            @csrf
+                            
+                            @if($product->hasVariations())
+                                @foreach($product->variations as $slug => $variation)
+                                    <div class="mb-4">
+                                        <label class="form-label fw-semibold pb-1 mb-2">
+                                            {{ $variation['attribute']->name }}
+                                            @if($variation['attribute']->is_required)
+                                                <span class="text-danger">*</span>
+                                            @endif
+                                        </label>
 
-                            @foreach($product->attributes ?? [] as $attribute)
-                            <!-- {{ $attribute->attribute->name }} select -->
-                            <div class="mb-4">
-                                <label class="form-label fw-semibold pb-1 mb-2">{{ $attribute->attribute->name }}</label>
-                                <select name="attributes[{{$attribute->attribute->name}}]" class="form-select form-select-lg rounded-pill"
-                                    data-select='{
-                                        "classNames": {
-                                            "containerInner": ["form-select", "form-select-lg", "rounded-pill"]
-                                        }
-                                        }'
-                                    aria-label="Material select">
-                                    @foreach(explode('|', $attribute->attribute->values) as $value)
-                                    <option value="{{ $value }}">{{ $value }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            @endforeach
+                                        @if($variation['attribute']->type == 'color')
+                                            <!-- Color options -->
+                                            <div class="d-flex flex-wrap gap-2">
+                                                @foreach($variation['selected_values'] as $value)
+                                                    <input type="radio" 
+                                                           class="btn-check attribute-option" 
+                                                           name="attributes[{{ $variation['attribute']->id }}]" 
+                                                           id="attr_{{ $variation['attribute']->id }}_{{ $value->id }}"
+                                                           value="{{ $value->id }}"
+                                                           data-price-adjustment="{{ $value->price_adjustment }}"
+                                                           {{ $variation['attribute']->is_required ? 'required' : '' }}>
+                                                    <label for="attr_{{ $variation['attribute']->id }}_{{ $value->id }}" 
+                                                           class="btn btn-outline-secondary"
+                                                           style="@if($value->color_code) background-color: {{ $value->color_code }}; border-color: {{ $value->color_code }}; @endif">
+                                                        {{ $value->display_value }}
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                        
+                                        @elseif($variation['attribute']->type == 'size' || $variation['attribute']->type == 'radio')
+                                            <!-- Size/Radio options -->
+                                            <div class="d-flex flex-wrap gap-2">
+                                                @foreach($variation['selected_values'] as $value)
+                                                    <input type="radio" 
+                                                           class="btn-check attribute-option" 
+                                                           name="attributes[{{ $variation['attribute']->id }}]" 
+                                                           id="attr_{{ $variation['attribute']->id }}_{{ $value->id }}"
+                                                           value="{{ $value->id }}"
+                                                           data-price-adjustment="{{ $value->price_adjustment }}"
+                                                           {{ $variation['attribute']->is_required ? 'required' : '' }}>
+                                                    <label for="attr_{{ $variation['attribute']->id }}_{{ $value->id }}" 
+                                                           class="btn btn-outline-secondary">
+                                                        {{ $value->display_value }}
+                                                        @if($value->price_adjustment > 0)
+                                                            <span class="badge bg-success ms-1">+Rp {{ number_format($value->price_adjustment, 0, ',', '.') }}</span>
+                                                        @elseif($value->price_adjustment < 0)
+                                                            <span class="badge bg-danger ms-1">-Rp {{ number_format(abs($value->price_adjustment), 0, ',', '.') }}</span>
+                                                        @endif
+                                                    </label>
+                                                @endforeach
+                                            </div>
+
+                                        @else
+                                            <!-- Select dropdown -->
+                                            <select name="attributes[{{ $variation['attribute']->id }}]" 
+                                                    class="form-select form-select-lg rounded-pill attribute-option"
+                                                    {{ $variation['attribute']->is_required ? 'required' : '' }}>
+                                                <option value="">Pilih {{ $variation['attribute']->name }}</option>
+                                                @foreach($variation['selected_values'] as $value)
+                                                    <option value="{{ $value->id }}" data-price-adjustment="{{ $value->price_adjustment }}">
+                                                        {{ $value->display_value }}
+                                                        @if($value->price_adjustment > 0)
+                                                            (+Rp {{ number_format($value->price_adjustment, 0, ',', '.') }})
+                                                        @elseif($value->price_adjustment < 0)
+                                                            (-Rp {{ number_format(abs($value->price_adjustment), 0, ',', '.') }})
+                                                        @endif
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            @endif
 
                             <!-- Add to cart + Wishlist buttons -->
                             <div class="d-flex gap-3 pb-4 mb-2 mb-lg-3">
-                                
-                                    <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                    <button type="submit" class="btn btn-lg btn-dark w-100 rounded-pill btn-add_to_cart">Add to cart</button>
-                                {{-- <button type="button" class="btn btn-icon btn-lg btn-secondary rounded-circle animate-pulse"
-                                    aria-label="Add to Wishlist">
+                                <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                <button type="submit" class="btn btn-lg btn-dark w-100 rounded-pill btn-add_to_cart">Add to cart</button>
+                                <button type="button" 
+                                        class="btn btn-icon btn-lg btn-secondary rounded-circle animate-pulse wishlist-toggle"
+                                        data-product-id="{{ $product->id }}"
+                                        aria-label="Add to Wishlist">
                                     <i class="ci-heart fs-lg animate-target"></i>
-                                </button> --}}
+                                </button>
                             </div>
 
                         </form>
@@ -215,19 +172,21 @@
                         <div class="bg-body-tertiary rounded p-3 mb-3">
                             <h6 class="fs-sm mb-2">Detail Produk</h6>
                             <div class="row g-2">
-                                @if($product->weight)
                                 <div class="col-6">
                                     <div class="d-flex">
                                         <span class="fs-xs text-muted me-2">Berat:</span>
-                                        <span class="fs-xs fw-medium">{{ $product->weight }}g</span>
+                                        @if($product->weight)
+                                            <span class="fs-xs fw-medium">{{ number_format($product->weight, 0, ',', '.') }}g</span>
+                                        @else
+                                            <span class="fs-xs text-danger">Belum diatur</span>
+                                        @endif
                                     </div>
                                 </div>
-                                @endif
                                 @if($product->dimension)
                                 <div class="col-6">
                                     <div class="d-flex">
                                         <span class="fs-xs text-muted me-2">Dimensi:</span>
-                                        <span class="fs-xs fw-medium">{{ $product->dimension }}cm</span>
+                                        <span class="fs-xs fw-medium">{{ $product->dimension }}</span>
                                     </div>
                                 </div>
                                 @endif
@@ -246,6 +205,12 @@
                                 </div>
                                 @endif
                             </div>
+                            
+                            @if(!$product->weight)
+                                <div class="alert alert-warning alert-sm mt-2 mb-0">
+                                    <small><i class="ci-alert-triangle me-1"></i> Berat produk belum diatur. Ongkos kirim mungkin tidak akurat.</small>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -257,8 +222,12 @@
                 <div class="sticky-product-banner-inner pt-5">
                     <div class="navbar flex-nowrap align-items-center bg-body pt-4 pb-2">
                         <div class="d-flex align-items-center min-w-0 ms-lg-2 me-3">
-                            <div class="ratio ratio-1x1 flex-shrink-0" style="width: 50px">
-                                <img src="{{ $product->featured_image_url }}" alt="{{ $product->name }}">
+                            <div class="ratio ratio-1x1 flex-shrink-0 d-flex align-items-center justify-content-center bg-light rounded" style="width: 50px">
+                                @if($product->featured_image)
+                                    <img src="{{ $product->featured_image_url }}" alt="{{ $product->name }}" class="rounded">
+                                @else
+                                    <i class="ci-image text-muted"></i>
+                                @endif
                             </div>
                             <h4 class="h6 fw-medium d-none d-lg-block ps-3 mb-0">{{ $product->name }}</h4>
                             <div class="w-100 min-w-0 d-lg-none ps-2">
@@ -266,7 +235,7 @@
                                 <div class="h6 mb-0">
                                     Rp {{ $product->price_label }}
                                     @if($product->compare_price)
-                                        <del class="fs-xs fw-normal text-body-tertiary">Rp {{ $product->compare_price_label }}</del>
+                                        <del class="fs-xs fw-normal text-body-tertiary ms-2">Rp {{ $product->compare_price_label }}</del>
                                     @endif
                                 </div>
                             </div>
@@ -274,11 +243,12 @@
                         <div class="h4 d-none d-lg-block mb-0 ms-auto me-4">
                             Rp {{ $product->price_label }}
                             @if($product->compare_price)
-                                <del class="fs-sm fw-normal text-body-tertiary">Rp {{ $product->compare_price_label }}</del>
+                                <del class="fs-sm fw-normal text-body-tertiary ms-2">Rp {{ $product->compare_price_label }}</del>
                             @endif
                         </div>
                         <div class="d-flex gap-2">
-                            <button type="button" class="btn btn-icon btn-secondary rounded-circle animate-pulse"
+                            <button type="button" class="btn btn-icon btn-secondary rounded-circle animate-pulse wishlist-toggle"
+                                data-product-id="{{ $product->id }}"
                                 aria-label="Add to Wishlist">
                                 <i class="ci-heart fs-base animate-target"></i>
                             </button>
@@ -347,103 +317,76 @@
             </section>
 
 
-            <!-- Popular products carousel -->
+            <!-- Popular products -->
             <section class="pb-5 mb-1 mb-sm-3 mb-lg-4 mb-xl-5">
                 <h2 class="h3 pb-2 pb-sm-3">Popular products</h2>
-                <div class="position-relative pb-xxl-3">
-
-                    <!-- External slider prev/next buttons visible on screens > 500px wide (sm breakpoint) -->
-                    <button type="button"
-                        class="popular-prev btn btn-icon btn-outline-secondary bg-body rounded-circle animate-slide-start position-absolute top-50 start-0 z-2 translate-middle mt-n5 d-none d-sm-inline-flex"
-                        aria-label="Prev">
-                        <i class="ci-chevron-left fs-lg animate-target"></i>
-                    </button>
-                    <button type="button"
-                        class="popular-next btn btn-icon btn-outline-secondary bg-body rounded-circle animate-slide-end position-absolute top-50 start-100 z-2 translate-middle mt-n5 d-none d-sm-inline-flex"
-                        aria-label="Next">
-                        <i class="ci-chevron-right fs-lg animate-target"></i>
-                    </button>
-
-                    <!-- Slider -->
-                    <div class="swiper"
-                        data-swiper='{
-              "slidesPerView": 2,
-              "spaceBetween": 24,
-              "loop": true,
-              "navigation": {
-                "prevEl": ".popular-prev",
-                "nextEl": ".popular-next"
-              },
-              "breakpoints": {
-                "768": {
-                  "slidesPerView": 3
-                },
-                "992": {
-                  "slidesPerView": 4
-                }
-              }
-            }'>
-                        <div class="swiper-wrapper">
-                            @forelse($popularProducts as $popularProduct)
-                            <!-- Item -->
-                            <div class="swiper-slide">
-                                <div class="animate-underline">
-                                    <a class="hover-effect-opacity ratio ratio-1x1 d-block mb-3"
-                                        href="{{ $popularProduct->permalink }}">
+                
+                <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
+                    @forelse($popularProducts->take(8) as $popularProduct)
+                        <div class="col">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="position-relative">
+                                    <a href="{{ $popularProduct->permalink }}" class="d-block">
                                         @if($popularProduct->compare_price && $popularProduct->percentage_discount_by_compare_price > 0)
-                                            <div class="position-absolute top-0 start-0 z-2 mt-2 mt-sm-3 ms-2 ms-sm-3">
-                                                <span class="badge text-bg-danger">-{{$popularProduct->percentage_discount_by_compare_price}}%</span>
+                                            <div class="position-absolute top-0 start-0 z-2 mt-2 ms-2">
+                                                <span class="badge bg-danger">-{{ $popularProduct->percentage_discount_by_compare_price }}%</span>
                                             </div>
                                         @endif
-                                        <img src="{{ $popularProduct->featured_image_url }}" class="hover-effect-target opacity-100" alt="{{ $popularProduct->name }}">
+                                        <div class="ratio ratio-1x1">
+                                            @if($popularProduct->featured_image_url)
+                                                <img src="{{ $popularProduct->featured_image_url }}" 
+                                                     class="card-img-top object-fit-cover" 
+                                                     alt="{{ $popularProduct->name }}"
+                                                     style="border-radius: 0.5rem 0.5rem 0 0;">
+                                            @else
+                                                <div class="d-flex align-items-center justify-content-center bg-light" 
+                                                     style="border-radius: 0.5rem 0.5rem 0 0;">
+                                                    <div class="text-center">
+                                                        <i class="ci-image text-muted mb-2" style="font-size: 2rem;"></i>
+                                                        <small class="text-muted d-block">No Image</small>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
                                     </a>
-                                    
-                                    <h3 class="mb-2">
-                                        <a class="d-block fs-sm fw-medium text-truncate" href="{{ $popularProduct->permalink }}">
-                                            <span class="animate-target">{{ $popularProduct->name }}</span>
+                                </div>
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title fs-sm mb-2">
+                                        <a href="{{ $popularProduct->permalink }}" 
+                                           class="text-decoration-none text-dark">
+                                            {{ Str::limit($popularProduct->name, 50) }}
                                         </a>
-                                    </h3>
-                                    <div class="h6">
-                                        Rp {{ $popularProduct->price_label }}
+                                    </h5>
+                                    <div class="mb-3">
+                                        <span class="h6 text-primary">Rp {{ $popularProduct->price_label }}</span>
                                         @if($popularProduct->compare_price)
-                                            <del class="fs-sm fw-normal text-body-tertiary">Rp {{ $popularProduct->compare_price_label }}</del>
+                                            <del class="fs-sm text-muted ms-2">Rp {{ $popularProduct->compare_price_label }}</del>
                                         @endif
                                     </div>
-                                    <div class="d-flex gap-2">
-                                        <button type="button" class="btn btn-dark w-100 rounded-pill px-3 add-to-cart-btn" data-product-id="{{ $popularProduct->id }}">
-                                            Add to cart
+                                    <div class="mt-auto d-flex gap-2">
+                                        <button type="button" 
+                                                class="btn btn-primary btn-sm w-100 add-to-cart-btn" 
+                                                data-product-id="{{ $popularProduct->id }}">
+                                            <i class="ci-shopping-cart me-1"></i>
+                                            Add to Cart
                                         </button>
                                         <button type="button"
-                                            class="btn btn-icon btn-secondary rounded-circle animate-pulse"
-                                            aria-label="Add to wishlist">
-                                            <i class="ci-heart fs-base animate-target"></i>
+                                                class="btn btn-outline-secondary btn-sm"
+                                                aria-label="Add to wishlist">
+                                            <i class="ci-heart"></i>
                                         </button>
                                     </div>
                                 </div>
                             </div>
-                            @empty
-                            <div class="swiper-slide">
-                                <div class="text-center py-4">
-                                    <p class="text-muted">Tidak ada produk populer saat ini.</p>
-                                </div>
-                            </div>
-                            @endforelse
                         </div>
-                    </div>
-                </div>
-
-                <!-- External slider prev/next buttons visible on screens < 500px wide (sm breakpoint) -->
-                <div class="d-flex justify-content-center gap-2 mt-1 pt-4 d-sm-none">
-                    <button type="button"
-                        class="popular-prev btn btn-icon btn-outline-secondary bg-body rounded-circle animate-slide-start me-1"
-                        aria-label="Prev">
-                        <i class="ci-chevron-left fs-lg animate-target"></i>
-                    </button>
-                    <button type="button"
-                        class="popular-next btn btn-icon btn-outline-secondary bg-body rounded-circle animate-slide-end"
-                        aria-label="Next">
-                        <i class="ci-chevron-right fs-lg animate-target"></i>
-                    </button>
+                    @empty
+                        <div class="col-12">
+                            <div class="text-center py-5">
+                                <i class="ci-package text-muted mb-3" style="font-size: 3rem;"></i>
+                                <p class="text-muted mb-0">Tidak ada produk populer saat ini.</p>
+                            </div>
+                        </div>
+                    @endforelse
                 </div>
             </section>
 
@@ -457,9 +400,19 @@
                     <article class="col">
                         <a class="ratio d-flex hover-effect-scale rounded-4 overflow-hidden" 
                            href="{{ route('web.blog-post', $blogPost->slug) }}"
-                           style="--cz-aspect-ratio: calc(260 / 306 * 100%)">
-                            <img src="{{ $blogPost->featured_image_url ?? 'assets/img/blog/grid/v2/10.jpg' }}" 
-                                 class="hover-effect-target" alt="{{ $blogPost->title }}">
+                           style="--cz-aspect-ratio: calc(200 / 280 * 100%)">
+                            @if($blogPost->featured_image_url)
+                                <img src="{{ $blogPost->featured_image_url }}" 
+                                     class="hover-effect-target w-100 h-100 object-fit-cover" 
+                                     alt="{{ $blogPost->title }}">
+                            @else
+                                <div class="d-flex align-items-center justify-content-center bg-light hover-effect-target">
+                                    <div class="text-center">
+                                        <i class="ci-file-text text-muted mb-2" style="font-size: 2rem;"></i>
+                                        <small class="text-muted d-block">Article</small>
+                                    </div>
+                                </div>
+                            @endif
                         </a>
                         <div class="pt-4">
                             @if($blogPost->categories->first())
@@ -467,17 +420,29 @@
                                 <span class="nav-link text-body fs-xs text-uppercase p-0">{{ $blogPost->categories->first()->name ?? 'Blog' }}</span>
                             </div>
                             @endif
-                            <h3 class="h6 mb-3">
-                                <a class="hover-effect-underline" 
+                            <h3 class="h6 mb-2">
+                                <a class="hover-effect-underline text-decoration-none" 
                                    href="{{ route('web.blog-post', $blogPost->slug) }}">
-                                    {{ Str::limit($blogPost->title, 60) }}
+                                    {{ Str::limit($blogPost->title, 50) }}
                                 </a>
                             </h3>
-                            <div class="nav align-items-center gap-2 fs-xs">
-                                <span class="nav-link text-body-secondary fs-xs fw-normal p-0">{{ $blogPost->author ?? 'Admin' }}</span>
-                                <hr class="vr my-1 mx-1">
-                                <span class="text-body-secondary">{{ $blogPost->created_at->format('F j, Y') }}</span>
-                            </div>
+                            
+                            <!-- Excerpt - 20 words -->
+                            <p class="fs-sm text-muted mb-3">
+                                {{ $blogPost->excerpt }}
+                            </p>
+                            
+                            {{-- <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-2 fs-xs text-muted">
+                                    <span>{{ $blogPost->author ?? 'Admin' }}</span>
+                                    <span>•</span>
+                                    <span>{{ $blogPost->created_at->format('M j, Y') }}</span>
+                                </div>
+                                <a href="{{ route('web.blog-post', $blogPost->slug) }}" 
+                                   class="btn btn-sm btn-outline-primary">
+                                    <small>Baca</small>
+                                </a>
+                            </div> --}}
                         </div>
                     </article>
                     @empty
@@ -497,376 +462,670 @@
                 <!-- Heading + Add review button -->
                 <div class="d-sm-flex align-items-center justify-content-between border-bottom pb-2 pb-sm-3">
                     <div class="mb-3 me-sm-3">
-                        <h2 class="h3 pb-2 mb-1">Customer reviews</h2>
+                        <h2 class="h3 pb-2 mb-1">Review Produk</h2>
                         <div class="d-flex align-items-center fs-sm">
-                            <div class="d-flex gap-1 me-2">
-                                <i class="ci-star-filled text-body-emphasis"></i>
-                                <i class="ci-star-filled text-body-emphasis"></i>
-                                <i class="ci-star-filled text-body-emphasis"></i>
-                                <i class="ci-star-filled text-body-emphasis"></i>
-                                <i class="ci-star text-body-tertiary opacity-75"></i>
-                            </div>
-                            Based on 6 reviews
+                            @if($totalReviews > 0)
+                                <div class="d-flex gap-1 me-2">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        @if ($i <= floor($averageRating + 0.5))
+                                            <i class="ci-star-filled text-body-emphasis"></i>
+                                        @else
+                                            <i class="ci-star text-body-tertiary opacity-75"></i>
+                                        @endif
+                                    @endfor
+                                </div>
+                                <span class="me-2">{{ number_format($averageRating, 1) }}</span>
+                                <span>Berdasarkan {{ $totalReviews }} review{{ $totalReviews > 1 ? 's' : '' }}</span>
+                            @else
+                                <span>Belum ada review</span>
+                            @endif
                         </div>
                     </div>
-                    <button type="button" class="btn btn-lg btn-outline-dark rounded-pill mb-3" data-bs-toggle="modal"
-                        data-bs-target="#reviewForm">Leave a review</button>
+                    
+                    @if($canUserReview)
+                        <button type="button" class="btn btn-lg btn-outline-dark rounded-pill mb-3" data-bs-toggle="modal"
+                            data-bs-target="#reviewForm">Tulis Review</button>
+                    @elseif($userReviewReason == 'already_reviewed')
+                        <span class="badge bg-secondary mb-3">Anda sudah memberikan review</span>
+                    @elseif($userReviewReason == 'not_logged_in')
+                        <a href="{{ route('login') }}" class="btn btn-lg btn-outline-dark rounded-pill mb-3">Login untuk Review</a>
+                    @endif
                 </div>
 
-                <!-- Review -->
-                <div class="border-bottom py-4">
-                    <div class="row py-sm-2">
-                        <div class="col-md-4 col-lg-3 mb-3 mb-md-0">
-                            <div class="d-flex h6 mb-2">
-                                Rafael Marquez
-                                <i class="ci-check-circle text-success mt-1 ms-2" data-bs-toggle="tooltip"
-                                    data-bs-custom-class="tooltip-sm" title="Verified customer"></i>
-                            </div>
-                            <div class="fs-sm mb-2 mb-md-3">June 25, 2024</div>
-                            <div class="d-flex gap-1 fs-sm">
-                                <i class="ci-star-filled text-body-emphasis"></i>
-                                <i class="ci-star-filled text-body-emphasis"></i>
-                                <i class="ci-star-filled text-body-emphasis"></i>
-                                <i class="ci-star-filled text-body-emphasis"></i>
-                                <i class="ci-star-filled text-body-emphasis"></i>
-                            </div>
-                        </div>
-                        <div class="col-md-8 col-lg-9">
-                            <p class="mb-md-4">Absolutely love this chair! It's exactly what I was looking for to complete
-                                my Scandinavian-themed living room. The wooden legs add a touch of warmth and the design is
-                                timeless. Comfortable and sturdy, couldn't be happier with my purchase!</p>
-                            <div class="d-sm-flex justify-content-between">
-                                <div
-                                    class="d-flex align-items-center fs-sm fw-medium text-dark-emphasis pb-2 pb-sm-0 mb-1 mb-sm-0">
-                                    <i class="ci-check fs-base me-1" style="margin-top: .125rem"></i>
-                                    Yes, I recommend this product
-                                </div>
-                                <div class="d-flex align-items-center gap-2">
-                                    <div class="fs-sm fw-medium text-dark-emphasis me-1">Helpful?</div>
-                                    <button type="button" class="btn btn-sm btn-secondary">
-                                        <i class="ci-thumbs-up fs-sm ms-n1 me-1"></i>
-                                        0
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Review -->
-                <div class="border-bottom py-4">
-                    <div class="row py-sm-2">
-                        <div class="col-md-4 col-lg-3 mb-3 mb-md-0">
-                            <div class="d-flex h6 mb-2">
-                                Bessie Cooper
-                                <i class="ci-check-circle text-success mt-1 ms-2" data-bs-toggle="tooltip"
-                                    data-bs-custom-class="tooltip-sm" title="Verified customer"></i>
-                            </div>
-                            <div class="fs-sm mb-2 mb-md-3">April 8, 2024</div>
-                            <div class="d-flex gap-1 fs-sm">
-                                <i class="ci-star-filled text-body-emphasis"></i>
-                                <i class="ci-star-filled text-body-emphasis"></i>
-                                <i class="ci-star text-body-tertiary opacity-75"></i>
-                                <i class="ci-star text-body-tertiary opacity-75"></i>
-                                <i class="ci-star text-body-tertiary opacity-75"></i>
-                            </div>
-                        </div>
-                        <div class="col-md-8 col-lg-9">
-                            <p class="mb-md-4">While the design of the chair is nice and it does add a touch of retro vibe
-                                to my space, I found the quality to be lacking. After just a few weeks of use, one of the
-                                legs started to wobble, and the seat isn't as comfortable as I had hoped. Disappointed with
-                                the durability. Additionally, the assembly process was a bit frustrating as some of the
-                                screws didn't align properly with the holes, requiring extra effort to secure them in place.
-                                Overall, while it looks good, I expected better quality for the price.</p>
-                            <div class="d-sm-flex justify-content-between">
-                                <div
-                                    class="d-flex align-items-center fs-sm fw-medium text-dark-emphasis pb-2 pb-sm-0 mb-1 mb-sm-0">
-                                    <i class="ci-close fs-base me-1" style="margin-top: .125rem"></i>
-                                    No, I don't recommend this product
-                                </div>
-                                <div class="d-flex align-items-center gap-2">
-                                    <div class="fs-sm fw-medium text-dark-emphasis me-1">Helpful?</div>
-                                    <button type="button" class="btn btn-sm btn-secondary">
-                                        <i class="ci-thumbs-up fs-sm ms-n1 me-1"></i>
-                                        3
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Review -->
-                <div class="border-bottom py-4">
-                    <div class="row py-sm-2">
-                        <div class="col-md-4 col-lg-3 mb-3 mb-md-0">
-                            <div class="d-flex h6 mb-2">Savannah Nguyen</div>
-                            <div class="fs-sm mb-2 mb-md-3">March 30, 2024</div>
-                            <div class="d-flex gap-1 fs-sm">
-                                <i class="ci-star-filled text-body-emphasis"></i>
-                                <i class="ci-star-filled text-body-emphasis"></i>
-                                <i class="ci-star-filled text-body-emphasis"></i>
-                                <i class="ci-star-filled text-body-emphasis"></i>
-                                <i class="ci-star text-body-tertiary opacity-75"></i>
-                            </div>
-                        </div>
-                        <div class="col-md-8 col-lg-9">
-                            <p class="mb-md-4">Great addition to our dining room! The chair looks fantastic and is quite
-                                comfortable for short sits. Assembly was a breeze, and the quality seems decent for the
-                                price. Overall, satisfied with the purchase.</p>
-                            <div class="d-sm-flex justify-content-between">
-                                <div
-                                    class="d-flex align-items-center fs-sm fw-medium text-dark-emphasis pb-2 pb-sm-0 mb-1 mb-sm-0">
-                                    <i class="ci-check fs-base me-1" style="margin-top: .125rem"></i>
-                                    Yes, I recommend this product
-                                </div>
-                                <div class="d-flex align-items-center gap-2">
-                                    <div class="fs-sm fw-medium text-dark-emphasis me-1">Helpful?</div>
-                                    <button type="button" class="btn btn-sm btn-secondary">
-                                        <i class="ci-thumbs-up fs-sm ms-n1 me-1"></i>
-                                        7
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- More reviews collaspe -->
-                <div class="collapse" id="moreReviews">
-
-                    <!-- Review -->
-                    <div class="border-bottom py-4">
-                        <div class="row py-sm-2">
-                            <div class="col-md-4 col-lg-3 mb-3 mb-md-0">
-                                <div class="d-flex h6 mb-2">Daniel Adams</div>
-                                <div class="fs-sm mb-2 mb-md-3">March 16, 2024</div>
-                                <div class="d-flex gap-1 fs-sm">
-                                    <i class="ci-star-filled text-body-emphasis"></i>
-                                    <i class="ci-star-filled text-body-emphasis"></i>
-                                    <i class="ci-star-filled text-body-emphasis"></i>
-                                    <i class="ci-star-filled text-body-emphasis"></i>
-                                    <i class="ci-star-filled text-body-emphasis"></i>
-                                </div>
-                            </div>
-                            <div class="col-md-8 col-lg-9">
-                                <p class="mb-md-4">Couldn't be happier with this chair! It's not only stylish but also
-                                    incredibly comfortable. The size is perfect for our space, and the wooden legs feel
-                                    sturdy. Definitely recommend it to anyone looking for a chic and functional seating
-                                    option.</p>
-                                <div class="d-sm-flex justify-content-between">
-                                    <div
-                                        class="d-flex align-items-center fs-sm fw-medium text-dark-emphasis pb-2 pb-sm-0 mb-1 mb-sm-0">
-                                        <i class="ci-check fs-base me-1" style="margin-top: .125rem"></i>
-                                        Yes, I recommend this product
-                                    </div>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <div class="fs-sm fw-medium text-dark-emphasis me-1">Helpful?</div>
-                                        <button type="button" class="btn btn-sm btn-secondary">
-                                            <i class="ci-thumbs-up fs-sm ms-n1 me-1"></i>
-                                            14
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Review -->
+                <!-- Reviews List -->
+                @forelse($reviews as $review)
                     <div class="border-bottom py-4">
                         <div class="row py-sm-2">
                             <div class="col-md-4 col-lg-3 mb-3 mb-md-0">
                                 <div class="d-flex h6 mb-2">
-                                    Jenny Wilson
-                                    <i class="ci-check-circle text-success mt-1 ms-2" data-bs-toggle="tooltip"
-                                        data-bs-custom-class="tooltip-sm" title="Verified customer"></i>
+                                    {{ $review->user->name ?? 'Customer' }}
+                                    @if($review->is_verified_purchase)
+                                        <i class="ci-check-circle text-success mt-1 ms-2" data-bs-toggle="tooltip"
+                                            data-bs-custom-class="tooltip-sm" title="Verified Purchase"></i>
+                                    @endif
                                 </div>
-                                <div class="fs-sm mb-2 mb-md-3">February 19, 2024</div>
+                                <div class="fs-sm mb-2 mb-md-3">{{ $review->created_at_formatted }}</div>
                                 <div class="d-flex gap-1 fs-sm">
-                                    <i class="ci-star-filled text-body-emphasis"></i>
-                                    <i class="ci-star-filled text-body-emphasis"></i>
-                                    <i class="ci-star-filled text-body-emphasis"></i>
-                                    <i class="ci-star-filled text-body-emphasis"></i>
-                                    <i class="ci-star-filled text-body-emphasis"></i>
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        @if ($i <= $review->rating)
+                                            <i class="ci-star-filled text-body-emphasis"></i>
+                                        @else
+                                            <i class="ci-star text-body-tertiary opacity-75"></i>
+                                        @endif
+                                    @endfor
                                 </div>
                             </div>
                             <div class="col-md-8 col-lg-9">
-                                <p class="mb-md-4">This chair exceeded my expectations! It's well-made, comfortable, and
-                                    looks even better in person. The Scandinavian design adds a sophisticated touch to my
-                                    home office. I've received so many compliments already. Five stars all the way!</p>
-                                <div class="d-sm-flex justify-content-between">
-                                    <div
-                                        class="d-flex align-items-center fs-sm fw-medium text-dark-emphasis pb-2 pb-sm-0 mb-1 mb-sm-0">
-                                        <i class="ci-check fs-base me-1" style="margin-top: .125rem"></i>
-                                        Yes, I recommend this product
+                                <p class="mb-md-4">{{ $review->review }}</p>
+                                
+                                @if($review->admin_reply)
+                                    <div class="bg-light p-3 rounded mb-3">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <strong class="text-primary">Admin Response:</strong>
+                                        </div>
+                                        <p class="mb-0 fs-sm">{{ $review->admin_reply }}</p>
                                     </div>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <div class="fs-sm fw-medium text-dark-emphasis me-1">Helpful?</div>
-                                        <button type="button" class="btn btn-sm btn-secondary">
-                                            <i class="ci-thumbs-up fs-sm ms-n1 me-1"></i>
-                                            2
-                                        </button>
+                                @endif
+                                
+                                @if($review->is_verified_purchase)
+                                    <div class="d-flex justify-content-end">
+                                        <div class="badge bg-success-subtle text-success">
+                                            <i class="ci-check fs-sm me-1"></i>
+                                            Verified Purchase
+                                        </div>
                                     </div>
-                                </div>
+                                @endif
                             </div>
                         </div>
                     </div>
-
-                    <!-- Review -->
-                    <div class="border-bottom py-4">
-                        <div class="row py-sm-2">
-                            <div class="col-md-4 col-lg-3 mb-3 mb-md-0">
-                                <div class="d-flex h6 mb-2">Kristin Watson</div>
-                                <div class="fs-sm mb-2 mb-md-3">February 7, 2024</div>
-                                <div class="d-flex gap-1 fs-sm">
-                                    <i class="ci-star-filled text-body-emphasis"></i>
-                                    <i class="ci-star-filled text-body-emphasis"></i>
-                                    <i class="ci-star-filled text-body-emphasis"></i>
-                                    <i class="ci-star text-body-tertiary opacity-75"></i>
-                                    <i class="ci-star text-body-tertiary opacity-75"></i>
-                                </div>
-                            </div>
-                            <div class="col-md-8 col-lg-9">
-                                <p class="mb-md-4">The chair is nice, but it's not the most comfortable for extended
-                                    periods of sitting. The wooden legs give it a nice aesthetic, but they seem a bit
-                                    fragile. It's a decent chair for occasional use, but I wouldn't recommend it for daily
-                                    use or long sitting sessions.</p>
-                                <div class="d-sm-flex justify-content-between">
-                                    <div
-                                        class="d-flex align-items-center fs-sm fw-medium text-dark-emphasis pb-2 pb-sm-0 mb-1 mb-sm-0">
-                                        <i class="ci-close fs-base me-1" style="margin-top: .125rem"></i>
-                                        No, I don't recommend this product
-                                    </div>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <div class="fs-sm fw-medium text-dark-emphasis me-1">Helpful?</div>
-                                        <button type="button" class="btn btn-sm btn-secondary">
-                                            <i class="ci-thumbs-up fs-sm ms-n1 me-1"></i>
-                                            9
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                @empty
+                    <div class="text-center py-5">
+                        <div class="mb-3">
+                            <i class="ci-chat fs-1 text-muted"></i>
                         </div>
+                        <h4 class="h5 text-muted mb-2">Belum ada review</h4>
+                        <p class="text-muted mb-0">Jadilah yang pertama memberikan review untuk produk ini!</p>
                     </div>
-                </div>
+                @endforelse
 
-                <!-- Toggle reviews collapse button -->
-                <div class="nav pt-3 mt-md-2 mb-xxl-2">
-                    <a class="nav-link animate-underline collapsed px-0" href="#moreReviews" data-bs-toggle="collapse"
-                        aria-expanded="false" aria-controls="moreReviews" aria-label="Show / hide reviews">
-                        <span class="animate-target" data-label-collapsed="Show more reviews"
-                            data-label-expanded="Show less reviews"></span>
-                        <i class="collapse-toggle-icon ci-chevron-down fs-base mt-1 ms-1"></i>
-                    </a>
-                </div>
+                <!-- Show More Reviews Button (only if there are more than 5 reviews) -->
+                @if($reviews->count() > 5)
+                    <div class="text-center pt-3">
+                        <button class="btn btn-outline-primary" onclick="loadMoreReviews()">
+                            Tampilkan Review Lainnya
+                        </button>
+                    </div>
+                @endif
             </section>
 
 
-            <!-- Viewed products carousel -->
+            <!-- Viewed products -->
             <section class="pb-5 mb-2 mb-sm-3 mb-md-4 mb-lg-5">
                 <h2 class="h3 pb-2 pb-sm-3">Viewed products</h2>
-                <div class="position-relative pb-xxl-3">
-
-                    <!-- External slider prev/next buttons visible on screens > 500px wide (sm breakpoint) -->
-                    <button type="button"
-                        class="viewed-prev btn btn-icon btn-outline-secondary bg-body rounded-circle animate-slide-start position-absolute top-50 start-0 z-2 translate-middle mt-n5 d-none d-sm-inline-flex"
-                        aria-label="Prev">
-                        <i class="ci-chevron-left fs-lg animate-target"></i>
-                    </button>
-                    <button type="button"
-                        class="viewed-next btn btn-icon btn-outline-secondary bg-body rounded-circle animate-slide-end position-absolute top-50 start-100 z-2 translate-middle mt-n5 d-none d-sm-inline-flex"
-                        aria-label="Next">
-                        <i class="ci-chevron-right fs-lg animate-target"></i>
-                    </button>
-
-                    <!-- Slider -->
-                    <div class="swiper"
-                        data-swiper='{
-              "slidesPerView": 2,
-              "spaceBetween": 24,
-              "navigation": {
-                "prevEl": ".viewed-prev",
-                "nextEl": ".viewed-next"
-              },
-              "breakpoints": {
-                "768": {
-                  "slidesPerView": 3
-                },
-                "992": {
-                  "slidesPerView": 4
-                }
-              }
-            }'>
-                        <div class="swiper-wrapper">
-                            @forelse($viewedProducts as $viewedProduct)
-                            <!-- Item -->
-                            <div class="swiper-slide">
-                                <div class="animate-underline">
-                                    <a class="hover-effect-opacity ratio ratio-1x1 d-block mb-3"
-                                        href="{{ $viewedProduct->permalink }}">
+                
+                <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
+                    @forelse($viewedProducts->take(8) as $viewedProduct)
+                        <div class="col">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="position-relative">
+                                    <a href="{{ $viewedProduct->permalink }}" class="d-block">
                                         @if($viewedProduct->compare_price && $viewedProduct->percentage_discount_by_compare_price > 0)
-                                            <div class="position-absolute top-0 start-0 z-2 mt-2 mt-sm-3 ms-2 ms-sm-3">
-                                                <span class="badge text-bg-danger">-{{$viewedProduct->percentage_discount_by_compare_price}}%</span>
+                                            <div class="position-absolute top-0 start-0 z-2 mt-2 ms-2">
+                                                <span class="badge bg-danger">-{{ $viewedProduct->percentage_discount_by_compare_price }}%</span>
                                             </div>
                                         @endif
-                                        <img src="{{ $viewedProduct->featured_image_url }}" 
-                                             class="hover-effect-target opacity-100" alt="{{ $viewedProduct->name }}">
+                                        <div class="ratio ratio-1x1">
+                                            @if($viewedProduct->featured_image_url)
+                                                <img src="{{ $viewedProduct->featured_image_url }}" 
+                                                     class="card-img-top object-fit-cover" 
+                                                     alt="{{ $viewedProduct->name }}"
+                                                     style="border-radius: 0.5rem 0.5rem 0 0;">
+                                            @else
+                                                <div class="d-flex align-items-center justify-content-center bg-light" 
+                                                     style="border-radius: 0.5rem 0.5rem 0 0;">
+                                                    <div class="text-center">
+                                                        <i class="ci-image text-muted mb-2" style="font-size: 2rem;"></i>
+                                                        <small class="text-muted d-block">No Image</small>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
                                     </a>
-                                    
-                                    <h3 class="mb-2">
-                                        <a class="d-block fs-sm fw-medium text-truncate" href="{{ $viewedProduct->permalink }}">
-                                            <span class="animate-target">{{ $viewedProduct->name }}</span>
+                                </div>
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title fs-sm mb-2">
+                                        <a href="{{ $viewedProduct->permalink }}" 
+                                           class="text-decoration-none text-dark">
+                                            {{ Str::limit($viewedProduct->name, 50) }}
                                         </a>
-                                    </h3>
-                                    <div class="h6">
-                                        Rp {{ $viewedProduct->price_label }}
+                                    </h5>
+                                    <div class="mb-3">
+                                        <span class="h6 text-primary">Rp {{ $viewedProduct->price_label }}</span>
                                         @if($viewedProduct->compare_price)
-                                            <del class="fs-sm fw-normal text-body-tertiary">Rp {{ $viewedProduct->compare_price_label }}</del>
+                                            <del class="fs-sm text-muted ms-2">Rp {{ $viewedProduct->compare_price_label }}</del>
                                         @endif
                                     </div>
-                                    <div class="d-flex gap-2">
-                                        <button type="button" class="btn btn-dark w-100 rounded-pill px-3 add-to-cart-btn" 
+                                    <div class="mt-auto d-flex gap-2">
+                                        <button type="button" 
+                                                class="btn btn-primary btn-sm w-100 add-to-cart-btn" 
                                                 data-product-id="{{ $viewedProduct->id }}">
-                                            Add to cart
+                                            <i class="ci-shopping-cart me-1"></i>
+                                            Add to Cart
                                         </button>
                                         <button type="button"
-                                            class="btn btn-icon btn-secondary rounded-circle animate-pulse"
-                                            aria-label="Add to wishlist">
-                                            <i class="ci-heart fs-base animate-target"></i>
+                                                class="btn btn-outline-secondary btn-sm"
+                                                aria-label="Add to wishlist">
+                                            <i class="ci-heart"></i>
                                         </button>
                                     </div>
                                 </div>
                             </div>
-                            @empty
-                            <div class="swiper-slide">
-                                <div class="text-center py-4">
-                                    <p class="text-muted">Tidak ada produk yang pernah dilihat.</p>
-                                </div>
-                            </div>
-                            @endforelse
                         </div>
-                    </div>
-                </div>
-
-                <!-- External slider prev/next buttons visible on screens < 500px wide (sm breakpoint) -->
-                <div class="d-flex justify-content-center gap-2 mt-1 pt-4 d-sm-none">
-                    <button type="button"
-                        class="viewed-prev btn btn-icon btn-outline-secondary bg-body rounded-circle animate-slide-start me-1"
-                        aria-label="Prev">
-                        <i class="ci-chevron-left fs-lg animate-target"></i>
-                    </button>
-                    <button type="button"
-                        class="viewed-next btn btn-icon btn-outline-secondary bg-body rounded-circle animate-slide-end"
-                        aria-label="Next">
-                        <i class="ci-chevron-right fs-lg animate-target"></i>
-                    </button>
+                    @empty
+                        <div class="col-12">
+                            <div class="text-center py-5">
+                                <i class="ci-clock text-muted mb-3" style="font-size: 3rem;"></i>
+                                <p class="text-muted mb-0">Tidak ada produk yang pernah dilihat.</p>
+                            </div>
+                        </div>
+                    @endforelse
                 </div>
             </section>
         </div>
     </main>
 @endsection
 
+<!-- Review Form Modal -->
+@if($canUserReview)
+<div class="modal fade" id="reviewForm" tabindex="-1" aria-labelledby="reviewFormLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reviewFormLabel">Tulis Review untuk {{ $product->name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="reviewFormSubmit">
+                <div class="modal-body">
+                    @csrf
+                    <input type="hidden" name="product_id" value="{{ $product->id }}">
+                    
+                    <!-- Rating -->
+                    <div class="mb-3">
+                        <label class="form-label">Rating <span class="text-danger">*</span></label>
+                        <div class="d-flex gap-1 mb-2">
+                            @for($i = 1; $i <= 5; $i++)
+                                <i class="ci-star text-body-tertiary star-rating" 
+                                   data-rating="{{ $i }}" 
+                                   style="font-size: 1.5rem; cursor: pointer;"></i>
+                            @endfor
+                        </div>
+                        <input type="hidden" name="rating" id="selectedRating" required>
+                        <div class="invalid-feedback" id="ratingError"></div>
+                    </div>
+
+                    <!-- Review Text -->
+                    <div class="mb-3">
+                        <label for="reviewText" class="form-label">Review Anda <span class="text-danger">*</span></label>
+                        <textarea class="form-control" 
+                                  id="reviewText" 
+                                  name="review" 
+                                  rows="4" 
+                                  placeholder="Ceritakan pengalaman Anda dengan produk ini..."
+                                  maxlength="1000"
+                                  required></textarea>
+                        <div class="form-text">
+                            <span id="reviewCharCount">0</span>/1000 karakter
+                        </div>
+                        <div class="invalid-feedback" id="reviewError"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary" id="submitReviewBtn">
+                        <span class="btn-text">Kirim Review</span>
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endif
 
 @section('footer_scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const basePrice = {{ $product->price }};
+    const priceElements = document.querySelectorAll('.product-price');
+    const stickyPriceElements = document.querySelectorAll('.h4');
+    const attributeOptions = document.querySelectorAll('.attribute-option');
+
+    function updatePrice() {
+        let totalAdjustment = 0;
+        
+        // Calculate total price adjustment from selected attributes
+        attributeOptions.forEach(function(option) {
+            if ((option.type === 'radio' && option.checked) || 
+                (option.tagName === 'SELECT' && option.value)) {
+                
+                const adjustment = parseFloat(option.dataset.priceAdjustment || 0);
+                if (option.tagName === 'SELECT') {
+                    const selectedOption = option.options[option.selectedIndex];
+                    if (selectedOption && selectedOption.dataset.priceAdjustment) {
+                        totalAdjustment += parseFloat(selectedOption.dataset.priceAdjustment);
+                    }
+                } else {
+                    totalAdjustment += adjustment;
+                }
+            }
+        });
+
+        const finalPrice = basePrice + totalAdjustment;
+        const formattedPrice = new Intl.NumberFormat('id-ID').format(finalPrice);
+        
+        // Update all price displays
+        const priceDisplay = `Rp ${formattedPrice}`;
+        
+        // Update main price  
+        const mainPriceElement = document.querySelector('.h4.fw-bold.mb-4');
+        if (mainPriceElement) {
+            const originalHTML = mainPriceElement.innerHTML;
+            const newHTML = originalHTML.replace(/Rp\s[\d,\.]+/g, priceDisplay);
+            mainPriceElement.innerHTML = newHTML;
+        }
+        
+        // Update sticky price
+        const stickyPriceElement = document.querySelector('.d-none.d-lg-block.mb-0.ms-auto.me-4');
+        if (stickyPriceElement) {
+            const originalHTML = stickyPriceElement.innerHTML;
+            const newHTML = originalHTML.replace(/Rp\s[\d,\.]+/g, priceDisplay);
+            stickyPriceElement.innerHTML = newHTML;
+        }
+
+        // Update mobile sticky price
+        const mobileStickyPrice = document.querySelector('.h6.mb-0');
+        if (mobileStickyPrice) {
+            const originalHTML = mobileStickyPrice.innerHTML;
+            const newHTML = originalHTML.replace(/Rp\s[\d,\.]+/g, priceDisplay);
+            mobileStickyPrice.innerHTML = newHTML;
+        }
+    }
+
+    // Add event listeners to all attribute options
+    attributeOptions.forEach(function(option) {
+        option.addEventListener('change', updatePrice);
+    });
+
+    // Review Form JavaScript
+    @if($canUserReview)
+    // Star rating functionality
+    const starRatings = document.querySelectorAll('.star-rating');
+    const selectedRatingInput = document.getElementById('selectedRating');
     
+    starRatings.forEach(function(star, index) {
+        star.addEventListener('click', function() {
+            const rating = parseInt(this.dataset.rating);
+            selectedRatingInput.value = rating;
+            
+            // Update star display
+            starRatings.forEach(function(s, i) {
+                if (i < rating) {
+                    s.classList.remove('text-body-tertiary');
+                    s.classList.add('text-body-emphasis', 'ci-star-filled');
+                } else {
+                    s.classList.add('text-body-tertiary');
+                    s.classList.remove('text-body-emphasis', 'ci-star-filled');
+                }
+            });
+        });
+        
+        // Hover effects
+        star.addEventListener('mouseenter', function() {
+            const rating = parseInt(this.dataset.rating);
+            starRatings.forEach(function(s, i) {
+                if (i < rating) {
+                    s.classList.add('text-warning');
+                } else {
+                    s.classList.remove('text-warning');
+                }
+            });
+        });
+    });
+    
+    // Reset hover effects
+    document.querySelector('.d-flex.gap-1.mb-2').addEventListener('mouseleave', function() {
+        starRatings.forEach(function(s) {
+            s.classList.remove('text-warning');
+        });
+    });
+
+    // Character count for review
+    const reviewTextarea = document.getElementById('reviewText');
+    const charCountSpan = document.getElementById('reviewCharCount');
+    
+    reviewTextarea.addEventListener('input', function() {
+        const count = this.value.length;
+        charCountSpan.textContent = count;
+        
+        if (count > 1000) {
+            charCountSpan.classList.add('text-danger');
+        } else {
+            charCountSpan.classList.remove('text-danger');
+        }
+    });
+
+    // Review form submission
+    const reviewForm = document.getElementById('reviewFormSubmit');
+    const submitBtn = document.getElementById('submitReviewBtn');
+    
+    reviewForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Reset errors
+        document.getElementById('ratingError').textContent = '';
+        document.getElementById('reviewError').textContent = '';
+        document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+        
+        // Validate form
+        const rating = selectedRatingInput.value;
+        const review = reviewTextarea.value.trim();
+        let hasError = false;
+        
+        if (!rating) {
+            document.getElementById('ratingError').textContent = 'Rating harus dipilih';
+            selectedRatingInput.classList.add('is-invalid');
+            hasError = true;
+        }
+        
+        if (!review) {
+            document.getElementById('reviewError').textContent = 'Review harus diisi';
+            reviewTextarea.classList.add('is-invalid');
+            hasError = true;
+        } else if (review.length > 1000) {
+            document.getElementById('reviewError').textContent = 'Review maksimal 1000 karakter';
+            reviewTextarea.classList.add('is-invalid');
+            hasError = true;
+        }
+        
+        if (hasError) {
+            return;
+        }
+        
+        // Show loading state
+        submitBtn.disabled = true;
+        submitBtn.querySelector('.btn-text').textContent = 'Mengirim...';
+        submitBtn.querySelector('.spinner-border').classList.remove('d-none');
+        
+        // Prepare form data
+        const formData = new FormData(this);
+        
+        // Submit review
+        fetch('{{ route("reviews.store") }}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Show success message
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Review berhasil ditambahkan! Terima kasih atas feedback Anda.',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+                
+                // Close modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('reviewForm'));
+                modal.hide();
+                
+                // Reload page to show new review
+                window.location.reload();
+            } else {
+                // Show error message
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'error',
+                    title: data.message || 'Terjadi kesalahan saat mengirim review',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'error',
+                title: 'Terjadi kesalahan saat mengirim review',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
+        })
+        .finally(() => {
+            // Reset button state
+            submitBtn.disabled = false;
+            submitBtn.querySelector('.btn-text').textContent = 'Kirim Review';
+            submitBtn.querySelector('.spinner-border').classList.add('d-none');
+        });
+    });
+    @endif
+
+    // Wishlist functionality
+    document.querySelectorAll('.wishlist-toggle').forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.dataset.productId;
+            
+            fetch('{{ route("wishlist.toggle") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    product_id: productId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update button appearance
+                    const icon = this.querySelector('i');
+                    if (data.is_wishlist) {
+                        icon.classList.remove('ci-heart');
+                        icon.classList.add('ci-heart-filled', 'text-danger');
+                        this.classList.remove('btn-secondary');
+                        this.classList.add('btn-danger');
+                    } else {
+                        icon.classList.remove('ci-heart-filled', 'text-danger');
+                        icon.classList.add('ci-heart');
+                        this.classList.remove('btn-danger');
+                        this.classList.add('btn-secondary');
+                    }
+                    
+                    // Show success message
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: data.message,
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true
+                    });
+                } else if (data.error) {
+                    if (data.redirect) {
+                        window.location.href = data.redirect;
+                    } else {
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: 'error',
+                            title: data.error,
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'error',
+                    title: 'Terjadi kesalahan saat menambah ke wishlist',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+            });
+        });
+    });
+
+    // Update wishlist buttons for product cards
+    document.querySelectorAll('.btn-outline-secondary[aria-label="Add to wishlist"]').forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.closest('.col').querySelector('.add-to-cart-btn')?.dataset.productId;
+            if (!productId) return;
+            
+            fetch('{{ route("wishlist.toggle") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    product_id: productId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const icon = this.querySelector('i');
+                    if (data.is_wishlist) {
+                        icon.classList.remove('ci-heart');
+                        icon.classList.add('ci-heart-filled', 'text-danger');
+                    } else {
+                        icon.classList.remove('ci-heart-filled', 'text-danger');
+                        icon.classList.add('ci-heart');
+                    }
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: data.message,
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true
+                    });
+                } else if (data.error) {
+                    if (data.redirect) {
+                        window.location.href = data.redirect;
+                    } else {
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: 'error',
+                            title: data.error,
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'error',
+                    title: 'Terjadi kesalahan',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+            });
+        });
+    });
+
+    // Add to cart form is handled by global handlers in layouts/default.blade.php
+
+    // Handle product card add to cart buttons
+    document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.dataset.productId;
+            if (!productId) return;
+            
+            const originalText = this.textContent;
+            this.disabled = true;
+            this.textContent = 'Adding...';
+            
+            fetch('{{ route("cart.add") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    product_id: productId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Produk berhasil ditambahkan ke keranjang!',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true
+                    });
+                    
+                    // Update cart badge
+                    if (window.updateCartBadge) {
+                        window.updateCartBadge();
+                    }
+                } else {
+                    alert(data.error || 'Terjadi kesalahan');
+                    if (data.redirect) {
+                        window.location.href = data.redirect;
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'error',
+                    title: 'Terjadi kesalahan',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+            })
+            .finally(() => {
+                this.disabled = false;
+                this.textContent = originalText;
+            });
+        });
+    });
+});
+</script>
 @endsection
